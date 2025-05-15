@@ -1,1 +1,59 @@
 .ipynb_checkpoints/
+
+# Jupyter Notebook files
+.ipynb_checkpoints
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# NextJS project in ai-security-course
+ai-security-course/node_modules
+ai-security-course/.pnp
+ai-security-course/.pnp.js
+ai-security-course/.yarn/install-state.gz
+ai-security-course/.next/
+ai-security-course/out/
+ai-security-course/build/
+ai-security-course/npm-debug.log*
+ai-security-course/yarn-debug.log*
+ai-security-course/yarn-error.log*
+ai-security-course/.env*.local
+ai-security-course/.env
+ai-security-course/.vercel
+ai-security-course/*.tsbuildinfo
+ai-security-course/next-env.d.ts
+
+# General
+.DS_Store
+*.pem
+Thumbs.db
+.directory
+.Spotlight-V100
+.Trashes
+
+# IDE specific files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+*.swp
+*.swo

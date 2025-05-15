@@ -1,0 +1,436 @@
+/* Base styles */
+:root {
+  --primary-color: #8B1724;
+  --primary-hover: #6d111c;
+  --text-color: #333;
+  --secondary-text: #666;
+  --light-bg: #f5f5f5;
+  --border-color: #ddd;
+  --white: #fff;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+/* Main container */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar styles */
+.sidebar {
+  width: 100%;
+  height: 100vh;
+  border-right: 1px solid var(--border-color);
+  background-color: var(--white);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-logo {
+  height: 48px;
+  width: 48px;
+  margin-right: 12px;
+}
+
+.sidebar-title {
+  font-weight: bold;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+.sidebar-subtitle {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.search-container {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.search-input-wrapper {
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 6px 12px;
+  padding-right: 32px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(139, 23, 36, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--secondary-text);
+}
+
+.sidebar-nav {
+  overflow-y: auto;
+  padding: 12px;
+  flex: 1;
+}
+
+.nav-section {
+  margin-bottom: 8px;
+}
+
+.nav-section-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.nav-section-header:hover {
+  background-color: var(--light-bg);
+}
+
+.nav-section-toggle {
+  margin-right: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.nav-section-title {
+  color: var(--text-color);
+  font-weight: 500;
+  margin: 0;
+}
+
+.nav-section-items {
+  margin-left: 16px;
+  border-left: 2px solid var(--border-color);
+  padding-left: 8px;
+  margin-top: 4px;
+}
+
+.nav-item {
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.nav-item:hover {
+  background-color: var(--light-bg);
+}
+
+.nav-item.active {
+  background-color: rgba(139, 23, 36, 0.1);
+  color: var(--primary-color);
+}
+
+/* Main content area */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.main-header {
+  background-color: var(--white);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+.menu-button {
+  padding: 8px;
+  border-radius: 4px;
+  color: var(--secondary-text);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.menu-button:hover {
+  background-color: var(--light-bg);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.header-action {
+  padding: 8px;
+  border-radius: 4px;
+  color: var(--secondary-text);
+  text-decoration: none;
+  margin-left: 16px;
+}
+
+.header-action:hover {
+  background-color: var(--light-bg);
+}
+
+/* Content */
+.content-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.content-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.content-block {
+  margin-bottom: 16px;
+}
+
+.code-block {
+  background-color: #282c34;
+  color: var(--white);
+  padding: 16px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+  margin-bottom: 16px;
+  overflow-x: auto;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+.tab {
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  border-bottom-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.tab:hover:not(.active) {
+  color: var(--primary-color);
+}
+
+/* Section headers */
+.section-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+.inline-code {
+  background-color: var(--light-bg);
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: 'Consolas', 'Monaco', 'Andale Mono', monospace;
+}
+
+/* Table of Contents Sidebar */
+.toc-sidebar {
+  width: 280px;
+  border-left: 1px solid var(--border-color);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.toc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.toc-title {
+  font-weight: bold;
+  color: var(--secondary-text);
+  margin: 0;
+}
+
+.toc-close {
+  background: none;
+  border: none;
+  color: var(--secondary-text);
+  cursor: pointer;
+}
+
+.toc-close:hover {
+  color: var(--text-color);
+}
+
+.toc-nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  space-y: 8px;
+}
+
+.toc-nav li {
+  margin-bottom: 8px;
+}
+
+.toc-link {
+  display: block;
+  text-decoration: none;
+  color: var(--secondary-text);
+  font-size: 0.875rem;
+}
+
+.toc-link:hover {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
+.toc-link.active {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+/* Action button (from your CSS) */
+.action-button {
+  display: inline-block;
+  background-color: var(--primary-color);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.action-button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Page divider (from your CSS) */
+.page-divider {
+  width: 30%;
+  margin-left: 35%;
+  height: 3px;
+  background-color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+/* Add these styles to your main.css file */
+
+/* Collapsible sidebar styles */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* .sidebar {
+  width: 280px;
+  height: 100vh;
+  border-right: 1px solid var(--border-color);
+  background-color: var(--white);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.3s ease;
+  flex-shrink: 0;
+} */
+
+.sidebar.collapsed {
+  width: 0;
+  overflow: hidden;
+}
+
+/* Enhanced resize handle to make it more visible */
+.resize-handle {
+  width: 10px; /* Make it wider to be easier to grab */
+  height: 100vh;
+  background-color: transparent; /* Make it transparent by default */
+  cursor: col-resize;
+  position: absolute;
+  /* left: 280px;  Same as initial sidebar width  */
+  top: 0;
+  z-index: 100; /* Increase z-index to ensure it's above other elements */
+  transition: background-color 0.2s;
+}
+
+/* Add visible indicator in the center */
+.resize-handle::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 40px;
+  background-color: var(--border-color);
+  top: 50%;
+  left: 3px; /* Center it in the 10px wide handle */
+  transform: translateY(-50%);
+  border-radius: 2px;
+  opacity: 0.7;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+.resize-handle:hover::after,
+.resize-handle.active::after {
+  background-color: var(--primary-color);
+  opacity: 1;
+}
+
+/* Make sure the resize handle stays visible and functional */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden; /* Prevent any overflow issues */
+}
+
+/* Ensure the sidebar and main content are correctly positioned */
+.sidebar {
+  position: relative;
+  z-index: 1;
+}
+
+.main-content {
+  position: relative;
+  z-index: 1;
+}
