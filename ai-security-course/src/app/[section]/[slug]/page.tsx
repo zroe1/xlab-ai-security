@@ -12,7 +12,6 @@ import React from "react";
 const components = {
   pre: (props: React.HTMLAttributes<HTMLPreElement>) => <pre {...props} className="code-block" />,
   code: (props: React.HTMLAttributes<HTMLElement>) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { children, className, ...rest } = props;
     return (
       <code className={className} {...rest}>
@@ -23,14 +22,14 @@ const components = {
 };
 
 interface PageProps {
-  params: {
+  params: Promise<{
     section: string;
     slug: string;
-  };
+  }>;
 }
 
 export default async function Page({ params }: PageProps) {
-  const { section, slug } = params;
+  const { section, slug } = await params;
 
   // Get the content
   const contentData = getContentByPath(section, slug);
@@ -45,7 +44,7 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <MainLayout tocItems={tocItems}>
-      <h1 className="page-title">{contentData.frontMatter.title}</h1>
+      <h1 className="page-title">{contentData.frontMatter.title as string}</h1>
       <div className="mdx-content">
         <MDXRemote
           source={contentData.content}

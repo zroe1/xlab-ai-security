@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, ReactNode } from "react";
+import React, { useState, useRef, useEffect, ReactNode, useCallback } from "react";
 import Sidebar from "./Sidebar";
 import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 
@@ -15,7 +15,7 @@ interface LayoutProps {
 }
 
 const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
-  const { theme, toggleTheme } = useTheme();
+  const { toggleTheme } = useTheme();
   const [showTOC, setShowTOC] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(380); // Default width
@@ -30,6 +30,35 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
   };
 
   // Handle resize functionality
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isResizing || !appRef.current) return;
+
+      const appRect = appRef.current.getBoundingClientRect();
+      const newWidth = Math.max(292, Math.min(500, e.clientX - appRect.left));
+
+      // Update state
+      setSidebarWidth(newWidth);
+
+      // Update the position of the resize handle
+      if (resizeHandleRef.current) {
+        resizeHandleRef.current.style.left = `${newWidth}px`;
+      }
+    },
+    [isResizing]
+  );
+
+  const stopResizing = useCallback(() => {
+    setIsResizing(false);
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", stopResizing);
+
+    // Remove the active class
+    if (resizeHandleRef.current) {
+      resizeHandleRef.current.classList.remove("active");
+    }
+  }, [handleMouseMove]);
+
   const startResizing = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault(); // Prevent default behavior
     setIsResizing(true);
@@ -44,39 +73,13 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
     }
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isResizing || !appRef.current) return;
-
-    const appRect = appRef.current.getBoundingClientRect();
-    const newWidth = Math.max(292, Math.min(500, e.clientX - appRect.left));
-
-    // Update state
-    setSidebarWidth(newWidth);
-
-    // Update the position of the resize handle
-    if (resizeHandleRef.current) {
-      resizeHandleRef.current.style.left = `${newWidth}px`;
-    }
-  };
-
-  const stopResizing = () => {
-    setIsResizing(false);
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", stopResizing);
-
-    // Remove the active class
-    if (resizeHandleRef.current) {
-      resizeHandleRef.current.classList.remove("active");
-    }
-  };
-
   // Clean up event listeners when component unmounts
   useEffect(() => {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", stopResizing);
     };
-  }, []);
+  }, [handleMouseMove, stopResizing]);
 
   // Reset resize handle position when sidebar is collapsed/expanded
   useEffect(() => {
@@ -96,7 +99,7 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", stopResizing);
     }
-  }, [isResizing, handleMouseMove]);
+  }, [isResizing, handleMouseMove, stopResizing]);
 
   return (
     <div className="app-container" ref={appRef}>

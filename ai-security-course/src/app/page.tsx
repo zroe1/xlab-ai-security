@@ -1,7 +1,6 @@
 "use client";
 import MainLayout from "@/components/MainLayout";
-import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 
 export default function Home() {
   // const [showTOC, setShowTOC] = useState(true);
@@ -50,7 +49,8 @@ export default function Home() {
             <div>
               <p>Enter the following command in terminal:</p>
               <div className="code-block">
-                curl --proto 'https' --tlsv1.2 https://ai-sec.toolkit.org/install.sh -sSf | sh
+                curl --proto &apos;https&apos; --tlsv1.2 https://ai-sec.toolkit.org/install.sh -sSf
+                | sh
               </div>
             </div>
           </div>
@@ -64,9 +64,9 @@ export default function Home() {
 
             <p>
               to both check if you already have the toolkit installed, and if so, which version. If
-              you don't have it installed, go above and follow the instructions to install it. If
-              you already have an AI security environment installed, then you can update the version
-              by doing:
+              you don&apos;t have it installed, go above and follow the instructions to install it.
+              If you already have an AI security environment installed, then you can update the
+              version by doing:
             </p>
 
             <div className="code-block">aisecsdk update</div>

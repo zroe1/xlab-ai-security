@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -151,10 +152,12 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-logo-container">
-          <img
+          <Image
             src={theme === "dark" ? "/images/x_white.png" : "/images/x.png"}
             alt="UChicago XLab Logo"
             className="sidebar-logo"
+            width={32}
+            height={32}
           />
           <div>
             <div className="sidebar-title">UChicago XLab</div>
