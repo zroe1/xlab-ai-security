@@ -118,7 +118,7 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
       <div className="main-content">
         {/* Top Navigation Bar */}
         <header className="main-header">
-          <button className="sidebar-toggle" onClick={toggleSidebar}>
+          <button className="menu-button" onClick={toggleSidebar}>
             {sidebarCollapsed ? (
               <svg
                 width="24"

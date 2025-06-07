@@ -11,44 +11,6 @@ export default function Home() {
   ];
   return (
     <MainLayout tocItems={tocItems}>
-      {/* <h1 className="page-title">UChicago XLab AI Security Guide</h1>
-
-      <div className="content-block">
-        <p>
-          Welcome to the AI Security Guide. This comprehensive resource is designed to help you
-          understand and implement security best practices for artificial intelligence systems.
-        </p>
-      </div>
-
-      <div className="content-block">
-        <h2>Getting Started</h2>
-        <p>
-          Begin your journey with the{" "}
-          <Link href="/getting-started/installation" className="text-link">
-            Installation guide
-          </Link>{" "}
-          to set up your AI security toolkit.
-        </p>
-      </div>
-
-      <div className="content-block">
-        <h2>Featured Content</h2>
-        <ul className="feature-list">
-          <li>
-            <Link href="/model-inference-attacks/stealing-model-weights" className="feature-link">
-              Model Extraction Attacks
-            </Link>
-            <p>Learn how attackers can steal information about AI models</p>
-          </li>
-          <li>
-            <Link href="/adversarial-examples/creating" className="feature-link">
-              Creating Adversarial Inputs
-            </Link>
-            <p>Understand how to generate inputs that fool AI systems</p>
-          </li>
-        </ul>
-      </div> */}
-
       <div className="content-container">
         <div className="content-wrapper">
           <h1 className="page-title">1.1. Installation</h1>
@@ -109,45 +71,8 @@ export default function Home() {
 
             <div className="code-block">aisecsdk update</div>
           </div>
-
-          {/* {children} */}
         </div>
       </div>
-      {/* </div> */}
-
-      {/* {showTOC && tocItems.length > 0 && (
-        <div className="toc-sidebar">
-          <div className="toc-header">
-            <h3 className="toc-title">Contents</h3>
-            <button onClick={() => setShowTOC(false)} className="toc-close">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-
-          <nav className="toc-nav">
-            <ul>
-              {tocItems.map((item, index) => (
-                <li key={index}>
-                  <a href={`#${item.id}`} className="toc-link">
-                    {item.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-      )} */}
     </MainLayout>
   );
 }
