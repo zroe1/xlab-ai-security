@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
 
 body[data-theme='dark'] {
-  --primary-color: #9c5967;
+  --primary-color: #8a535a;
   --primary-hover: #8a4956;
   --text-color: #e0e0e0;
   --secondary-text: #b0b0b0;
@@ -9,6 +9,33 @@ body[data-theme='dark'] {
   --border-color: #444;
   --white: #121212;
   background-color: #121212;
+}
+
+body[data-theme='dark'] .content-wrapper h1,
+body[data-theme='dark'] .content-wrapper h2,
+body[data-theme='dark'] .content-wrapper h3,
+body[data-theme='dark'] .content-wrapper h4,
+body[data-theme='dark'] .content-wrapper h5,
+body[data-theme='dark'] .content-wrapper h6,
+body[data-theme='dark'] .toc-title {
+  color: var(--primary-color);
+}
+
+body[data-theme='dark'] .content-wrapper a {
+  color: #4d5eab;
+}
+
+body[data-theme='dark'] .toc-link {
+  color: white;
+}
+
+body[data-theme='dark'] .nav-item {
+  color: white;
+}
+
+body[data-theme='dark'] .nav-item.active {
+  color: #ffffff;
+  background-color: var(--primary-color);
 }
 
 /* Base styles */
