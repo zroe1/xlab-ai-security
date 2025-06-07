@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "@/contexts/ThemeContext";
 
 // Define types for navigation items
 interface SubItem {
@@ -129,6 +130,7 @@ const NavItem = ({
 };
 
 const Sidebar = () => {
+  const { theme } = useTheme();
   const pathname = usePathname();
   const [activeItem, setActiveItem] = useState("");
   const [searchText, setSearchText] = useState("");
@@ -149,7 +151,11 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="sidebar-header">
         <div className="sidebar-logo-container">
-          <img src="/images/x.png" alt="UChicago XLab Logo" className="sidebar-logo" />
+          <img
+            src={theme === "dark" ? "/images/x_white.png" : "/images/x.png"}
+            alt="UChicago XLab Logo"
+            className="sidebar-logo"
+          />
           <div>
             <div className="sidebar-title">UChicago XLab</div>
             <div className="sidebar-subtitle">AI Security Guide</div>

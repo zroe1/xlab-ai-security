@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
 
 body[data-theme='dark'] {
-  --primary-color: #bb86fc;
-  --primary-hover: #a96ef7;
+  --primary-color: #9c5967;
+  --primary-hover: #8a4956;
   --text-color: #e0e0e0;
   --secondary-text: #b0b0b0;
   --light-bg: #2a2a2a;
