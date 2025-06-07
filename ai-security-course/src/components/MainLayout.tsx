@@ -18,7 +18,7 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
   const { theme, toggleTheme } = useTheme();
   const [showTOC, setShowTOC] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(280); // Default width
+  const [sidebarWidth, setSidebarWidth] = useState(380); // Default width
   const [isResizing, setIsResizing] = useState(false);
 
   const appRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
     if (!isResizing || !appRef.current) return;
 
     const appRect = appRef.current.getBoundingClientRect();
-    const newWidth = Math.max(200, Math.min(500, e.clientX - appRect.left));
+    const newWidth = Math.max(292, Math.min(500, e.clientX - appRect.left));
 
     // Update state
     setSidebarWidth(newWidth);
