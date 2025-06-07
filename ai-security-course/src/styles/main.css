@@ -75,21 +75,23 @@ body {
 }
 
 .search-container {
+  /* background-color: red; */
   padding: 12px;
   border-bottom: 1px solid var(--border-color);
 }
 
 .search-input-wrapper {
+  /* background-color: blue; */
   position: relative;
 }
 
 .search-input {
-  width: 100%;
+  width: calc(100% - 2*12px);
   padding: 6px 12px;
-  padding-right: 32px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
-  font-size: 0.875rem;
+  font-size: 1rem;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .search-input:focus {
@@ -101,7 +103,7 @@ body {
 .search-icon {
   position: absolute;
   right: 8px;
-  top: 50%;
+  top: 55%;
   transform: translateY(-50%);
   color: var(--secondary-text);
 }
