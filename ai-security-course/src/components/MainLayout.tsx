@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Sidebar from "./Sidebar";
 
-const MainLayout = ({ children, tocItems }) => {
+const MainLayout = ({ children, tocItems = [] }) => {
   const [showTOC, setShowTOC] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(280); // Default width
@@ -30,9 +30,6 @@ const MainLayout = ({ children, tocItems }) => {
     if (resizeHandleRef.current) {
       resizeHandleRef.current.classList.add("active");
     }
-
-    // For debugging
-    console.log("Start resizing");
   };
 
   const handleMouseMove = (e) => {
@@ -40,9 +37,6 @@ const MainLayout = ({ children, tocItems }) => {
 
     const appRect = appRef.current.getBoundingClientRect();
     const newWidth = Math.max(200, Math.min(500, e.clientX - appRect.left));
-
-    // For debugging
-    console.log("Resizing to width:", newWidth);
 
     // Update state
     setSidebarWidth(newWidth);
@@ -62,9 +56,6 @@ const MainLayout = ({ children, tocItems }) => {
     if (resizeHandleRef.current) {
       resizeHandleRef.current.classList.remove("active");
     }
-
-    // For debugging
-    console.log("Stop resizing");
   };
 
   // Clean up event listeners when component unmounts
@@ -116,7 +107,6 @@ const MainLayout = ({ children, tocItems }) => {
         {/* Top Navigation Bar */}
         <header className="main-header">
           <button className="sidebar-toggle" onClick={toggleSidebar}>
-            <span className="sr-only">{sidebarCollapsed ? "Open" : "Close"} Sidebar</span>
             {sidebarCollapsed ? (
               <svg
                 width="24"
@@ -207,78 +197,16 @@ const MainLayout = ({ children, tocItems }) => {
 
         {/* Content Area with Scroll */}
         <div className="content-container">
-          <div className="content-wrapper">
-            <h1 className="page-title">1.1. Installation</h1>
-
-            <div className="content-block">
-              <p>
-                Setting up a secure AI development environment is the first step in building secure
-                AI systems. This guide will walk you through the installation process for the
-                UChicago XLab AI Security toolkit.
-              </p>
-            </div>
-
-            <div className="content-block">
-              <p>
-                The <span className="inline-code">aisecsdk</span> installer and version management
-                tool is the best way to download, install, and maintain your AI security development
-                environment. Using the <span className="inline-code">aisecsdk</span> command after
-                installation will help you check for updates and update your environment when
-                necessary.
-              </p>
-            </div>
-
-            <div className="content-block">
-              <p>
-                Depending on your operating system, you can install{" "}
-                <span className="inline-code">aisecsdk</span> by following the instructions below:
-              </p>
-            </div>
-
-            {/* Tabs for different OS instructions */}
-            <div className="content-block">
-              <div className="tabs">
-                <button className="tab active">Linux or macOS</button>
-                <button className="tab">Windows</button>
-              </div>
-
-              <div>
-                <p>Enter the following command in terminal:</p>
-                <div className="code-block">
-                  curl --proto 'https' --tlsv1.2 https://ai-sec.toolkit.org/install.sh -sSf | sh
-                </div>
-              </div>
-            </div>
-
-            <h2 className="section-title">1.1.1. Update existing AI security environment</h2>
-
-            <div className="content-block">
-              <p>You can run:</p>
-
-              <div className="code-block">aisecsdk --version</div>
-
-              <p>
-                to both check if you already have the toolkit installed, and if so, which version.
-                If you don't have it installed, go above and follow the instructions to install it.
-                If you already have an AI security environment installed, then you can update the
-                version by doing:
-              </p>
-
-              <div className="code-block">aisecsdk update</div>
-            </div>
-
-            {children}
-          </div>
+          <div className="content-wrapper">{children}</div>
         </div>
       </div>
 
       {/* Table of Contents Sidebar */}
-      {showTOC && (
+      {showTOC && tocItems.length > 0 && (
         <div className="toc-sidebar">
           <div className="toc-header">
             <h3 className="toc-title">Contents</h3>
             <button onClick={() => setShowTOC(false)} className="toc-close">
-              <span className="sr-only">Close TOC</span>
               <svg
                 width="20"
                 height="20"
@@ -296,16 +224,13 @@ const MainLayout = ({ children, tocItems }) => {
 
           <nav className="toc-nav">
             <ul>
-              <li>
-                <a href="#" className="toc-link active">
-                  1.1.1. Update existing AI security environment
-                </a>
-              </li>
-              <li>
-                <a href="#" className="toc-link">
-                  1.1.2. AI Security Playground
-                </a>
-              </li>
+              {tocItems.map((item, index) => (
+                <li key={index}>
+                  <a href={`#${item.id}`} className="toc-link">
+                    {item.text}
+                  </a>
+                </li>
+              ))}
             </ul>
           </nav>
         </div>

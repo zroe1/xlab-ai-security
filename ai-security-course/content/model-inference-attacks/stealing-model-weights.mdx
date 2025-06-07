@@ -1,0 +1,81 @@
+---
+title: "Model Extraction Attacks"
+description: "Learn how attackers can steal information about AI models"
+---
+
+# Model Extraction Attacks
+
+## Introduction to Model Stealing Techniques
+
+This section introduces practical techniques for model extraction attacks - a significant concern in AI security. When deploying AI models, particularly large language models (LLMs), organizations must be aware that even black-box access to models can leak information about their architecture and parameters.
+
+## Learning Objectives
+
+By the end of this section, you will:
+
+- Understand how to run a GPT-2 model locally for experimentation
+- Learn how to extract a model's hidden dimension size from its outputs
+- Understand the mathematical principles behind model extraction attacks
+- Recognize the security implications of these vulnerabilities
+
+## Mathematical Intuition
+
+The core insight behind model extraction attacks comes from understanding the architecture of transformer-based language models. In these models:
+
+- The final layer projects from a hidden dimension _h_ to vocabulary size _l_
+- This creates a mathematical bottleneck where output logits can only span a subspace of dimension _h_
+- By collecting many output vectors and analyzing their singular values, we can determine this hidden dimension
+
+Mathematically, when a language model processes text:
+
+$$f_\theta(p) = \text{softmax}(\mathbf{W} \cdot g_\theta(p))$$
+
+Where:
+
+- $\mathbf{W}$ is an $l \times h$ matrix (vocabulary size × hidden dimension)
+- $g_\theta(p)$ outputs an $h$-dimensional hidden state vector
+
+This means that no matter how many different inputs we try, the rank of the output logit matrix cannot exceed _h_. This property allows us to extract proprietary information about model architecture through careful analysis.
+
+## Hands-on Exercise
+
+This concept is demonstrated in the accompanying Jupyter notebook, which shows:
+
+1. How to run GPT-2 locally and generate text
+2. How temperature affects text generation (preventing repetition)
+3. How to implement the model extraction attack described in "[Stealing Part of a Production Language Model](https://arxiv.org/pdf/2403.06634)" (Carlini et al., 2024)
+
+In the practical exercise, you'll:
+
+- Generate random prefixes to query the model
+- Collect logit vectors from model outputs
+- Apply Singular Value Decomposition (SVD) to determine the hidden dimension
+- Visualize the "cliff edge" in singular values that reveals the model's dimension
+
+## Security Implications
+
+This type of attack demonstrates that:
+
+1. Even black-box access to models can leak architectural details
+2. Proprietary information about model design can be extracted through API calls
+3. Knowledge of model dimensions enables more sophisticated attacks
+4. Traditional API security measures may not protect against these mathematical vulnerabilities
+
+## Defensive Considerations
+
+To protect against model extraction attacks, consider:
+
+- Limiting the precision of model outputs
+- Adding controlled noise to model responses
+- Implementing rate limiting and monitoring for suspicious query patterns
+- Using watermarking techniques to detect model stealing attempts
+
+## Notebook Access
+
+The complete code for this exercise is available in the [Model Extraction Notebook](/notebooks/model-extraction.ipynb) where you can run the code yourself and experiment with different parameters.
+
+## Further Reading
+
+- [Stealing Part of a Production Language Model](https://arxiv.org/pdf/2403.06634) by Carlini et al. (2024)
+- [Extracting Training Data from Large Language Models](https://arxiv.org/abs/2012.07805) by Carlini et al. (2021)
+- [Membership Inference Attacks on Machine Learning Models](https://arxiv.org/abs/1610.05820) by Shokri et al. (2017)

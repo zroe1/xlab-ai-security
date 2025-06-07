@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 
 // Sample navigation structure (will be replaced with dynamic data)
 const navigationItems = [
@@ -23,9 +24,13 @@ const navigationItems = [
   },
   {
     id: "3",
-    title: "Defensive Techniques",
+    title: "Model Inference Attacks",
     items: [
-      { id: "3.1", title: "Input Validation", href: "/defensive-techniques/input-validation" },
+      {
+        id: "3.1",
+        title: "Stealing Model Weights",
+        href: "/model-inference-attacks/stealing-model-weights",
+      },
       { id: "3.2", title: "Model Monitoring", href: "/defensive-techniques/model-monitoring" },
     ],
   },
@@ -84,12 +89,13 @@ const NavItem = ({ item, activeItem, setActiveItem }) => {
       {isExpanded && (
         <div className="nav-section-items">
           {item.items.map((subItem) => (
-            <div
+            <Link
               key={subItem.id}
+              href={subItem.href}
               className={`nav-item ${activeItem === subItem.id ? "active" : ""}`}
               onClick={() => setActiveItem(subItem.id)}>
               {subItem.id} {subItem.title}
-            </div>
+            </Link>
           ))}
         </div>
       )}
