@@ -48,7 +48,7 @@ body {
 }
 
 .sidebar-header {
-  padding: 16px;
+  padding: 22px 25px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -58,19 +58,20 @@ body {
 }
 
 .sidebar-logo {
-  height: 48px;
-  width: 48px;
+  height: 4rem;
+  width: 4rem;
   margin-right: 12px;
 }
 
 .sidebar-title {
+  font-size: 1.3rem;
   font-weight: bold;
   color: var(--primary-color);
   margin: 0;
 }
 
 .sidebar-subtitle {
-  font-size: 0.875rem;
+  font-size: 1.1rem;
   margin: 0;
 }
 
