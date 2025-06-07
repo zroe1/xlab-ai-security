@@ -6,11 +6,13 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import React from "react";
 
 // Custom MDX components
 const components = {
-  pre: (props) => <pre {...props} className="code-block" />,
-  code: (props) => {
+  pre: (props: React.HTMLAttributes<HTMLPreElement>) => <pre {...props} className="code-block" />,
+  code: (props: React.HTMLAttributes<HTMLElement>) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { children, className, ...rest } = props;
     return (
       <code className={className} {...rest}>
@@ -20,7 +22,14 @@ const components = {
   },
 };
 
-export default async function Page({ params }) {
+interface PageProps {
+  params: {
+    section: string;
+    slug: string;
+  };
+}
+
+export default async function Page({ params }: PageProps) {
   const { section, slug } = params;
 
   // Get the content
