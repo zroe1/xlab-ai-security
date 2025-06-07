@@ -1,16 +1,28 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, ReactNode } from "react";
 import Sidebar from "./Sidebar";
+import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 
-const MainLayout = ({ children, tocItems = [] }) => {
+interface TocItem {
+  id: string;
+  text: string;
+}
+
+interface LayoutProps {
+  children: ReactNode;
+  tocItems?: TocItem[];
+}
+
+const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
+  const { theme, toggleTheme } = useTheme();
   const [showTOC, setShowTOC] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(280); // Default width
   const [isResizing, setIsResizing] = useState(false);
 
-  const appRef = useRef(null);
-  const resizeHandleRef = useRef(null);
+  const appRef = useRef<HTMLDivElement>(null);
+  const resizeHandleRef = useRef<HTMLDivElement>(null);
 
   // Toggle sidebar visibility
   const toggleSidebar = () => {
@@ -18,7 +30,7 @@ const MainLayout = ({ children, tocItems = [] }) => {
   };
 
   // Handle resize functionality
-  const startResizing = (e) => {
+  const startResizing = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault(); // Prevent default behavior
     setIsResizing(true);
 
@@ -32,7 +44,7 @@ const MainLayout = ({ children, tocItems = [] }) => {
     }
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: MouseEvent) => {
     if (!isResizing || !appRef.current) return;
 
     const appRect = appRef.current.getBoundingClientRect();
@@ -84,7 +96,7 @@ const MainLayout = ({ children, tocItems = [] }) => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", stopResizing);
     }
-  }, [isResizing]);
+  }, [isResizing, handleMouseMove]);
 
   return (
     <div className="app-container" ref={appRef}>
@@ -179,7 +191,7 @@ const MainLayout = ({ children, tocItems = [] }) => {
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
               </svg>
             </a>
-            <a href="#" className="header-action">
+            <a href="#" className="header-action" onClick={toggleTheme}>
               <svg
                 width="20"
                 height="20"
@@ -236,6 +248,14 @@ const MainLayout = ({ children, tocItems = [] }) => {
         </div>
       )}
     </div>
+  );
+};
+
+const MainLayout = ({ children, tocItems = [] }: LayoutProps) => {
+  return (
+    <ThemeProvider>
+      <LayoutContent tocItems={tocItems}>{children}</LayoutContent>
+    </ThemeProvider>
   );
 };
 

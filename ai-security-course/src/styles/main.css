@@ -1,3 +1,14 @@
+body[data-theme='dark'] {
+  --primary-color: #bb86fc;
+  --primary-hover: #a96ef7;
+  --text-color: #e0e0e0;
+  --secondary-text: #b0b0b0;
+  --light-bg: #2a2a2a;
+  --border-color: #444;
+  --white: #121212;
+  background-color: #121212;
+}
+
 /* Base styles */
 :root {
   --primary-color: #8B1724;
