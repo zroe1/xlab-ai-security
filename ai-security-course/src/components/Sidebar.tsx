@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Define types for navigation items
 interface SubItem {
@@ -66,7 +67,10 @@ const NavItem = ({
   activeItem: string;
   setActiveItem: (id: string) => void;
 }) => {
-  const [isExpanded, setIsExpanded] = useState(item.id === "1"); // First section open by default
+  const pathname = usePathname();
+  const [isExpanded, setIsExpanded] = useState(
+    item.items.some((subItem) => subItem.href === pathname)
+  );
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -125,8 +129,21 @@ const NavItem = ({
 };
 
 const Sidebar = () => {
-  const [activeItem, setActiveItem] = useState("1.1");
+  const pathname = usePathname();
+  const [activeItem, setActiveItem] = useState("");
   const [searchText, setSearchText] = useState("");
+
+  useEffect(() => {
+    // Find the active item based on the current path
+    for (const section of navigationItems) {
+      for (const subItem of section.items) {
+        if (subItem.href === pathname) {
+          setActiveItem(subItem.id);
+          return; // Exit once found
+        }
+      }
+    }
+  }, [pathname]);
 
   return (
     <div className="sidebar">
