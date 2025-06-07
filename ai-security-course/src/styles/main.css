@@ -141,6 +141,9 @@ body {
   font-size: 0.875rem;
   cursor: pointer;
   border-radius: 4px;
+  display: block;
+  color: black;
+  text-decoration: none;
 }
 
 .nav-item:hover {
@@ -150,6 +153,12 @@ body {
 .nav-item.active {
   background-color: rgba(139, 23, 36, 0.1);
   color: var(--primary-color);
+}
+
+.nav-link-custom {
+  display: block;
+  color: black;
+  text-decoration: none;
 }
 
 /* Main content area */

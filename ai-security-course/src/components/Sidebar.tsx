@@ -3,8 +3,21 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
+// Define types for navigation items
+interface SubItem {
+  id: string;
+  title: string;
+  href: string;
+}
+
+interface NavigationItem {
+  id: string;
+  title: string;
+  items: SubItem[];
+}
+
 // Sample navigation structure (will be replaced with dynamic data)
-const navigationItems = [
+const navigationItems: NavigationItem[] = [
   {
     id: "1",
     title: "Getting Started",
@@ -44,7 +57,15 @@ const navigationItems = [
   },
 ];
 
-const NavItem = ({ item, activeItem, setActiveItem }) => {
+const NavItem = ({
+  item,
+  activeItem,
+  setActiveItem,
+}: {
+  item: NavigationItem;
+  activeItem: string;
+  setActiveItem: (id: string) => void;
+}) => {
   const [isExpanded, setIsExpanded] = useState(item.id === "1"); // First section open by default
 
   const toggleExpand = () => {
@@ -92,7 +113,7 @@ const NavItem = ({ item, activeItem, setActiveItem }) => {
             <Link
               key={subItem.id}
               href={subItem.href}
-              className={`nav-item ${activeItem === subItem.id ? "active" : ""}`}
+              className={`nav-item nav-link-custom ${activeItem === subItem.id ? "active" : ""}`}
               onClick={() => setActiveItem(subItem.id)}>
               {subItem.id} {subItem.title}
             </Link>
