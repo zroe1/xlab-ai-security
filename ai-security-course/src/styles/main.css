@@ -258,6 +258,110 @@ body {
   background-color: var(--light-bg);
 }
 
+/* Ensure button elements with header-action class have consistent styling */
+button.header-action {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button.header-action:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Theme Toggle Switch */
+.theme-toggle-wrapper {
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.theme-toggle {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--light-bg);
+}
+
+.theme-toggle:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.theme-toggle-track {
+  width: 44px;
+  height: 22px;
+  background-color: var(--border-color);
+  border-radius: 11px;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+.theme-toggle.dark .theme-toggle-track {
+  background-color: var(--secondary-text);
+  border-color: var(--secondary-text);
+}
+
+.theme-toggle-thumb {
+  width: 18px;
+  height: 18px;
+  background-color: var(--white);
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle.dark .theme-toggle-thumb {
+  transform: translateX(22px);
+  background-color: var(--white);
+}
+
+.theme-icon {
+  position: absolute;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sun-icon {
+  opacity: 1;
+  transform: scale(1);
+  color: var(--secondary-text);
+}
+
+.moon-icon {
+  opacity: 0;
+  transform: scale(0.8);
+  color: var(--secondary-text);
+}
+
+.theme-toggle.dark .sun-icon {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.theme-toggle.dark .moon-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
 /* Content */
 .content-container {
   flex: 1;
