@@ -1,0 +1,9 @@
+# Include important files in the package distribution
+include README.md
+include pyproject.toml
+include requirements-dev.txt
+recursive-include xlab *.py
+recursive-include tests *.py
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .DS_Store 
