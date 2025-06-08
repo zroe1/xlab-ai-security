@@ -62,13 +62,25 @@ export function getAllContentPaths(): ContentPath[] {
 export function getContentByPath(section: string, slug: string): ContentData | null {
   console.log("Looking for content:", section, slug);
 
-  // Try both .mdx and .md extensions
-  let fullPath = path.join(contentDirectory, section, `${slug}.mdx`);
+  let fullPath: string;
+
+  // If section is empty, look in the root content directory
+  if (!section || section === "") {
+    fullPath = path.join(contentDirectory, `${slug}.mdx`);
+  } else {
+    fullPath = path.join(contentDirectory, section, `${slug}.mdx`);
+  }
+
   console.log("Checking path:", fullPath);
   console.log("Path exists?", fs.existsSync(fullPath));
 
   if (!fs.existsSync(fullPath)) {
-    fullPath = path.join(contentDirectory, section, `${slug}.md`);
+    // Try .md extension
+    if (!section || section === "") {
+      fullPath = path.join(contentDirectory, `${slug}.md`);
+    } else {
+      fullPath = path.join(contentDirectory, section, `${slug}.md`);
+    }
     console.log("Checking alternate path:", fullPath);
     console.log("Alternate path exists?", fs.existsSync(fullPath));
 
@@ -86,7 +98,7 @@ export function getContentByPath(section: string, slug: string): ContentData | n
   return {
     frontMatter: data,
     content,
-    section,
+    section: section || "",
     slug,
   };
 }

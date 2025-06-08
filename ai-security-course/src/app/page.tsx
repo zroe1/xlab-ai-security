@@ -1,84 +1,80 @@
-"use client";
+import { getContentByPath, parseTableOfContents } from "@/lib/mdx";
+import { notFound } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
+import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
 import React from "react";
 
+// Helper function to generate ID from text (matches the logic in parseTableOfContents)
+const generateId = (text: string): string => {
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]/g, "");
+};
+
+// Custom heading components that add id attributes
+const createHeading = (level: number) => {
+  const Component = ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+    const text =
+      typeof children === "string" ? children : React.Children.toArray(children).join("");
+    const id = generateId(text);
+
+    return React.createElement(`h${level}`, { ...props, id }, children);
+  };
+  Component.displayName = `Heading${level}`;
+  return Component;
+};
+
+// Custom MDX components
+const components = {
+  pre: (props: React.HTMLAttributes<HTMLPreElement>) => <pre {...props} className="code-block" />,
+  code: (props: React.HTMLAttributes<HTMLElement>) => {
+    const { children, className, ...rest } = props;
+    return (
+      <code className={className} {...rest}>
+        {children}
+      </code>
+    );
+  },
+  h1: createHeading(1),
+  h2: createHeading(2),
+  h3: createHeading(3),
+  h4: createHeading(4),
+  h5: createHeading(5),
+  h6: createHeading(6),
+};
+
 export default function Home() {
-  // const [showTOC, setShowTOC] = useState(true);
-  const tocItems = [
-    { id: "11-installation", text: "1.1. Installation" },
-    {
-      id: "111-update-existing-ai-security-environment",
-      text: "1.1.1. Update existing AI security environment",
-    },
-  ];
+  // Load the installation content from MDX
+  const contentData = getContentByPath("", "installation");
+
+  // If content not found, return 404
+  if (!contentData) {
+    return notFound();
+  }
+
+  // Parse table of contents
+  const tocItems = parseTableOfContents(contentData.content);
+
   return (
     <MainLayout tocItems={tocItems}>
-      <div className="content-container">
-        <div className="content-wrapper">
-          <h1 className="page-title" id="11-installation">
-            1.1. Installation
-          </h1>
-
-          <div className="content-block">
-            <p>
-              Setting up a secure AI development environment is the first step in building secure AI
-              systems. This guide will walk you through the installation process for the UChicago
-              XLab AI Security toolkit.
-            </p>
-          </div>
-
-          <div className="content-block">
-            <p>
-              The <span className="inline-code">aisecsdk</span> installer and version management
-              tool is the best way to download, install, and maintain your AI security development
-              environment. Using the <span className="inline-code">aisecsdk</span> command after
-              installation will help you check for updates and update your environment when
-              necessary.
-            </p>
-          </div>
-
-          <div className="content-block">
-            <p>
-              Depending on your operating system, you can install{" "}
-              <span className="inline-code">aisecsdk</span> by following the instructions below:
-            </p>
-          </div>
-
-          {/* Tabs for different OS instructions */}
-          <div className="content-block">
-            <div className="tabs">
-              <button className="tab active">Linux or macOS</button>
-              <button className="tab">Windows</button>
-            </div>
-
-            <div>
-              <p>Enter the following command in terminal:</p>
-              <div className="code-block">
-                curl --proto &apos;https&apos; --tlsv1.2 https://ai-sec.toolkit.org/install.sh -sSf
-                | sh
-              </div>
-            </div>
-          </div>
-
-          <h2 className="section-title" id="111-update-existing-ai-security-environment">
-            1.1.1. Update existing AI security environment
-          </h2>
-
-          <div className="content-block">
-            <p>You can run:</p>
-
-            <div className="code-block">aisecsdk --version</div>
-
-            <p>
-              to both check if you already have the toolkit installed, and if so, which version. If
-              you don&apos;t have it installed, go above and follow the instructions to install it.
-              If you already have an AI security environment installed, then you can update the
-              version by doing:
-            </p>
-
-            <div className="code-block">aisecsdk update</div>
-          </div>
-        </div>
+      <h1 className="page-title">{contentData.frontMatter.title as string}</h1>
+      <div className="mdx-content">
+        <MDXRemote
+          source={contentData.content}
+          components={components}
+          options={{
+            mdxOptions: {
+              remarkPlugins: [remarkGfm, remarkMath],
+              rehypePlugins: [rehypeHighlight, rehypeKatex],
+            },
+          }}
+        />
       </div>
     </MainLayout>
   );

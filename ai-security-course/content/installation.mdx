@@ -1,0 +1,38 @@
+---
+title: "Installation"
+description: "Setting up a secure AI development environment"
+---
+
+## 1.1. Installation
+
+Setting up a secure AI development environment is the first step in building secure AI systems. This guide will walk you through the installation process for the UChicago XLab AI Security toolkit.
+
+The `aisecsdk` installer and version management tool is the best way to download, install, and maintain your AI security development environment. Using the `aisecsdk` command after installation will help you check for updates and update your environment when necessary.
+
+Depending on your operating system, you can install `aisecsdk` by following the instructions below:
+
+## Linux or macOS
+
+Enter the following command in terminal:
+
+```bash
+curl --proto 'https' --tlsv1.2 https://ai-sec.toolkit.org/install.sh -sSf | sh
+```
+
+## Windows
+
+_Installation instructions for Windows coming soon._
+
+## 1.1.1. Update existing AI security environment
+
+You can run:
+
+```bash
+aisecsdk --version
+```
+
+to both check if you already have the toolkit installed, and if so, which version. If you don't have it installed, go above and follow the instructions to install it. If you already have an AI security environment installed, then you can update the version by doing:
+
+```bash
+aisecsdk update
+```
