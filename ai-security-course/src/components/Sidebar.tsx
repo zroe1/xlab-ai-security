@@ -25,7 +25,7 @@ const navigationItems: NavigationItem[] = [
     id: "1",
     title: "Getting Started",
     items: [
-      { id: "1.1", title: "Installation", href: "/getting-started/installation" },
+      { id: "1.1", title: "Installation", href: "/" },
       { id: "1.2", title: "Hello World", href: "/getting-started/hello-world" },
       { id: "1.3", title: "Debugging Programs", href: "/getting-started/debugging" },
     ],
@@ -60,6 +60,11 @@ const navigationItems: NavigationItem[] = [
   },
 ];
 
+// Helper function to normalize paths by removing trailing slashes
+const normalizePath = (path: string): string => {
+  return path === "/" ? "/" : path.replace(/\/$/, "");
+};
+
 const NavItem = ({
   item,
   activeItem,
@@ -70,12 +75,34 @@ const NavItem = ({
   setActiveItem: (id: string) => void;
 }) => {
   const pathname = usePathname();
+  const normalizedPathname = normalizePath(pathname);
   const [isExpanded, setIsExpanded] = useState(
-    item.items.some((subItem) => subItem.href === pathname)
+    item.items.some((subItem) => normalizePath(subItem.href) === normalizedPathname)
   );
 
+  console.log(
+    `NavItem ${item.id} - pathname: ${pathname}, normalizedPathname: ${normalizedPathname}, isExpanded: ${isExpanded}, activeItem: ${activeItem}`
+  );
+
+  // Update isExpanded when pathname changes
+  useEffect(() => {
+    const shouldExpand = item.items.some(
+      (subItem) => normalizePath(subItem.href) === normalizedPathname
+    );
+    console.log(
+      `NavItem ${item.id} useEffect - pathname: ${pathname}, normalizedPathname: ${normalizedPathname}, shouldExpand: ${shouldExpand}, current isExpanded: ${isExpanded}`
+    );
+    setIsExpanded(shouldExpand);
+  }, [normalizedPathname, item.items]);
+
   const toggleExpand = () => {
+    console.log(`NavItem ${item.id} - toggleExpand clicked, current isExpanded: ${isExpanded}`);
     setIsExpanded(!isExpanded);
+  };
+
+  const handleItemClick = (subItemId: string) => {
+    console.log(`NavItem ${item.id} - item ${subItemId} clicked, setting activeItem`);
+    setActiveItem(subItemId);
   };
 
   return (
@@ -120,7 +147,7 @@ const NavItem = ({
               key={subItem.id}
               href={subItem.href}
               className={`nav-item nav-link-custom ${activeItem === subItem.id ? "active" : ""}`}
-              onClick={() => setActiveItem(subItem.id)}>
+              onClick={() => handleItemClick(subItem.id)}>
               {subItem.id} {subItem.title}
             </Link>
           ))}
@@ -133,20 +160,37 @@ const NavItem = ({
 const Sidebar = () => {
   const { theme } = useTheme();
   const pathname = usePathname();
+  const normalizedPathname = normalizePath(pathname);
   const [activeItem, setActiveItem] = useState("");
   const [searchText, setSearchText] = useState("");
 
+  console.log(
+    `Sidebar - pathname: ${pathname}, normalizedPathname: ${normalizedPathname}, activeItem: ${activeItem}`
+  );
+
   useEffect(() => {
+    console.log(
+      `Sidebar useEffect - pathname changed to: ${pathname}, normalizedPathname: ${normalizedPathname}`
+    );
     // Find the active item based on the current path
     for (const section of navigationItems) {
       for (const subItem of section.items) {
-        if (subItem.href === pathname) {
+        if (normalizePath(subItem.href) === normalizedPathname) {
+          console.log(
+            `Sidebar useEffect - found matching item: ${subItem.id} for path: ${normalizedPathname}`
+          );
           setActiveItem(subItem.id);
           return; // Exit once found
         }
       }
     }
-  }, [pathname]);
+    console.log(`Sidebar useEffect - no matching item found for path: ${normalizedPathname}`);
+  }, [normalizedPathname]);
+
+  const handleSetActiveItem = (itemId: string) => {
+    console.log(`Sidebar - setActiveItem called with: ${itemId}`);
+    setActiveItem(itemId);
+  };
 
   return (
     <div className="sidebar">
@@ -198,7 +242,7 @@ const Sidebar = () => {
             key={item.id}
             item={item}
             activeItem={activeItem}
-            setActiveItem={setActiveItem}
+            setActiveItem={handleSetActiveItem}
           />
         ))}
       </div>
