@@ -67,12 +67,13 @@ body {
 .app-container {
   display: flex;
   min-height: 100vh;
+  position: relative;
 }
 
 /* Sidebar styles */
 .sidebar {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   border-right: 1px solid var(--border-color);
   background-color: var(--white);
   display: flex;
@@ -248,7 +249,9 @@ body {
 
 .header-action {
   padding: 8px;
+  padding-top: 15px;
   border-radius: 4px;
+
   color: var(--secondary-text);
   text-decoration: none;
   margin-left: 16px;
@@ -290,11 +293,6 @@ button.header-action:focus {
 
 .theme-toggle:hover {
   background-color: var(--light-bg);
-}
-
-.theme-toggle:focus {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
 }
 
 .theme-toggle-track {
@@ -375,15 +373,24 @@ button.header-action:focus {
 }
 
 .page-title {
-  font-size: 1.9rem;
+  font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 24px;
 }
 
 h2 {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: bold;
   margin-bottom: 16px;
+}
+
+p {
+  font-size: 0.9rem;
+}
+
+ul,
+ol {
+  font-size: 0.9rem;
 }
 
 .content-block {
