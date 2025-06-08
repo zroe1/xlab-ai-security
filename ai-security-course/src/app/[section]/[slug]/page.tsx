@@ -1,4 +1,4 @@
-import { getContentByPath, parseTableOfContents } from "@/lib/mdx";
+import { getContentByPath, parseTableOfContents, getAllContentPaths } from "@/lib/mdx";
 import { notFound } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -7,6 +7,38 @@ import rehypeHighlight from "rehype-highlight";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import React from "react";
+
+// Generate static params for all content pages
+export async function generateStaticParams() {
+  const paths = getAllContentPaths();
+
+  return paths.map((path) => ({
+    section: path.section,
+    slug: path.slug,
+  }));
+}
+
+// Helper function to generate ID from text (matches the logic in parseTableOfContents)
+const generateId = (text: string): string => {
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]/g, "");
+};
+
+// Custom heading components that add id attributes
+const createHeading = (level: number) => {
+  const Component = ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+    const text =
+      typeof children === "string" ? children : React.Children.toArray(children).join("");
+    const id = generateId(text);
+
+    return React.createElement(`h${level}`, { ...props, id }, children);
+  };
+  Component.displayName = `Heading${level}`;
+  return Component;
+};
 
 // Custom MDX components
 const components = {
@@ -19,6 +51,12 @@ const components = {
       </code>
     );
   },
+  h1: createHeading(1),
+  h2: createHeading(2),
+  h3: createHeading(3),
+  h4: createHeading(4),
+  h5: createHeading(5),
+  h6: createHeading(6),
 };
 
 interface PageProps {

@@ -18,11 +18,35 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
   const { toggleTheme } = useTheme();
   const [showTOC, setShowTOC] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(380); // Default width
+  const [sidebarWidth, setSidebarWidth] = useState(280); // Default width
   const [isResizing, setIsResizing] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("");
 
   const appRef = useRef<HTMLDivElement>(null);
   const resizeHandleRef = useRef<HTMLDivElement>(null);
+
+  // Track scroll position to highlight active TOC item
+  useEffect(() => {
+    if (tocItems.length === 0) return;
+
+    const handleScroll = () => {
+      const sections = tocItems.map((item) => document.getElementById(item.id)).filter(Boolean);
+      const scrollPosition = window.scrollY + 100; // Offset for header
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section && section.offsetTop <= scrollPosition) {
+          setActiveSection(tocItems[i].id);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Set initial active section
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [tocItems]);
 
   // Toggle sidebar visibility
   const toggleSidebar = () => {
@@ -35,7 +59,7 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
       if (!isResizing || !appRef.current) return;
 
       const appRect = appRef.current.getBoundingClientRect();
-      const newWidth = Math.max(292, Math.min(500, e.clientX - appRect.left));
+      const newWidth = Math.max(234, Math.min(500, e.clientX - appRect.left));
 
       // Update state
       setSidebarWidth(newWidth);
@@ -241,7 +265,9 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
             <ul>
               {tocItems.map((item, index) => (
                 <li key={index}>
-                  <a href={`#${item.id}`} className="toc-link">
+                  <a
+                    href={`#${item.id}`}
+                    className={`toc-link ${activeSection === item.id ? "active" : ""}`}>
                     {item.text}
                   </a>
                 </li>

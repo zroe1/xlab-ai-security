@@ -5,14 +5,19 @@ import React from "react";
 export default function Home() {
   // const [showTOC, setShowTOC] = useState(true);
   const tocItems = [
-    { id: "1.1.", text: "1.1. Installation" },
-    { id: "here", text: "1.1.1. Update existing AI security environment" },
+    { id: "11-installation", text: "1.1. Installation" },
+    {
+      id: "111-update-existing-ai-security-environment",
+      text: "1.1.1. Update existing AI security environment",
+    },
   ];
   return (
     <MainLayout tocItems={tocItems}>
       <div className="content-container">
         <div className="content-wrapper">
-          <h1 className="page-title">1.1. Installation</h1>
+          <h1 className="page-title" id="11-installation">
+            1.1. Installation
+          </h1>
 
           <div className="content-block">
             <p>
@@ -55,7 +60,9 @@ export default function Home() {
             </div>
           </div>
 
-          <h2 className="section-title">1.1.1. Update existing AI security environment</h2>
+          <h2 className="section-title" id="111-update-existing-ai-security-environment">
+            1.1.1. Update existing AI security environment
+          </h2>
 
           <div className="content-block">
             <p>You can run:</p>

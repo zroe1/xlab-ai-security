@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
 
+/* Add smooth scrolling behavior */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* Account for fixed header */
+}
+
 body[data-theme='dark'] {
   --primary-color: #8a535a;
   --primary-hover: #8a4956;
@@ -75,7 +81,7 @@ body {
 }
 
 .sidebar-header {
-  padding: 22px 25px;
+  padding: 12px 15px;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -85,20 +91,20 @@ body {
 }
 
 .sidebar-logo {
-  height: 4rem;
-  width: 4rem;
+  height: 2.5rem;
+  width: 2.5rem;
   margin-right: 12px;
 }
 
 .sidebar-title {
-  font-size: 1.3rem;
+  font-size: 1rem;
   font-weight: bold;
   color: var(--primary-color);
   margin: 0;
 }
 
 .sidebar-subtitle {
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   margin: 0;
 }
 
@@ -118,7 +124,7 @@ body {
   padding: 6px 12px;
   border-radius: 4px;
   border: 1px solid var(--border-color);
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-family: 'Montserrat', sans-serif;
 }
 
@@ -167,6 +173,7 @@ body {
 }
 
 .nav-section-title {
+  font-size: 0.85rem;
   color: var(--text-color);
   font-weight: 500;
   margin: 0;
@@ -181,7 +188,7 @@ body {
 
 .nav-item {
   padding: 4px 8px;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   cursor: pointer;
   border-radius: 4px;
   display: block;
@@ -259,14 +266,20 @@ body {
 }
 
 .content-wrapper {
-  max-width: 800px;
+  max-width: 650px;
   margin: 0 auto;
 }
 
 .page-title {
-  font-size: 2.5rem;
+  font-size: 1.6rem;
   font-weight: bold;
   margin-bottom: 24px;
+}
+
+h2 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 16px;
 }
 
 .content-block {
@@ -307,7 +320,7 @@ body {
 
 /* Section headers */
 .section-title {
-  font-size: 1.8rem;
+  font-size: 1.3rem;
   font-weight: bold;
   color: var(--primary-color);
   margin-top: 32px;
@@ -323,7 +336,7 @@ body {
 
 /* Table of Contents Sidebar */
 .toc-sidebar {
-  width: 280px;
+  width: 250px;
   border-left: 1px solid var(--border-color);
   padding: 16px;
   overflow-y: auto;
@@ -368,7 +381,7 @@ body {
   display: block;
   text-decoration: none;
   color: var(--secondary-text);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 }
 
 .toc-link:hover {
