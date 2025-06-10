@@ -1,16 +1,52 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, ReactNode, useCallback } from "react";
 import Sidebar from "./Sidebar";
+import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 
-const MainLayout = ({ children, tocItems }) => {
+interface TocItem {
+  id: string;
+  text: string;
+}
+
+interface LayoutProps {
+  children: ReactNode;
+  tocItems?: TocItem[];
+}
+
+const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
+  const { theme, toggleTheme } = useTheme();
   const [showTOC, setShowTOC] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(280); // Default width
   const [isResizing, setIsResizing] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("");
 
-  const appRef = useRef(null);
-  const resizeHandleRef = useRef(null);
+  const appRef = useRef<HTMLDivElement>(null);
+  const resizeHandleRef = useRef<HTMLDivElement>(null);
+
+  // Track scroll position to highlight active TOC item
+  useEffect(() => {
+    if (tocItems.length === 0) return;
+
+    const handleScroll = () => {
+      const sections = tocItems.map((item) => document.getElementById(item.id)).filter(Boolean);
+      const scrollPosition = window.scrollY + 100; // Offset for header
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const section = sections[i];
+        if (section && section.offsetTop <= scrollPosition) {
+          setActiveSection(tocItems[i].id);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Set initial active section
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [tocItems]);
 
   // Toggle sidebar visibility
   const toggleSidebar = () => {
@@ -18,7 +54,36 @@ const MainLayout = ({ children, tocItems }) => {
   };
 
   // Handle resize functionality
-  const startResizing = (e) => {
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!isResizing || !appRef.current) return;
+
+      const appRect = appRef.current.getBoundingClientRect();
+      const newWidth = Math.max(234, Math.min(500, e.clientX - appRect.left));
+
+      // Update state
+      setSidebarWidth(newWidth);
+
+      // Update the position of the resize handle
+      if (resizeHandleRef.current) {
+        resizeHandleRef.current.style.left = `${newWidth}px`;
+      }
+    },
+    [isResizing]
+  );
+
+  const stopResizing = useCallback(() => {
+    setIsResizing(false);
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", stopResizing);
+
+    // Remove the active class
+    if (resizeHandleRef.current) {
+      resizeHandleRef.current.classList.remove("active");
+    }
+  }, [handleMouseMove]);
+
+  const startResizing = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault(); // Prevent default behavior
     setIsResizing(true);
 
@@ -30,41 +95,6 @@ const MainLayout = ({ children, tocItems }) => {
     if (resizeHandleRef.current) {
       resizeHandleRef.current.classList.add("active");
     }
-
-    // For debugging
-    console.log("Start resizing");
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isResizing || !appRef.current) return;
-
-    const appRect = appRef.current.getBoundingClientRect();
-    const newWidth = Math.max(200, Math.min(500, e.clientX - appRect.left));
-
-    // For debugging
-    console.log("Resizing to width:", newWidth);
-
-    // Update state
-    setSidebarWidth(newWidth);
-
-    // Update the position of the resize handle
-    if (resizeHandleRef.current) {
-      resizeHandleRef.current.style.left = `${newWidth}px`;
-    }
-  };
-
-  const stopResizing = () => {
-    setIsResizing(false);
-    document.removeEventListener("mousemove", handleMouseMove);
-    document.removeEventListener("mouseup", stopResizing);
-
-    // Remove the active class
-    if (resizeHandleRef.current) {
-      resizeHandleRef.current.classList.remove("active");
-    }
-
-    // For debugging
-    console.log("Stop resizing");
   };
 
   // Clean up event listeners when component unmounts
@@ -73,7 +103,7 @@ const MainLayout = ({ children, tocItems }) => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", stopResizing);
     };
-  }, []);
+  }, [handleMouseMove, stopResizing]);
 
   // Reset resize handle position when sidebar is collapsed/expanded
   useEffect(() => {
@@ -93,7 +123,7 @@ const MainLayout = ({ children, tocItems }) => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", stopResizing);
     }
-  }, [isResizing]);
+  }, [isResizing, handleMouseMove, stopResizing]);
 
   return (
     <div className="app-container" ref={appRef}>
@@ -115,8 +145,7 @@ const MainLayout = ({ children, tocItems }) => {
       <div className="main-content">
         {/* Top Navigation Bar */}
         <header className="main-header">
-          <button className="sidebar-toggle" onClick={toggleSidebar}>
-            <span className="sr-only">{sidebarCollapsed ? "Open" : "Close"} Sidebar</span>
+          <button className="menu-button" onClick={toggleSidebar}>
             {sidebarCollapsed ? (
               <svg
                 width="24"
@@ -148,7 +177,70 @@ const MainLayout = ({ children, tocItems }) => {
           </button>
 
           <div className="header-actions">
-            <a href="#" className="header-action">
+            {sidebarCollapsed && (
+              <button className="header-action" onClick={toggleSidebar} title="Open Navigation">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round">
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+              </button>
+            )}
+            <div className="theme-toggle-wrapper">
+              <button
+                className={`theme-toggle ${theme === "dark" ? "dark" : "light"}`}
+                onClick={toggleTheme}
+                title="Toggle Theme"
+                aria-label="Toggle Theme">
+                <div className="theme-toggle-track">
+                  <div className="theme-toggle-thumb">
+                    <div className="theme-icon sun-icon">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                      </svg>
+                    </div>
+                    <div className="theme-icon moon-icon">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </div>
+            <a href="#" className="header-action" title="GitHub">
               <svg
                 width="20"
                 height="20"
@@ -161,124 +253,42 @@ const MainLayout = ({ children, tocItems }) => {
                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
               </svg>
             </a>
-            <a href="#" className="header-action">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-            </a>
-            <a href="#" className="header-action">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
-              </svg>
-            </a>
-            <a href="#" className="header-action">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-              </svg>
-            </a>
+            {!showTOC && tocItems.length > 0 && (
+              <button
+                className="header-action"
+                onClick={() => setShowTOC(true)}
+                title="Open Table of Contents">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="9" y1="9" x2="15" y2="9"></line>
+                  <line x1="9" y1="12" x2="15" y2="12"></line>
+                  <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+              </button>
+            )}
           </div>
         </header>
 
         {/* Content Area with Scroll */}
         <div className="content-container">
-          <div className="content-wrapper">
-            <h1 className="page-title">1.1. Installation</h1>
-
-            <div className="content-block">
-              <p>
-                Setting up a secure AI development environment is the first step in building secure
-                AI systems. This guide will walk you through the installation process for the
-                UChicago XLab AI Security toolkit.
-              </p>
-            </div>
-
-            <div className="content-block">
-              <p>
-                The <span className="inline-code">aisecsdk</span> installer and version management
-                tool is the best way to download, install, and maintain your AI security development
-                environment. Using the <span className="inline-code">aisecsdk</span> command after
-                installation will help you check for updates and update your environment when
-                necessary.
-              </p>
-            </div>
-
-            <div className="content-block">
-              <p>
-                Depending on your operating system, you can install{" "}
-                <span className="inline-code">aisecsdk</span> by following the instructions below:
-              </p>
-            </div>
-
-            {/* Tabs for different OS instructions */}
-            <div className="content-block">
-              <div className="tabs">
-                <button className="tab active">Linux or macOS</button>
-                <button className="tab">Windows</button>
-              </div>
-
-              <div>
-                <p>Enter the following command in terminal:</p>
-                <div className="code-block">
-                  curl --proto 'https' --tlsv1.2 https://ai-sec.toolkit.org/install.sh -sSf | sh
-                </div>
-              </div>
-            </div>
-
-            <h2 className="section-title">1.1.1. Update existing AI security environment</h2>
-
-            <div className="content-block">
-              <p>You can run:</p>
-
-              <div className="code-block">aisecsdk --version</div>
-
-              <p>
-                to both check if you already have the toolkit installed, and if so, which version.
-                If you don't have it installed, go above and follow the instructions to install it.
-                If you already have an AI security environment installed, then you can update the
-                version by doing:
-              </p>
-
-              <div className="code-block">aisecsdk update</div>
-            </div>
-
-            {children}
-          </div>
+          <div className="content-wrapper">{children}</div>
         </div>
       </div>
 
       {/* Table of Contents Sidebar */}
-      {showTOC && (
+      {showTOC && tocItems.length > 0 && (
         <div className="toc-sidebar">
           <div className="toc-header">
             <h3 className="toc-title">Contents</h3>
             <button onClick={() => setShowTOC(false)} className="toc-close">
-              <span className="sr-only">Close TOC</span>
               <svg
                 width="20"
                 height="20"
@@ -296,21 +306,28 @@ const MainLayout = ({ children, tocItems }) => {
 
           <nav className="toc-nav">
             <ul>
-              <li>
-                <a href="#" className="toc-link active">
-                  1.1.1. Update existing AI security environment
-                </a>
-              </li>
-              <li>
-                <a href="#" className="toc-link">
-                  1.1.2. AI Security Playground
-                </a>
-              </li>
+              {tocItems.map((item, index) => (
+                <li key={index}>
+                  <a
+                    href={`#${item.id}`}
+                    className={`toc-link ${activeSection === item.id ? "active" : ""}`}>
+                    {item.text}
+                  </a>
+                </li>
+              ))}
             </ul>
           </nav>
         </div>
       )}
     </div>
+  );
+};
+
+const MainLayout = ({ children, tocItems = [] }: LayoutProps) => {
+  return (
+    <ThemeProvider>
+      <LayoutContent tocItems={tocItems}>{children}</LayoutContent>
+    </ThemeProvider>
   );
 };
 
