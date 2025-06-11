@@ -61,7 +61,7 @@ def task1(student_function):
     # Test 1: Function should run without crashing.
     total_count += 1
     case_name = "function runs without crashing"
-    test_description = f"✓ {total_count}. Test case '{case_name}'"
+    test_description = f"✓ {total_count}. Test case {case_name}"
     
     try:
         student_function("test input")
