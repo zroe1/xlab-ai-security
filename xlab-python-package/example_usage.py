@@ -25,4 +25,30 @@ print("Calling hello_world() directly:")
 hello_world()
 print()
 
+# --- Example of using the student-facing tests ---
+print("--- Testing with xlab.tests ---")
+
+# Import the tests module
+from xlab import tests
+
+# This is a dummy function a student might write
+def student_code_pass(input_str):
+    """A sample student function that passes the test."""
+    return "expected output"
+
+def student_code_fail(input_str):
+    """A sample student function that fails the test."""
+    return "some other output"
+
+print("Running test with a function that should pass:")
+result_pass = tests.section1_0.task1(student_code_pass)
+print(f"Result: {result_pass}")
+print()
+
+print("Running test with a function that should fail:")
+result_fail = tests.section1_0.task1(student_code_fail)
+print(f"Result: {result_fail}")
+print()
+# -----------------------------------------
+
 print("Example completed successfully!") 
