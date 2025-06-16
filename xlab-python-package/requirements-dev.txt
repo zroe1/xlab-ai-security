@@ -4,5 +4,5 @@ pytest-cov>=2.0
 black>=21.0
 flake8>=3.9
 mypy>=0.900
-twine>=3.0
+twine==6.1.0
 build>=0.7.0 

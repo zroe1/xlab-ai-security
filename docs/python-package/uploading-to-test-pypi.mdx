@@ -1,0 +1,77 @@
+# Uploading to TestPyPI
+
+This guide explains how to build the Python package and upload it to TestPyPI for testing.
+
+## Prerequisites
+
+<b>
+  These steps require an API key for TestPyPI. You would only have access to something like this if
+  you are a core developer working at XLab. If you are doing open source work, you should submit a
+  pull request for your changes to the python package and an XLab developer will upload your changes
+  to future changes of the python package.{" "}
+</b>
+
+- You have followed the instructions in [Running the python package locally](./running-python-package-local.mdx) to set up your development environment.
+- We reccomend Python version 3.11 (tested with Python 3.11.11). You are free to use another python version but be aware that some combinations of python and twine are not compatible.
+- You have created an account on [TestPyPI](httpss://test.pypi.org/).
+- You have created an account on [PyPI](httpss://pypi.org/).
+
+## Setup
+
+### 1. Install Build Tools
+
+Ensure you have the latest build tools installed. If you followed the local development setup, these should already be installed, but run this command to be sure:
+
+```bash
+pip install build twine==6.1.0
+```
+
+**Note:** We pin `twine==6.1.0` as this version is tested to work reliably with Python 3.11.11 for uploading packages.
+
+## Building and Uploading
+
+### 1. Update the Version Number
+
+Before you can upload a new version, you need to increment the package version number.
+
+- Open the file `xlab-python-package/xlab/__init__.py`.
+- Locate the `__version__` variable.
+- Update the version number. For example, change `__version__ = "0.1.1"` to `__version__ = "0.1.2"`.
+
+### 2. Build the Package
+
+Navigate to the `xlab-python-package` directory and clean any existing build artifacts, then build the package:
+
+```bash
+cd xlab-python-package
+rm -rf dist/*
+python -m build
+```
+
+This command will create a `dist` directory with the build artifacts (a `.whl` file and a `.tar.gz` file).
+
+You will see some output that ends with a line that looks something like this:
+
+```
+Successfully built xlab_security-0.1.2.tar.gz and xlab_security-0.1.2-py3-none-any.whl
+```
+
+### 3. Upload to TestPyPI
+
+Now, upload the contents of the `dist` directory to TestPyPI:
+
+```bash
+twine upload --repository testpypi dist/*
+```
+
+Here you will have to enter your API token.
+
+## Installing from TestPyPI
+
+Once the package is uploaded, you or others can install it from TestPyPI to test it:
+
+```bash
+pip install --index-url https://test.pypi.org/simple/ --no-deps xlab-security
+```
+
+This ensures that your package can be installed correctly before publishing it to the real PyPI.
