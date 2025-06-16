@@ -48,6 +48,30 @@ This guide will walk you through setting up the `xlab-security` python package f
 
 You should now have a fully functional local development environment for the `xlab-security` package.
 
+## Troubleshooting Using the Package in Jupyter Notebooks
+
+If you are developing the project locally, and you get an error that it is not found
+within a notebook, you may have to install the package directly in a notebook cell. In your Jupyter notebook, run:
+
+```python
+# Install the package in editable mode directly in the notebook
+!pip install -e /path/to/xlab-python-package
+```
+
+Then import and use the package:
+
+```python
+import xlab
+
+# Test that it's working
+print(f"XLab Package Version: {xlab.__version__}")
+xlab.hello_world()
+```
+
+<b>Note: </b> When developing in a notebook, if you make a change to the package, you will not see the
+changes unless you restart the kernel and re-import the package. You will not have to run `pip install
+-e \path\to\package` again if you used the -e flag when you originally installed the package locally.
+
 ## Example Usage
 
 You can refer to `example_usage.py` to see how to use the package. Note that you should see failing tests for the output of example_usage.py.
