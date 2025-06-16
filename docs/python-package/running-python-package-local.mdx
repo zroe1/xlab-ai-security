@@ -1,0 +1,54 @@
+# Running the python package locally
+
+This guide will walk you through setting up the `xlab-security` python package for local development.
+
+## Prerequisites
+
+- Python 3.7+
+
+## Setup Instructions
+
+1.  **Navigate to the package directory:**
+
+    ```bash
+    cd xlab-python-package
+    ```
+
+2.  **Install the package in editable mode:**
+
+    This command will install the package in a way that allows you to edit the source code and have the changes immediately reflected in your environment.
+
+    ```bash
+    pip install -e .
+    ```
+
+    You should see some output with the final line being something like:
+
+    ```
+    Successfully installed xlab-security-0.1.1
+    ```
+
+3.  **Install development dependencies:**
+
+    This will install all the tools needed for testing, linting, and building the package.
+
+    ```bash
+    pip install -r requirements-dev.txt
+    ```
+
+4.  **Verify your setup:**
+
+    Run the test suite to make sure everything is installed correctly.
+
+    ```bash
+    pytest
+    ```
+
+    If any tests fail, please submit an issue to the github: https://github.com/zroe1/xlab-ai-security
+
+You should now have a fully functional local development environment for the `xlab-security` package.
+
+## Example Usage
+
+You can refer to `example_usage.py` to see how to use the package. Note that you should see failing tests for the output of example_usage.py.
+This is because the file loads a function to test an example of a function that has not been fuly implemented.
