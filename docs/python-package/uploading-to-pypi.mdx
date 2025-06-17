@@ -1,0 +1,96 @@
+# Uploading to PyPI (Production)
+
+This guide explains how to upload your package to the main PyPI so users can install it with `pip install xlab-security`.
+
+## Prerequisites
+
+**Important:** Only upload to PyPI when you're ready for a production release. Unlike TestPyPI, PyPI is the main package repository that all Python users access.
+
+- You have followed the instructions in [Running the python package locally](./running-python-package-local.mdx) to set up your development environment
+- You have tested the package locally
+- You have successfully tested your package on TestPyPI following the [TestPyPI upload guide](./uploading-to-test-pypi.mdx)
+- You have installed the test package and it works as intended
+- We recommend Python version 3.11 (tested with Python 3.11.11). You are free to use another python version but be aware that some combinations of python and twine are not compatible
+- You have proper permissions to upload the `xlab-security` package (this is typically for paid XLab employees)
+
+## Setup
+
+### 1. Install Build Tools
+
+Ensure you have the latest build tools installed:
+
+```bash
+pip install build twine==6.1.0
+```
+
+**Note:** We pin `twine==6.1.0` as this version is tested to work reliably with Python 3.11.11 for uploading packages.
+
+## Building and Uploading
+
+### 1. Update the Version Number
+
+Before you can upload a new version, you need to increment the package version number.
+
+- Open the file `xlab-python-package/xlab/__init__.py`
+- Locate the `__version__` variable
+- Update the version number to a new release version. For example, change `__version__ = "0.1.3"` to `__version__ = "0.2.0"`
+
+**Important:** Use semantic versioning (MAJOR.MINOR.PATCH) for production releases.
+
+### 2. Build the Package
+
+Navigate to the `xlab-python-package` directory and clean any existing build artifacts, then build the package:
+
+```bash
+cd xlab-python-package
+rm -rf dist/*
+python -m build
+```
+
+This command will create a `dist` directory with the build artifacts (a `.whl` file and a `.tar.gz` file).
+
+You will see some output that ends with a line that looks something like this:
+
+```
+Successfully built xlab_security-0.2.0.tar.gz and xlab_security-0.2.0-py3-none-any.whl
+```
+
+### 3. Upload to PyPI
+
+Now, upload the contents of the `dist` directory to PyPI:
+
+```bash
+twine upload dist/*
+```
+
+**Note:** Unlike TestPyPI, this command uploads to the main PyPI repository by default.
+
+Here you will have to enter your PyPI API token.
+
+## Installing from PyPI
+
+Once the package is uploaded, anyone can install it from PyPI:
+
+```bash
+pip install xlab-security
+```
+
+## Version Management
+
+**Important considerations for PyPI uploads:**
+
+- **You cannot re-upload the same version number** - each version must be unique
+- **Deletions are restricted** - you cannot easily remove versions once uploaded
+- **Test thoroughly** - always test on TestPyPI first before uploading to main PyPI
+- **Use semantic versioning** - follow MAJOR.MINOR.PATCH versioning conventions
+
+## Verification
+
+After uploading, verify your package:
+
+1. Visit your package page: `https://pypi.org/project/xlab-security/`
+2. Test installation in a fresh environment:
+   ```bash
+   pip install xlab-security
+   python -c "import xlab; print(f'Version: {xlab.__version__}')"
+   ```
