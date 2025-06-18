@@ -1,5 +1,5 @@
 // This file is auto-generated. Do not edit manually.
-// Generated on: 2025-06-18T14:29:46.418Z
+// Generated on: 2025-06-18T17:06:58.139Z
 
 export interface SearchIndexEntry {
   title: string;
@@ -11,6 +11,12 @@ export interface SearchIndexEntry {
 export type SearchIndex = Record<string, SearchIndexEntry>;
 
 export const searchIndex: SearchIndex = {
+  "/getting-started/running-coding-exercises": {
+    "title": "Running Coding Exercises",
+    "content": "Different stages of this course will require different compute requirements. For example, in some sections, you will be calling APIs which take up nearly zero computational resources on your own machine. In others, you will have to run an LLM with 1.6B parameters (which is ~3.29G of data). For users who cannot run models this large on their own computers (we expect this to be most students) we explain how you can run our exercises for free or for very low cost using either Google Colab or Lambda Labs. Option #1: Local For every notebook, we will have a link to our GitHub where you can download a notebook to run the code exercises locally on your computer. For some students, this will be the most familiar and convenient setup. For others, it may be hard to configure or slow to run. Being able to ML code locally is an important research skill. By running code locally, you will gain experience managing python packages and optimizing for less than ideal hardware. Therefore, we encourage all students to run code locally when possible. We will indicate on the website which sections we expect to be not feasible to run locally, but we encourage this to be your default option. For managing python packages locally, we recommend using a virtual environment. For our own internal development, we use Conda. Option #2: Colab Colab has both a paid and free option. We have tested all notebooks on the free version so you shouldn’t have to sign up for Colab premium. In order to get the advantages of Colab you will have to pay careful attention to the runtime you connect to. At the top right corner you should find a dropdown with an option to “Change runtime type.” You are free to play around with the different options, but as long as you select a machine that is not “cpu” you should be fine. <img src=\"/colab.png\" alt=\"Colab runtime type dropdown\" style={{ width: \"35%\", display: \"block\", margin: \"0 auto\" }} /> Option #3: Lambda Labs Lambda Labs is a paid service for cloud computing. There are many fairly powerful machines you can rent out for less than 5 dollars an hour. If you want even fast compute (this shouldn’t be necessary) or if you want to use the code you write in this course to play around with larger models, we highly recommend Lambda Labs.",
+    "sectionTitle": "Getting Started",
+    "sectionId": "1"
+  },
   "/": {
     "title": "Installation",
     "content": "1.1. Installation Setting up a secure AI development environment is the first step in building secure AI systems. This guide will walk you through the installation process for the UChicago XLab AI Security toolkit. The xlab-security Python package is the best way to get started with AI security development. This package provides essential tools and helper functions for building secure AI systems. Prerequisites Make sure you have Python 3.7 or higher installed on your system. You can check your Python version by running: Installation from PyPI Once the package is published to PyPI, you can install it directly: Installation from TestPyPI (for testing) For testing the latest development version, you can install from TestPyPI: Verify Installation After installation, you can verify that the package is working correctly: This should output something like: Development Installation If you're contributing to the package or want to install from source: 1.1.1. Update existing AI security environment You can check your current package version: To update to the latest version:",

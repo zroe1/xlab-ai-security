@@ -165,6 +165,12 @@ const navigationItems: NavigationItem[] = [
       { id: "1.1", title: "Installation", href: "/", type: "link" },
       { id: "1.2", title: "Course Overview", href: "/getting-started/overview", type: "link" },
       { id: "1.3", title: "Setting Up Environment", href: "/getting-started/setup", type: "link" },
+      {
+        id: "1.4",
+        title: "Running Coding Exercises",
+        href: "/getting-started/running-coding-exercises",
+        type: "link",
+      },
     ],
   },
   {
