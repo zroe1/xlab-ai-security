@@ -36,6 +36,7 @@ npm run dev
 To build the app run:
 
 ```
+rm -rf .next
 npm run export
 ```
 
