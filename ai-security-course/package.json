@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "export": "next build",
-    "deploy": "next build && next export",
+    "build": "npm run generate-search && next build",
+    "export": "npm run generate-search && next build",
+    "deploy": "npm run generate-search && next build && next export",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-search": "npx tsx scripts/generateSearchIndex.ts"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

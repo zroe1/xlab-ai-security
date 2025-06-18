@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { generateSearchIndex } from "./scripts/generateSearchIndex";
 
 const nextConfig: NextConfig = {
   output: "export",
@@ -7,7 +8,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  webpack: (config) => {
+  webpack: (config, { dev, isServer }) => {
     config.resolve.alias = {
       ...config.resolve.alias,
       "@/components": path.resolve("src/components"),
@@ -15,6 +16,10 @@ const nextConfig: NextConfig = {
       "@/styles": path.resolve("src/styles"),
       "@/contexts": path.resolve("src/contexts"),
     };
+    // Generate search index during build
+    if (!dev && isServer) {
+      generateSearchIndex();
+    }
     return config;
   },
 };

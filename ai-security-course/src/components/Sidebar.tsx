@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/contexts/ThemeContext";
+import { searchIndex, type SearchIndexEntry } from "../data/searchIndex";
 
 // Define types for navigation items
 interface DirectLink {
@@ -39,87 +40,39 @@ interface SearchResult {
   sectionId: string;
 }
 
-// Content index for search - this would ideally be generated from actual markdown files
-const contentIndex: Record<
-  string,
-  { title: string; content: string; sectionTitle: string; sectionId: string }
-> = {
-  "/": {
-    title: "Installation",
-    content:
-      "Welcome to the UChicago XLab AI Security Course. This comprehensive guide will walk you through the fundamentals of AI security, from basic adversarial attacks to advanced LLM vulnerabilities. Install the required dependencies and set up your development environment to get started with hands-on exercises.",
-    sectionTitle: "Getting Started",
-    sectionId: "1",
-  },
-  "/getting-started/overview": {
-    title: "Course Overview",
-    content:
-      "This course covers the essential aspects of AI security including adversarial examples, model extraction attacks, LLM jailbreaking, and defense mechanisms. Students will learn both theoretical foundations and practical implementation skills.",
-    sectionTitle: "Getting Started",
-    sectionId: "1",
-  },
-  "/extraction/stealing-weights": {
-    title: "Stealing Model Weights",
-    content:
-      "Model extraction attacks allow adversaries to steal the parameters and architecture of machine learning models. These attacks can compromise intellectual property and enable further attacks on the extracted models. We'll explore query-based extraction methods and defenses.",
-    sectionTitle: "Model Extraction",
-    sectionId: "3",
-  },
-  "/adversarial/fgsm": {
-    title: "FGSM Attack",
-    content:
-      "The Fast Gradient Sign Method (FGSM) is one of the simplest and most fundamental adversarial attacks. It works by computing the gradient of the loss function with respect to the input and taking a step in the direction of the sign of the gradient.",
-    sectionTitle: "Adversarial Examples",
-    sectionId: "2",
-  },
-  "/adversarial/pgd": {
-    title: "PGD Attack",
-    content:
-      "Projected Gradient Descent (PGD) is an iterative variant of FGSM that applies multiple smaller steps instead of one large step. This makes it one of the strongest first-order adversarial attacks and a standard benchmark for robustness evaluation.",
-    sectionTitle: "Adversarial Examples",
-    sectionId: "2",
-  },
-  "/jailbreaking/gcg": {
-    title: "GCG",
-    content:
-      "Greedy Coordinate Gradient (GCG) is a token-level jailbreaking attack that optimizes adversarial suffixes to make language models generate harmful content. It uses gradient-based optimization to find effective jailbreak prompts.",
-    sectionTitle: "LLM Jailbreaking",
-    sectionId: "4",
-  },
-};
-
-// Search function
+// Search function using the generated index
 const searchContent = (query: string): SearchResult[] => {
   if (!query.trim()) return [];
 
   const results: SearchResult[] = [];
   const lowercaseQuery = query.toLowerCase();
 
-  for (const [href, content] of Object.entries(contentIndex)) {
-    const titleMatch = content.title.toLowerCase().includes(lowercaseQuery);
-    const contentMatch = content.content.toLowerCase().includes(lowercaseQuery);
+  for (const [href, content] of Object.entries(searchIndex)) {
+    const typedContent = content as SearchIndexEntry;
+    const titleMatch = typedContent.title.toLowerCase().includes(lowercaseQuery);
+    const contentMatch = typedContent.content.toLowerCase().includes(lowercaseQuery);
 
     if (titleMatch || contentMatch) {
       // Find the snippet around the match
-      let snippet = content.content;
+      let snippet = typedContent.content;
       if (contentMatch) {
-        const matchIndex = content.content.toLowerCase().indexOf(lowercaseQuery);
+        const matchIndex = typedContent.content.toLowerCase().indexOf(lowercaseQuery);
         const start = Math.max(0, matchIndex - 50);
-        const end = Math.min(content.content.length, matchIndex + query.length + 50);
-        snippet = content.content.slice(start, end);
+        const end = Math.min(typedContent.content.length, matchIndex + query.length + 50);
+        snippet = typedContent.content.slice(start, end);
         if (start > 0) snippet = "..." + snippet;
-        if (end < content.content.length) snippet = snippet + "...";
+        if (end < typedContent.content.length) snippet = snippet + "...";
       } else {
-        snippet = content.content.slice(0, 100) + "...";
+        snippet = typedContent.content.slice(0, 100) + "...";
       }
 
       results.push({
         id: href,
-        title: content.title,
+        title: typedContent.title,
         href,
         snippet,
-        sectionTitle: content.sectionTitle,
-        sectionId: content.sectionId,
+        sectionTitle: typedContent.sectionTitle,
+        sectionId: typedContent.sectionId,
       });
     }
   }
@@ -170,7 +123,7 @@ const SearchResults = ({
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
         </div>
-        <p className="search-no-results-text">No results found for "{query}"</p>
+        <p className="search-no-results-text">No results found for &ldquo;{query}&rdquo;</p>
         <p className="search-no-results-suggestion">Try different keywords or check spelling</p>
       </div>
     );
@@ -180,7 +133,7 @@ const SearchResults = ({
     <div className="search-results">
       <div className="search-results-header">
         <span className="search-results-count">
-          {results.length} result{results.length !== 1 ? "s" : ""} for "{query}"
+          {results.length} result{results.length !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
         </span>
       </div>
 
