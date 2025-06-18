@@ -7,11 +7,21 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "@/contexts/ThemeContext";
 
 // Define types for navigation items
-interface SubItem {
+interface DirectLink {
   id: string;
   title: string;
   href: string;
+  type: "link";
 }
+
+interface Folder {
+  id: string;
+  title: string;
+  type: "folder";
+  items: DirectLink[];
+}
+
+type SubItem = DirectLink | Folder;
 
 interface NavigationItem {
   id: string;
@@ -19,23 +29,66 @@ interface NavigationItem {
   items: SubItem[];
 }
 
-// Sample navigation structure (will be replaced with dynamic data)
+// Sample navigation structure with nested folders
 const navigationItems: NavigationItem[] = [
   {
     id: "1",
     title: "Getting Started",
     items: [
-      { id: "1.1", title: "Installation", href: "/" },
-      { id: "1.2", title: "Hello World", href: "/getting-started/hello-world" },
-      { id: "1.3", title: "Debugging Programs", href: "/getting-started/debugging" },
+      { id: "1.1", title: "Installation", href: "/", type: "link" },
+      { id: "1.2", title: "Hello World", href: "/getting-started/hello-world", type: "link" },
+      { id: "1.3", title: "Debugging Programs", href: "/getting-started/debugging", type: "link" },
     ],
   },
   {
     id: "2",
     title: "Core Concepts",
     items: [
-      { id: "2.1", title: "Threat Models", href: "/core-concepts/threat-models" },
-      { id: "2.2", title: "Attack Vectors", href: "/core-concepts/attack-vectors" },
+      { id: "2.1", title: "Threat Models", href: "/core-concepts/threat-models", type: "link" },
+      {
+        id: "2.2",
+        title: "Attack Fundamentals",
+        type: "folder",
+        items: [
+          {
+            id: "2.2.1",
+            title: "Attack Vectors",
+            href: "/core-concepts/attack-vectors",
+            type: "link",
+          },
+          {
+            id: "2.2.2",
+            title: "Attack Surfaces",
+            href: "/core-concepts/attack-surfaces",
+            type: "link",
+          },
+          {
+            id: "2.2.3",
+            title: "Risk Assessment",
+            href: "/core-concepts/risk-assessment",
+            type: "link",
+          },
+        ],
+      },
+      {
+        id: "2.3",
+        title: "Security Principles",
+        type: "folder",
+        items: [
+          {
+            id: "2.3.1",
+            title: "Defense in Depth",
+            href: "/core-concepts/defense-in-depth",
+            type: "link",
+          },
+          {
+            id: "2.3.2",
+            title: "Least Privilege",
+            href: "/core-concepts/least-privilege",
+            type: "link",
+          },
+        ],
+      },
     ],
   },
   {
@@ -46,16 +99,32 @@ const navigationItems: NavigationItem[] = [
         id: "3.1",
         title: "Stealing Model Weights",
         href: "/model-inference-attacks/stealing-model-weights",
+        type: "link",
       },
-      { id: "3.2", title: "Model Monitoring", href: "/defensive-techniques/model-monitoring" },
+      {
+        id: "3.2",
+        title: "Model Monitoring",
+        href: "/defensive-techniques/model-monitoring",
+        type: "link",
+      },
     ],
   },
   {
     id: "4",
     title: "Adversarial Examples",
     items: [
-      { id: "4.1", title: "Creating Adversarial Inputs", href: "/adversarial-examples/creating" },
-      { id: "4.2", title: "Defense Mechanisms", href: "/adversarial-examples/defense" },
+      {
+        id: "4.1",
+        title: "Creating Adversarial Inputs",
+        href: "/adversarial-examples/creating",
+        type: "link",
+      },
+      {
+        id: "4.2",
+        title: "Defense Mechanisms",
+        href: "/adversarial-examples/defense",
+        type: "link",
+      },
     ],
   },
 ];
@@ -63,6 +132,158 @@ const navigationItems: NavigationItem[] = [
 // Helper function to normalize paths by removing trailing slashes
 const normalizePath = (path: string): string => {
   return path === "/" ? "/" : path.replace(/\/$/, "");
+};
+
+// Helper function to check if a path matches any item recursively
+const findActiveItemId = (items: SubItem[], normalizedPath: string): string | null => {
+  for (const item of items) {
+    if (item.type === "link") {
+      if (normalizePath(item.href) === normalizedPath) {
+        return item.id;
+      }
+    } else if (item.type === "folder") {
+      const foundId = findActiveItemId(item.items, normalizedPath);
+      if (foundId) return foundId;
+    }
+  }
+  return null;
+};
+
+// Helper function to check if a folder contains the active path
+const folderContainsActivePath = (folder: Folder, normalizedPath: string): boolean => {
+  return folder.items.some((item) => normalizePath(item.href) === normalizedPath);
+};
+
+// Helper function to check if a section contains the active path
+const sectionContainsActivePath = (section: NavigationItem, normalizedPath: string): boolean => {
+  for (const item of section.items) {
+    if (item.type === "link") {
+      if (normalizePath(item.href) === normalizedPath) return true;
+    } else if (item.type === "folder") {
+      if (folderContainsActivePath(item, normalizedPath)) return true;
+    }
+  }
+  return false;
+};
+
+const SubNavItem = ({
+  item,
+  activeItem,
+  setActiveItem,
+  normalizedPathname,
+}: {
+  item: SubItem;
+  activeItem: string;
+  setActiveItem: (id: string) => void;
+  normalizedPathname: string;
+}) => {
+  // Always call hooks at the top level
+  const [isExpanded, setIsExpanded] = useState(
+    item.type === "folder" ? folderContainsActivePath(item, normalizedPathname) : false
+  );
+
+  useEffect(() => {
+    if (item.type === "folder") {
+      const shouldExpand = folderContainsActivePath(item, normalizedPathname);
+      setIsExpanded(shouldExpand);
+    }
+  }, [normalizedPathname, item]);
+
+  if (item.type === "link") {
+    return (
+      <Link
+        key={item.id}
+        href={item.href}
+        className={`nav-item nav-link-custom ${activeItem === item.id ? "active" : ""}`}
+        onClick={() => setActiveItem(item.id)}>
+        <div className="nav-item-content">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="nav-item-icon">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          {item.id} {item.title}
+        </div>
+      </Link>
+    );
+  }
+
+  // Folder type
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <div className="nav-subfolder">
+      <div
+        className={`nav-item nav-folder-toggle ${isExpanded ? "expanded" : ""}`}
+        onClick={toggleExpand}>
+        <div className="nav-item-content">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="nav-item-icon">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2l5 0 2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          {item.id} {item.title}
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className={`nav-folder-chevron ${isExpanded ? "expanded" : ""}`}>
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </div>
+      </div>
+      {isExpanded && (
+        <div className="nav-subfolder-items">
+          {item.items.map((subItem) => (
+            <Link
+              key={subItem.id}
+              href={subItem.href}
+              className={`nav-item nav-subitem ${activeItem === subItem.id ? "active" : ""}`}
+              onClick={() => setActiveItem(subItem.id)}>
+              <div className="nav-item-content">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="nav-item-icon">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                {subItem.id} {subItem.title}
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 const NavItem = ({
@@ -76,9 +297,7 @@ const NavItem = ({
 }) => {
   const pathname = usePathname();
   const normalizedPathname = normalizePath(pathname);
-  const [isExpanded, setIsExpanded] = useState(
-    item.items.some((subItem) => normalizePath(subItem.href) === normalizedPathname)
-  );
+  const [isExpanded, setIsExpanded] = useState(sectionContainsActivePath(item, normalizedPathname));
 
   console.log(
     `NavItem ${item.id} - pathname: ${pathname}, normalizedPathname: ${normalizedPathname}, isExpanded: ${isExpanded}, activeItem: ${activeItem}`
@@ -86,14 +305,12 @@ const NavItem = ({
 
   // Update isExpanded when pathname changes
   useEffect(() => {
-    const shouldExpand = item.items.some(
-      (subItem) => normalizePath(subItem.href) === normalizedPathname
-    );
+    const shouldExpand = sectionContainsActivePath(item, normalizedPathname);
     console.log(
       `NavItem ${item.id} useEffect - pathname: ${pathname}, normalizedPathname: ${normalizedPathname}, shouldExpand: ${shouldExpand}, current isExpanded: ${isExpanded}`
     );
     setIsExpanded(shouldExpand);
-  }, [normalizedPathname, item.items]);
+  }, [normalizedPathname, item]);
 
   const toggleExpand = () => {
     console.log(`NavItem ${item.id} - toggleExpand clicked, current isExpanded: ${isExpanded}`);
@@ -143,13 +360,13 @@ const NavItem = ({
       {isExpanded && (
         <div className="nav-section-items">
           {item.items.map((subItem) => (
-            <Link
+            <SubNavItem
               key={subItem.id}
-              href={subItem.href}
-              className={`nav-item nav-link-custom ${activeItem === subItem.id ? "active" : ""}`}
-              onClick={() => handleItemClick(subItem.id)}>
-              {subItem.id} {subItem.title}
-            </Link>
+              item={subItem}
+              activeItem={activeItem}
+              setActiveItem={handleItemClick}
+              normalizedPathname={normalizedPathname}
+            />
           ))}
         </div>
       )}
@@ -174,14 +391,13 @@ const Sidebar = () => {
     );
     // Find the active item based on the current path
     for (const section of navigationItems) {
-      for (const subItem of section.items) {
-        if (normalizePath(subItem.href) === normalizedPathname) {
-          console.log(
-            `Sidebar useEffect - found matching item: ${subItem.id} for path: ${normalizedPathname}`
-          );
-          setActiveItem(subItem.id);
-          return; // Exit once found
-        }
+      const foundId = findActiveItemId(section.items, normalizedPathname);
+      if (foundId) {
+        console.log(
+          `Sidebar useEffect - found matching item: ${foundId} for path: ${normalizedPathname}`
+        );
+        setActiveItem(foundId);
+        return;
       }
     }
     console.log(`Sidebar useEffect - no matching item found for path: ${normalizedPathname}`);

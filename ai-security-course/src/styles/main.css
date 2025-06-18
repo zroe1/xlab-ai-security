@@ -213,6 +213,134 @@ body {
   text-decoration: none;
 }
 
+/* Nested folder styles */
+.nav-item-content {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.nav-item-icon {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.nav-folder-toggle {
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  display: block;
+  color: black;
+  text-decoration: none;
+  background: none;
+  border: none;
+  /* width: 100%; */
+  display: block;
+  text-align: left;
+  font-weight: 500;
+  background-color: rgba(0, 0, 0, 0.02);
+  border: 1px solid transparent;
+}
+
+.nav-folder-toggle:hover {
+  background-color: var(--light-bg);
+  border-color: rgba(139, 23, 36, 0.1);
+}
+
+.nav-folder-toggle .nav-item-content {
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+}
+
+.nav-folder-toggle .nav-item-icon {
+  opacity: 0.9;
+  color: var(--secondary-text);
+}
+
+.nav-folder-chevron {
+  transition: transform 0.2s ease;
+  opacity: 0.6;
+  flex-shrink: 0;
+  margin-left: auto;
+  position: absolute;
+  right: 8px;
+}
+
+.nav-folder-chevron.expanded {
+  transform: rotate(90deg);
+}
+
+.nav-subfolder {
+  margin-left: 0;
+}
+
+.nav-subfolder-items {
+  margin-left: 20px;
+  border-left: 2px solid var(--border-color);
+  padding-left: 8px;
+  margin-top: 4px;
+}
+
+.nav-subitem {
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border-radius: 4px;
+  display: block;
+  color: black;
+  text-decoration: none;
+  margin-bottom: 2px;
+}
+
+.nav-subitem:hover {
+  background-color: var(--light-bg);
+}
+
+.nav-subitem.active {
+  background-color: rgba(139, 23, 36, 0.1);
+  color: var(--primary-color);
+}
+
+.nav-subitem .nav-item-content {
+  gap: 4px;
+}
+
+/* Ensure regular nav items (direct links) have consistent styling */
+.nav-item .nav-item-content {
+  align-items: center;
+}
+
+.nav-item .nav-item-icon {
+  opacity: 0.6;
+}
+
+/* Dark mode styles for nested elements */
+body[data-theme='dark'] .nav-folder-toggle {
+  color: var(--light-text);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+body[data-theme='dark'] .nav-folder-toggle:hover {
+  background-color: var(--light-bg);
+  border-color: rgba(139, 23, 36, 0.2);
+}
+
+body[data-theme='dark'] .nav-folder-toggle .nav-item-icon {
+  color: var(--secondary-text);
+}
+
+body[data-theme='dark'] .nav-subitem {
+  color: var(--light-text);
+}
+
+body[data-theme='dark'] .nav-subitem.active {
+  background-color: rgba(139, 23, 36, 0.2);
+  color: var(--primary-color);
+}
+
 /* Main content area */
 .main-content {
   flex: 1;
