@@ -2,9 +2,9 @@
 
 High quality research on adversarial robustness requires an effective way to measure attack and defense quality. Under one attack, a model may retain it’s performance, while under another, it may break entirely. This point cannot be overemphasized: a model may be highly robust to one common attack while giving near 0% accuracy against another.
 
-While this may seem like an obvious problem, many papers have been published in credible conferences that show high robustness, but under a more comprehensive benchmark, their performance slips. To address this issue Francesco Croce and Matthias Hein (University of Tubingen) proposed AutoAttack (Hein and Croc, 2020). Croce and Hein applied Auto Attack to published defenses and found that the robust accuracy dropped by more than 10% in 13 cases. This illustrates both the difficultly in evaluating ones own defenses and in comparing the effectiveness of defenses across papers.
+While this may seem like an obvious problem, many papers have been published in credible conferences that show high robustness, but under a more comprehensive benchmark, their performance slips. To address this issue Francesco Croce and Matthias Hein (University of Tubingen) proposed AutoAttack[^1]. Croce and Hein applied Auto Attack to published defenses and found that the robust accuracy dropped by more than 10% in 13 cases. This illustrates both the difficultly in evaluating ones own defenses and in comparing the effectiveness of defenses across papers.
 
-The next year, Croce and Hein (along with other authors[^1]) followed up AutoAttack with RobustBench, to make evaluation and comparison of defenses easier for the research community. Robustbench uses AutoAttack to evaluate defenses and uses a public leaderboard to track the research community’s progress.
+The next year, Croce and Hein (along with other authors[^2]) followed up AutoAttack with RobustBench[^3], to make evaluation and comparison of defenses more accessible for the research community. Robustbench uses AutoAttack to evaluate defenses and uses a public leaderboard to track the research community’s progress.
 
 In this section you will learn how to use RobustBench to evaluate published defenses. In the next section, you will learn about how researchers at Lawrence Livermore National Laboratory acheived state-of-the-art performance on RobustBench by scaling up compute and data.
 
@@ -23,7 +23,7 @@ To use RobustBench, correctly you will need to be aware of the restrictions of t
 
 3. Models submitted must “not have an optimization loop in the forward pass.”
 
-   Even if there are non-zero gradients through the forward, the backward pass will be very expensive to calculate.
+   Even if there are non-zero gradients through the forward pass, the backward pass will be very expensive to calculate.
 
 ## Installation
 
@@ -36,7 +36,17 @@ pip install git+https://github.com/RobustBench/robustbench.git
 After installation, you should be ready to go with the exercises!
 
 [^1]:
+    Francesco Croce and Matthias Hein. Reliable evaluation of adversarial robustness with an ensemble of diverse
+    parameter-free attacks. In ICML, 2020.
+
+[^2]:
     <b>Full list of contributors in order as listed in the paper:</b> Francesco Croce (Univ. of Tübingen),
     Maksym Andriushchenko (EPFL) Vikash Sehwag (Princeton Univ.), Edoardo Debenedetti (EPFL), Nicolas
     Flammarion (EPFL), Mung Chiang (Purdue Univ.), Prateek Mittal (Princeton Univ.), Matthias Hein (Univ.
     of Tübingen)
+
+[^3]:
+    Francesco Croce, Maksym Andriushchenko, Vikash Sehwag, Edoardo Debenedetti, Nicolas Flammarion, Mung
+    Chiang, Prateek Mittal, and Matthias Hein. Robustbench: a standardized adversarial robustness benchmark. In
+    Thirty-fifth Conference on Neural Information Processing Systems Datasets and Benchmarks Track, 2021. URL
+    https://openreview.net/forum?id=SSKZPJCt7B.
