@@ -893,3 +893,21 @@ body[data-theme='dark'] .search-highlight {
 body[data-theme='dark'] .search-no-results-text {
   color: var(--light-text);
 }
+
+/* Footnote styling */
+/* Make footnote references (the clickable numbers) bold */
+a[data-footnote-ref] {
+  margin-left: 2px;
+  margin-right: 2px;
+  font-weight: bold;
+}
+
+/* Alternative selector for footnote references */
+sup a[href^="#user-content-fn-"] {
+  font-weight: bold;
+}
+
+/* Optional: Style the footnote back references as well */
+a[data-footnote-backref] {
+  font-weight: bold;
+}
