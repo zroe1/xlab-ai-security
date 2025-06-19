@@ -175,37 +175,19 @@ const navigationItems: NavigationItem[] = [
   },
   {
     id: "2",
-    title: "Adversarial Examples",
+    title: "Adversarial Basics",
     items: [
       {
         id: "2.1",
         title: "Adversarial Example Basics",
         type: "folder",
         items: [
+          { id: "2.1.1", title: "FGSM Attack", href: "/adversarial/fgsm", type: "link" },
+          { id: "2.1.2", title: "PGD Attack", href: "/adversarial/pgd", type: "link" },
           {
-            id: "2.1.1",
-            title: "CIFAR-10 CNN Training",
-            href: "/adversarial/cifar10-training",
-            type: "link",
-          },
-          { id: "2.1.2", title: "FGSM Attack", href: "/adversarial/fgsm", type: "link" },
-          { id: "2.1.3", title: "PGD Attack", href: "/adversarial/pgd", type: "link" },
-          {
-            id: "2.1.4",
+            id: "2.1.3",
             title: "Carlini & Wagner (C&W)",
             href: "/adversarial/carlini-wagner",
-            type: "link",
-          },
-          {
-            id: "2.1.5",
-            title: "LPIPS Distance Metrics",
-            href: "/adversarial/lpips",
-            type: "link",
-          },
-          {
-            id: "2.1.6",
-            title: "Other Attack Methods",
-            href: "/adversarial/other-attacks",
             type: "link",
           },
         ],
@@ -233,12 +215,6 @@ const navigationItems: NavigationItem[] = [
             href: "/adversarial/transformations",
             type: "link",
           },
-          {
-            id: "2.2.4",
-            title: "Quantization Defenses",
-            href: "/adversarial/quantization",
-            type: "link",
-          },
         ],
       },
       {
@@ -259,12 +235,6 @@ const navigationItems: NavigationItem[] = [
             href: "/adversarial/surrogate-models",
             type: "link",
           },
-          {
-            id: "2.3.4",
-            title: "Transferability Analysis",
-            href: "/adversarial/transferability",
-            type: "link",
-          },
         ],
       },
       {
@@ -274,25 +244,19 @@ const navigationItems: NavigationItem[] = [
         items: [
           {
             id: "2.4.1",
-            title: "RobustBench & TorchAttacks",
+            title: "RobustBench",
             href: "/adversarial/robustbench",
             type: "link",
           },
           {
             id: "2.4.2",
-            title: "Benchmark Limitations",
-            href: "/adversarial/benchmark-limitations",
-            type: "link",
-          },
-          {
-            id: "2.4.3",
-            title: "Invalid Examples Problem",
-            href: "/adversarial/invalid-examples",
+            title: "State of the Art",
+            href: "/adversarial/state-of-the-art",
             type: "link",
           },
           {
             id: "2.4.4",
-            title: "Scaling Challenges",
+            title: "Natural Limitations",
             href: "/adversarial/scaling-challenges",
             type: "link",
           },

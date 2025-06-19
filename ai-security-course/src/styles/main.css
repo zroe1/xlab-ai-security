@@ -46,7 +46,7 @@ body[data-theme='dark'] .nav-item.active {
 
 /* Base styles */
 :root {
-  --primary-color: #8B1724;
+  --primary-color: #8b1724;
   --primary-hover: #6d111c;
   --text-color: #333;
   --secondary-text: #666;
