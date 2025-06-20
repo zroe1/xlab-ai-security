@@ -5,6 +5,7 @@ Tests for section 2.4.2 of the AI Security course.
 # import pprint
 import pickle
 import torch
+import torch.nn.functional as F
 import os
 
 def get_100_examples():
@@ -233,6 +234,105 @@ def task2(student_function, model):
         status = f"{RED}FAILED{RESET}"
         print(f"{test_description:<{line_width-8}} {status}")
         print(f"     Error: {e}")
+
+    failed_count = total_count - passed_count
+    
+    print()
+    print("=" * 70)
+    if failed_count == 0:
+        print(f"🎉 All tests passed! ({passed_count}/{total_count})")
+    else:
+        print(f"📊 Results: {passed_count} passed, {failed_count} failed out of {total_count} total")
+    print("=" * 70)
+
+    # Return a dictionary with the results.
+    return {
+        "total_tests": total_count,
+        "passed": passed_count,
+        "failed": failed_count,
+        "score": round((passed_count / total_count) * 100) if total_count > 0 else 0
+    }
+
+def task3(student_function):
+    """
+    Runs a series of tests for Section 2.4.2, Task 3, prints a structured
+    output, and returns a summary of the results.
+
+    Tests the wiggle_ReLU function implementation against the reference solution.
+
+    Args:
+        student_function (function): The student's wiggle_ReLU function to test.
+
+    Returns:
+        dict: A summary dictionary with the total number of tests, the
+              number passed/failed, and a final score.
+    """
+    # ANSI color codes
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+    
+    print("Running tests for Section 2.4.2, Task 3...")
+    print()
+
+    passed_count = 0
+    total_count = 0
+    line_width = 70  # Total width for alignment
+
+    # Reference implementation
+    def reference_wiggle_relu(x, amplitude=0.1, frequency=150):
+        return F.relu(x) + amplitude * torch.sin(x * frequency)
+
+    # Test cases: (input_tensor, amplitude, frequency, description)
+    test_cases = [
+        (torch.tensor([1.0, -1.0, 0.0, 2.5, -0.5]), 0.1, 150, "1D tensor, default params"),
+        (torch.tensor([[1.0, -2.0], [0.5, -0.3]]), 0.1, 150, "2D tensor, default params"),
+        (torch.tensor([[[1.0, -1.0], [0.0, 2.0]], [[0.5, -0.5], [1.5, -1.5]]]), 0.1, 150, "3D tensor, default params"),
+        (torch.tensor([1.0, -1.0, 0.0, 2.5]), 0.05, 150, "1D tensor, amplitude=0.05"),
+        (torch.tensor([1.0, -1.0, 0.0, 2.5]), 0.2, 150, "1D tensor, amplitude=0.2"),
+        (torch.tensor([1.0, -1.0, 0.0, 2.5]), 0.1, 100, "1D tensor, frequency=100"),
+        (torch.tensor([1.0, -1.0, 0.0, 2.5]), 0.1, 200, "1D tensor, frequency=200"),
+        (torch.tensor([0.0, 0.0, 0.0]), 0.1, 150, "all zeros"),
+        (torch.tensor([-1.0, -2.0, -0.5]), 0.1, 150, "all negative values"),
+        (torch.tensor([10.0, 5.0, -3.0, 7.5]), 0.05, 75, "custom amplitude and frequency"),
+    ]
+
+    for i, (input_tensor, amplitude, frequency, description) in enumerate(test_cases):
+        total_count += 1
+        case_name = description
+        test_description = f"✓ {total_count}. Test case {case_name}"
+        
+        try:
+            # Get expected output from reference implementation
+            expected_output = reference_wiggle_relu(input_tensor, amplitude, frequency)
+            
+            # Get student's output
+            student_output = student_function(input_tensor, amplitude, frequency)
+            
+            # Compare outputs with tolerance for floating point precision
+            tolerance = 1e-6
+            if torch.allclose(expected_output, student_output, atol=tolerance):
+                status = f"{GREEN}PASSED{RESET}"
+                print(f"{test_description:<{line_width-8}} {status}")
+                print(f"     Input shape: {list(input_tensor.shape)}")
+                print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
+                passed_count += 1
+            else:
+                status = f"{RED}FAILED{RESET}"
+                print(f"{test_description:<{line_width-8}} {status}")
+                print(f"     Input shape: {list(input_tensor.shape)}")
+                print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
+                print(f"     Expected (first few values): {expected_output.flatten()[:5].tolist()}")
+                print(f"     Got (first few values):      {student_output.flatten()[:5].tolist()}")
+                max_diff = torch.max(torch.abs(expected_output - student_output)).item()
+                print(f"     Max difference: {max_diff:.8f} (tolerance: {tolerance})")
+                
+        except Exception as e:
+            status = f"{RED}FAILED{RESET}"
+            print(f"{test_description:<{line_width-8}} {status}")
+            print(f"     Input shape: {list(input_tensor.shape)}")
+            print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
+            print(f"     Error: {e}")
 
     failed_count = total_count - passed_count
     
