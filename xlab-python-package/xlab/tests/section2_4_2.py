@@ -352,3 +352,113 @@ def task3(student_function):
         "score": round((passed_count / total_count) * 100) if total_count > 0 else 0
     }
 
+def task4(student_function):
+    """
+    Runs a series of tests for Section 2.4.2, Task 4, prints a structured
+    output, and returns a summary of the results.
+
+    Tests the wiggle_Relu_grad function implementation against the reference solution.
+    Uses higher tolerance to accommodate both autograd and analytical implementations.
+
+    Args:
+        student_function (function): The student's wiggle_Relu_grad function to test.
+
+    Returns:
+        dict: A summary dictionary with the total number of tests, the
+              number passed/failed, and a final score.
+    """
+    # ANSI color codes
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+    
+    print("Running tests for Section 2.4.2, Task 4...")
+    print()
+
+    passed_count = 0
+    total_count = 0
+    line_width = 70  # Total width for alignment
+
+    # Reference wiggle_ReLU implementation (needed for gradient computation)
+    def reference_wiggle_relu(x, amplitude=0.1, frequency=150):
+        return F.relu(x) + amplitude * torch.sin(x * frequency)
+
+    # Reference gradient implementation using autograd
+    def reference_wiggle_relu_grad(x, amplitude=0.1, frequency=150):
+        x_cloned = x.clone().requires_grad_(True)
+        out = reference_wiggle_relu(x_cloned, amplitude, frequency)
+        torch.sum(out).backward()
+        return x_cloned.grad
+
+    # Test cases: (input_tensor, amplitude, frequency, description)
+    test_cases = [
+        (torch.tensor([1.0, -1.0, 0.0, 2.5, -0.5]), 0.1, 150, "1D tensor, default params"),
+        (torch.tensor([[1.0, -2.0], [0.5, -0.3]]), 0.1, 150, "2D tensor, default params"),
+        (torch.tensor([[[1.0, -1.0], [0.0, 2.0]], [[0.5, -0.5], [1.5, -1.5]]]), 0.1, 150, "3D tensor, default params"),
+        (torch.tensor([1.0, -1.0, 0.0, 2.5]), 0.05, 150, "1D tensor, amplitude=0.05"),
+        (torch.tensor([1.0, -1.0, 0.0, 2.5]), 0.2, 150, "1D tensor, amplitude=0.2"),
+        (torch.tensor([1.0, -1.0, 0.0, 2.5]), 0.1, 100, "1D tensor, frequency=100"),
+        (torch.tensor([1.0, -1.0, 0.0, 2.5]), 0.1, 200, "1D tensor, frequency=200"),
+        (torch.tensor([0.0, 0.0, 0.0]), 0.1, 150, "all zeros"),
+        (torch.tensor([-1.0, -2.0, -0.5]), 0.1, 150, "all negative values"),
+        (torch.tensor([10.0, 5.0, -3.0, 7.5]), 0.05, 75, "custom amplitude and frequency"),
+        (torch.tensor([0.001, -0.001, 0.1, -0.1]), 0.1, 150, "small values near zero"),
+        (torch.tensor([3.14159, -3.14159, 1.5708, -1.5708]), 0.1, 150, "special values (pi, pi/2)"),
+    ]
+
+    for i, (input_tensor, amplitude, frequency, description) in enumerate(test_cases):
+        total_count += 1
+        case_name = description
+        test_description = f"✓ {total_count}. Test case {case_name}"
+        
+        try:
+            # Get expected output from reference implementation
+            expected_grad = reference_wiggle_relu_grad(input_tensor, amplitude, frequency)
+            
+            # Get student's output
+            student_grad = student_function(input_tensor, amplitude, frequency)
+            
+            # Compare outputs with higher tolerance for different implementation approaches
+            # Higher tolerance accounts for potential differences between autograd and analytical methods
+            tolerance = 1e-4
+            if torch.allclose(expected_grad, student_grad, atol=tolerance, rtol=tolerance):
+                status = f"{GREEN}PASSED{RESET}"
+                print(f"{test_description:<{line_width-8}} {status}")
+                print(f"     Input shape: {list(input_tensor.shape)}")
+                print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
+                passed_count += 1
+            else:
+                status = f"{RED}FAILED{RESET}"
+                print(f"{test_description:<{line_width-8}} {status}")
+                print(f"     Input shape: {list(input_tensor.shape)}")
+                print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
+                print(f"     Expected grad (first few values): {expected_grad.flatten()[:5].tolist()}")
+                print(f"     Got grad (first few values):      {student_grad.flatten()[:5].tolist()}")
+                max_diff = torch.max(torch.abs(expected_grad - student_grad)).item()
+                print(f"     Max difference: {max_diff:.8f} (tolerance: {tolerance})")
+                
+        except Exception as e:
+            status = f"{RED}FAILED{RESET}"
+            print(f"{test_description:<{line_width-8}} {status}")
+            print(f"     Input shape: {list(input_tensor.shape)}")
+            print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
+            print(f"     Error: {e}")
+
+    failed_count = total_count - passed_count
+    
+    print()
+    print("=" * 70)
+    if failed_count == 0:
+        print(f"🎉 All tests passed! ({passed_count}/{total_count})")
+    else:
+        print(f"📊 Results: {passed_count} passed, {failed_count} failed out of {total_count} total")
+    print("=" * 70)
+
+    # Return a dictionary with the results.
+    return {
+        "total_tests": total_count,
+        "passed": passed_count,
+        "failed": failed_count,
+        "score": round((passed_count / total_count) * 100) if total_count > 0 else 0
+    }
+
