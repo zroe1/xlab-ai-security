@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, ReactNode, useCallback } from "react";
 import Sidebar from "./Sidebar";
+import FontSelector from "./FontSelector";
 import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 
 interface TocItem {
@@ -319,6 +320,9 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
           </nav>
         </div>
       )}
+
+      {/* Font Selector - Development Tool */}
+      <FontSelector />
     </div>
   );
 };
