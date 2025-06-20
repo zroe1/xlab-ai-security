@@ -52,6 +52,9 @@ def task1(student_function, model):
     case_name = "model accuracy > 90%"
     test_description = f"✓ {total_count}. Test case {case_name}"
     
+    # Initialize accuracy variable for reuse
+    accuracy = None
+    
     try:
         x, y = get_100_examples()
         logits = model(x)
@@ -77,8 +80,38 @@ def task1(student_function, model):
         print(f"{test_description:<{line_width-8}} {status}")
         print(f"     Error: {e}")
 
-    # TODO: Add more test cases here as they are developed
+    # Test 2: Student function returns same accuracy
+    total_count += 1
+    case_name = "student function returns correct accuracy"
+    test_description = f"✓ {total_count}. Test case {case_name}"
     
+    try:
+        if accuracy is not None:  # Only run if first test succeeded in computing accuracy
+            student_accuracy = student_function(model, x, y)
+            accuracy_diff = abs(float(accuracy) - float(student_accuracy))
+            
+            if accuracy_diff <= 0.01:
+                status = f"{GREEN}PASSED{RESET}"
+                print(f"{test_description:<{line_width-8}} {status}")
+                print(f"     Expected: {accuracy:.4f} (±0.01)")
+                print(f"     Got:      {student_accuracy:.4f}")
+                print(f"     Difference: {accuracy_diff:.4f}")
+                passed_count += 1
+            else:
+                status = f"{RED}FAILED{RESET}"
+                print(f"{test_description:<{line_width-8}} {status}")
+                print(f"     Expected: {accuracy:.4f} (±0.01)")
+                print(f"     Got:      {student_accuracy:.4f}")
+                print(f"     Difference: {accuracy_diff:.4f} (exceeds 0.01 threshold)")
+        else:
+            status = f"{RED}SKIPPED{RESET}"
+            print(f"{test_description:<{line_width-8}} {status}")
+            print(f"     Skipped: Previous test failed to compute accuracy")
+    except Exception as e:
+        status = f"{RED}FAILED{RESET}"
+        print(f"{test_description:<{line_width-8}} {status}")
+        print(f"     Error: {e}")
+
     failed_count = total_count - passed_count
     
     print()
