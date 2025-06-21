@@ -3,6 +3,7 @@ include README.md
 include pyproject.toml
 include requirements-dev.txt
 recursive-include xlab *.py
+recursive-include xlab/tests/data *.pkl
 recursive-include tests *.py
 global-exclude *.pyc
 global-exclude __pycache__

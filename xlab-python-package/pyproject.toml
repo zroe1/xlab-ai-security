@@ -23,7 +23,12 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-dependencies = []
+dependencies = [
+    "torch>=1.9.0",
+    "torchvision>=0.10.0",
+    "numpy>=1.21.0",
+    "matplotlib>=3.3.0",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -40,6 +45,9 @@ Issues = "https://github.com/yourusername/xlab-security/issues"
 
 [tool.setuptools.dynamic]
 version = {attr = "xlab.__version__"}
+
+[tool.setuptools.package-data]
+"xlab.tests" = ["data/*.pkl"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
