@@ -79,9 +79,9 @@ const FontSelector: React.FC = () => {
   }, []);
 
   // Hide in production
-  if (process.env.NODE_ENV === "production") {
-    return null;
-  }
+  // if (process.env.NODE_ENV === "production") {
+  //   return null;
+  // }
 
   return (
     <div className="font-selector-container" ref={dropdownRef}>
