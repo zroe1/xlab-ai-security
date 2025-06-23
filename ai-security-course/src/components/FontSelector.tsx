@@ -78,10 +78,10 @@ const FontSelector: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Hide in production
-  // if (process.env.NODE_ENV === "production") {
-  //   return null;
-  // }
+  // Hide in production;
+  if (process.env.NODE_ENV === "production") {
+    return null;
+  }
 
   return (
     <div className="font-selector-container" ref={dropdownRef}>

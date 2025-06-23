@@ -182,12 +182,16 @@ const navigationItems: NavigationItem[] = [
         title: "Adversarial Example Basics",
         type: "folder",
         items: [
-          { id: "2.1.1", title: "FGSM Attack", href: "/adversarial/fgsm", type: "link" },
-          { id: "2.1.2", title: "PGD Attack", href: "/adversarial/pgd", type: "link" },
           {
-            id: "2.1.3",
+            id: "2.1.1",
+            title: "FGSM and PGD",
+            href: "/adversarial/adversarialimages",
+            type: "link",
+          },
+          {
+            id: "2.1.2",
             title: "Carlini & Wagner (C&W)",
-            href: "/adversarial/carlini-wagner",
+            href: "/adversarial/cw",
             type: "link",
           },
         ],
@@ -205,12 +209,6 @@ const navigationItems: NavigationItem[] = [
           },
           {
             id: "2.2.2",
-            title: "Gradient-Based Defenses",
-            href: "/adversarial/gradient-defenses",
-            type: "link",
-          },
-          {
-            id: "2.2.3",
             title: "Input Transformations",
             href: "/adversarial/transformations",
             type: "link",
@@ -222,15 +220,9 @@ const navigationItems: NavigationItem[] = [
         title: "Black Box Attacks",
         type: "folder",
         items: [
+          { id: "2.3.1", title: "Square Attack", href: "/adversarial/square-attack", type: "link" },
           {
-            id: "2.3.1",
-            title: "Simple Black Box Attacks",
-            href: "/adversarial/simple-blackbox",
-            type: "link",
-          },
-          { id: "2.3.2", title: "Square Attack", href: "/adversarial/square-attack", type: "link" },
-          {
-            id: "2.3.3",
+            id: "2.3.2",
             title: "Surrogate Models",
             href: "/adversarial/surrogate-models",
             type: "link",
