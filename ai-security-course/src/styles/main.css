@@ -894,6 +894,18 @@ body[data-theme='dark'] .search-no-results-text {
   color: var(--light-text);
 }
 
+/* Dark mode search input styling */
+body[data-theme='dark'] .search-input {
+  /* background-color: var(--light-bg); */
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+body[data-theme='dark'] .search-input::placeholder {
+  color: var(--secondary-text);
+}
+
 /* Footnote styling */
 /* Make footnote references (the clickable numbers) bold */
 a[data-footnote-ref] {
