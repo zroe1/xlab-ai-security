@@ -1,0 +1,36 @@
+# Adding Markdown Files to the website
+
+To add a new page to the website there are three simple steps:
+
+1.  First you will have to add your file to the `xlab-ai-security/ai-security-course/content` folder of the GitHub.
+2.  Once you have done that you will need to edit the sidebar component located in `xlab-ai-security/ai-security-course/src/components
+/Sidebar.tsx`. Below is an example of what part of the sidebar may look like.
+
+        ```JavaScript
+        items: [
+            {
+                id: "2.1",
+                title: "Adversarial Example Basics",
+                type: "folder",
+                items: [
+                { id: "2.1.1", title: "FGSM Attack", href: "/adversarial/fgsm", type: "link" },
+                { id: "2.1.2", title: "PGD Attack", href: "/adversarial/pgd", type: "link" },
+                {
+                    id: "2.1.3",
+                    title: "Carlini & Wagner (C&W)",
+                    href: "/adversarial/carlini-wagner",
+                    type: "link",
+                },
+                ],
+            },
+        ```
+
+        If you are adding a new page, you will need to enter a new JavaScript object with
+        an `id`, `title`, `href` and `type`. If you are adding markdown to a JavaScript object that already
+        exists then you will only have to enter the loction of your markdown in `href`. All
+        paths in `href` are relative to the content folder so you should write `/adversarial/fgsm`
+        rather than `content/adversarial/fgsm`.
+
+3.  Next you will have to reload the page for your results to be visable. If things are not
+    working as expected, the best first debuging step is to stop the local web server and restart
+    it using `npm run dev`.
