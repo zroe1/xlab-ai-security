@@ -445,8 +445,9 @@ button.header-action:focus {
   background-color: var(--white);
   border-radius: 50%;
   position: absolute;
-  top: 1px;
-  left: 1px;
+  top: 50%;
+  left: 2px;
+  transform: translateY(-50%);
   transition: all 0.3s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -455,7 +456,7 @@ button.header-action:focus {
 }
 
 .theme-toggle.dark .theme-toggle-thumb {
-  transform: translateX(22px);
+  transform: translateX(22px) translateY(-50%);
   background-color: var(--white);
 }
 
