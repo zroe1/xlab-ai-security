@@ -106,3 +106,70 @@ def plot_tensors(tensors, ncols=3, colorbar=True, log_scale=False, titles=None, 
     
     plt.tight_layout()
     return fig, images
+
+
+def plot_2d(x, y, x_range=None, y_range=None, title=None, figsize=(8, 6), **kwargs):
+    """
+    Plot 2D data with maroon color scheme.
+    
+    Parameters:
+    -----------
+    x : array-like
+        X coordinates/values
+    y : array-like
+        Y coordinates/values
+    x_range : tuple, optional
+        X-axis range as (min, max). If None, uses data range.
+    y_range : tuple, optional
+        Y-axis range as (min, max). If None, uses data range.
+    title : str, optional
+        Plot title. If None, no title is set.
+    figsize : tuple, default=(8, 6)
+        Figure size (width, height)
+    **kwargs : dict
+        Additional arguments passed to plot function
+    
+    Returns:
+    --------
+    fig : matplotlib.figure.Figure
+        The figure object
+    ax : matplotlib.axes.Axes
+        The axes object
+    """
+    
+    # Convert to numpy arrays
+    x = np.asarray(x)
+    y = np.asarray(y)
+    
+    # Assert x and y have the same length
+    assert len(x) == len(y), f"x and y must have the same length. Got x: {len(x)}, y: {len(y)}"
+    
+    # Set up plot defaults with maroon color
+    defaults = {'color': 'maroon', 'linewidth': 2}
+    defaults.update(kwargs)
+    
+    # Create figure and axis
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Plot the data
+    line = ax.plot(x, y, **defaults)
+    
+    # Set ranges if provided
+    if x_range is not None:
+        ax.set_xlim(x_range)
+    if y_range is not None:
+        ax.set_ylim(y_range)
+    
+    # Set title if provided
+    if title is not None:
+        ax.set_title(title)
+    
+    # Add grid for better readability
+    ax.grid(True, alpha=0.3)
+    
+    # Labels
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    
+    plt.tight_layout()
+    return fig, ax
