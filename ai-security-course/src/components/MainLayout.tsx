@@ -241,7 +241,12 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
                 </div>
               </button>
             </div>
-            <a href="#" className="header-action" title="GitHub">
+            <a
+              href="https://github.com/zroe1/xlab-ai-security"
+              className="github-link"
+              title="GitHub"
+              target="_blank"
+              rel="noopener noreferrer">
               <svg
                 width="20"
                 height="20"

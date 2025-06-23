@@ -403,6 +403,30 @@ button.header-action:focus {
   outline-offset: 2px;
 }
 
+/* GitHub Link Styling */
+.github-link {
+  padding: 8px;
+  padding-top: 15px;
+  border-radius: 4px;
+  color: var(--secondary-text);
+  text-decoration: none;
+  margin-left: 16px;
+  transition: color 0.3s ease;
+}
+
+.github-link:hover {
+  color: var(--primary-color);
+}
+
+/* Dark mode GitHub link */
+body[data-theme='dark'] .github-link {
+  color: var(--secondary-text);
+}
+
+body[data-theme='dark'] .github-link:hover {
+  color: var(--primary-color);
+}
+
 /* Theme Toggle Switch */
 .theme-toggle-wrapper {
   margin-left: 16px;
