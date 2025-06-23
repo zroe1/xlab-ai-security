@@ -35,5 +35,21 @@ rather than `content/adversarial/fgsm`.
     working as expected, the best first debuging step is to stop the local web server and restart
     it using `npm run dev`.
 
-Note that you will not see the updates in https://xlabaisecurity.com/ even after you commit to the GitHub. Currently the website
-is manually deployed so you will need to contact Zephy on the XLab Slack or at zroe@uchicago.edu to deploy your changes. 
+## Inserting Images in Markdown
+
+If you have an image you would like to insert in the markdown you should put it
+in the public folder of the GitHub: `ai-security-course/public`.
+
+Then in your markdown you should place your image with a relative path to from the public folder.
+For example if the path to your image is `xlab.png`, in your markdown, you should have something like this:
+
+```html
+<img src="/xlab.png" alt="XLab's Logo" style={{ width: "35%", display: "block", margin: "0 auto" }}
+/>
+```
+
+## It's Just Markdown!
+
+You should be able to insert footnotes, blockquotes, LaTeX and anything else you would do
+in markdown. If something doesn't look right please open an issue on [the GitHub](https://github.com/zroe1/xlab-ai-security/tree/main) and we will
+fix it.
