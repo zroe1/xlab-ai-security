@@ -263,7 +263,7 @@ const navigationItems: NavigationItem[] = [
       { id: "3.1", title: "Model Stealing Overview", href: "/extraction/overview", type: "link" },
       {
         id: "3.2",
-        title: "Steeling Model Weights",
+        title: "Stealing Model Weights",
         href: "/extraction/stealing-weights",
         type: "link",
       },
