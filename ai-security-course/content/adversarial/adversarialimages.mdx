@@ -11,12 +11,12 @@ More on adversarial training will be covered later in this course. This segment 
 
 ## Distances 
 
-There are a few metrics for calculating the 'distance' between the original image and the perturbed one.
-```math
-\|v\|_p = \left( \sum_{i=1}^{n} |v_i|^p \right)^{\frac{1}{p}}.
-```
+There are a few metrics for calculating the 'distance' between the original image and the perturbed one, the most notable being L_0, L_2, and L_inf.
+L_0 is equivalent to the number of non-matching pixels, and is easy to calculate. 
+L_2 is the typical 'norm' used in linear algebra, and refers to the vector distance between the two images. 
+L_inf calculates the maximum perturbation to any of the pixels in the original image.
 
-
+When it comes to FGSM and PGD, L_inf is used the most often. It is easy to calculate, and is intuitive to making a perturbed image indistinguishable from the input image - a single pixel being changed dramatically would be easy to spot. 
 
 ## FGSM
 
