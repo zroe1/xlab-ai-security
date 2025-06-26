@@ -3,6 +3,12 @@ import matplotlib.colors as mcolors
 import numpy as np
 import math
 
+# CIFAR-10 classes
+class CIFAR10:
+    classes = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck']
+    itos = {i: s for i, s in enumerate(classes)}
+    stoi = {s: i for s, i in itos.items()}
+
 def plot_tensors(tensors, ncols=3, colorbar=True, log_scale=False, titles=None, figsize=None, **kwargs):
     """
     Custom imshow for multiple tensors: negative=navy, zero=white, positive=maroon
