@@ -955,6 +955,54 @@ body[data-theme='dark'] .search-input::placeholder {
   color: var(--secondary-text);
 }
 
+/* Dark mode code block styling */
+body[data-theme='dark'] pre {
+  background-color: #282c34 !important;
+  color: #ffffff !important;
+}
+
+body[data-theme='dark'] pre code {
+  color: #ffffff !important;
+}
+
+body[data-theme='dark'] code {
+  color: #ffffff !important;
+}
+
+body[data-theme='dark'] .code-block {
+  color: #ffffff !important;
+}
+
+body[data-theme='dark'] .inline-code {
+  background-color: var(--light-bg);
+  color: #ffffff !important;
+}
+
+/* Ensure all syntax highlighted elements are white in dark mode */
+body[data-theme='dark'] .hljs {
+  color: #ffffff !important;
+  background-color: #282c34 !important;
+}
+
+body[data-theme='dark'] .hljs-keyword,
+body[data-theme='dark'] .hljs-string,
+body[data-theme='dark'] .hljs-number,
+body[data-theme='dark'] .hljs-comment,
+body[data-theme='dark'] .hljs-function,
+body[data-theme='dark'] .hljs-variable,
+body[data-theme='dark'] .hljs-literal,
+body[data-theme='dark'] .hljs-built_in,
+body[data-theme='dark'] .hljs-type,
+body[data-theme='dark'] .hljs-tag,
+body[data-theme='dark'] .hljs-name,
+body[data-theme='dark'] .hljs-attr,
+body[data-theme='dark'] .hljs-attribute,
+body[data-theme='dark'] .hljs-selector-tag,
+body[data-theme='dark'] .hljs-selector-id,
+body[data-theme='dark'] .hljs-selector-class {
+  color: #ffffff !important;
+}
+
 /* Footnote styling */
 /* Make footnote references (the clickable numbers) bold */
 a[data-footnote-ref] {
