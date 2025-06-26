@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import remarkBibtex from "@benchmark-urbanism/remark-bibtex";
+import rehypeCitation from "rehype-citation";
 import React from "react";
 
 // Generate static params for all content pages
@@ -90,12 +90,15 @@ export default async function Page({ params }: PageProps) {
           components={components}
           options={{
             mdxOptions: {
-              remarkPlugins: [
-                remarkGfm,
-                remarkMath,
-                [remarkBibtex, { bibtexFile: "references.bib" }],
+              remarkPlugins: [remarkGfm, remarkMath],
+              rehypePlugins: [
+                rehypeHighlight,
+                rehypeKatex,
+                [
+                  rehypeCitation,
+                  { bibliography: "references.bib", csl: "apa", linkCitations: true },
+                ],
               ],
-              rehypePlugins: [rehypeHighlight, rehypeKatex],
             },
           }}
         />

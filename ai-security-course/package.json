@@ -12,7 +12,6 @@
     "generate-search": "npx tsx scripts/generateSearchIndex.ts"
   },
   "dependencies": {
-    "@benchmark-urbanism/remark-bibtex": "^0.6.0",
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
     "@types/react": "^19",

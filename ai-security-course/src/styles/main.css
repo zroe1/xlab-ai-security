@@ -386,6 +386,25 @@ body[data-theme='dark'] .nav-subitem.active {
   margin-left: 16px;
 }
 
+.toc-button {
+  padding: 8px;
+  padding-top: 11px;
+  /* border-radius: 4px; */
+  border: none;
+  background-color: transparent;
+
+  color: var(--secondary-text);
+  text-decoration: none;
+  margin-left: 16px;
+  transition: color 0.3s ease;
+}
+
+.toc-button:hover {
+  color: var(--primary-color);
+}
+
+
+
 .header-action:hover {
   background-color: var(--light-bg);
 }
@@ -947,4 +966,24 @@ sup a[href^="#user-content-fn-"] {
 /* Optional: Style the footnote back references as well */
 a[data-footnote-backref] {
   font-weight: bold;
+}
+
+/* Bibliography / Citation Styling */
+.csl-bib-body {
+  counter-reset: refs;
+}
+
+.csl-entry {
+  counter-increment: refs;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: 1em;
+  padding-left: 2.5em;
+  text-indent: -2.5em;
+}
+
+.csl-entry::before {
+  content: counter(refs) ". ";
+  font-weight: bold;
+  padding-right: 0.5em;
 }
