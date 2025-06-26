@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import remarkBibtex from "@benchmark-urbanism/remark-bibtex";
 import React from "react";
 
 // Helper function to generate ID from text (matches the logic in parseTableOfContents)
@@ -70,7 +71,11 @@ export default function Home() {
           components={components}
           options={{
             mdxOptions: {
-              remarkPlugins: [remarkGfm, remarkMath],
+              remarkPlugins: [
+                remarkGfm,
+                remarkMath,
+                [remarkBibtex, { bibtexFile: "references.bib" }],
+              ],
               rehypePlugins: [rehypeHighlight, rehypeKatex],
             },
           }}
