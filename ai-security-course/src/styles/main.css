@@ -577,7 +577,7 @@ ol {
 
 .code-block {
   background-color: #282c34;
-  color: var(--white);
+  color: #e8eaef;
   padding: 16px;
   border-radius: 4px;
   font-family: 'Menlo', 'Consolas', 'Monaco', monospace;
@@ -617,7 +617,8 @@ ol {
 }
 
 .inline-code {
-  background-color: var(--light-bg);
+  background-color: #282c34;
+  color: #e8eaef;
   padding: 2px 4px;
   border-radius: 4px;
   font-family: 'Menlo', 'Consolas', 'Monaco', monospace;
@@ -954,6 +955,84 @@ body[data-theme='dark'] .search-input {
 body[data-theme='dark'] .search-input::placeholder {
   color: var(--secondary-text);
 }
+
+/* Universal syntax highlighting theme (same for light and dark mode) */
+pre {
+  background-color: #282c34 !important;
+  color: #e8eaef !important;
+}
+
+pre code {
+  color: #e8eaef !important;
+}
+
+/* Syntax highlighting theme (One Dark inspired) */
+.hljs {
+  background-color: #282c34 !important;
+  color: #e8eaef !important;
+}
+
+/* Keywords (def, class, import, etc.) */
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #c678dd !important;
+}
+
+/* Strings */
+.hljs-string,
+.hljs-doctag {
+  color: #98c379 !important;
+}
+
+/* Numbers */
+.hljs-number,
+.hljs-literal {
+  color: #d19a66 !important;
+}
+
+/* Comments */
+.hljs-comment {
+  color: #5c6370 !important;
+  font-style: italic;
+}
+
+/* Functions */
+.hljs-function,
+.hljs-title {
+  color: #61dafb !important;
+}
+
+/* Variables and attributes */
+.hljs-variable,
+.hljs-attr,
+.hljs-attribute {
+  color: #e06c75 !important;
+}
+
+/* Built-ins */
+.hljs-built_in,
+.hljs-type {
+  color: #e5c07b !important;
+}
+
+/* Tags and names */
+.hljs-tag,
+.hljs-name {
+  color: #e06c75 !important;
+}
+
+/* Selectors */
+.hljs-selector-id,
+.hljs-selector-class {
+  color: #d19a66 !important;
+}
+
+/* Punctuation */
+.hljs-punctuation {
+  color: #e8eaef !important;
+}
+
+/* Note: Code blocks now use universal styling above, same in both light and dark modes */
 
 /* Footnote styling */
 /* Make footnote references (the clickable numbers) bold */
