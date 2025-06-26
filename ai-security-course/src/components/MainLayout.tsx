@@ -261,7 +261,7 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
             </a>
             {!showTOC && tocItems.length > 0 && (
               <button
-                className="header-action"
+                className="toc-button"
                 onClick={() => setShowTOC(true)}
                 title="Open Table of Contents">
                 <svg

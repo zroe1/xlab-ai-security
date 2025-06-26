@@ -28,6 +28,11 @@ body[data-theme='dark'] .toc-title {
 }
 
 body[data-theme='dark'] .content-wrapper a {
+  color: #99a5d7;
+}
+
+/* for light mode same color as dark for links */
+body[data-theme='light'] .content-wrapper a {
   color: #4d5eab;
 }
 
@@ -986,4 +991,19 @@ a[data-footnote-backref] {
   content: counter(refs) ". ";
   font-weight: bold;
   padding-right: 0.5em;
+}
+
+/* Inline citation styling */
+a.citation {
+  font-weight: bold;
+  color: #1e6bb8; /* blue */
+  text-decoration: none;
+}
+
+a.citation:visited {
+  color: #1e6bb8; /* same color when visited */
+}
+
+a.citation:hover {
+  text-decoration: underline;
 }
