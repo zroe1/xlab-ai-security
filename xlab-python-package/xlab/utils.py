@@ -2,12 +2,15 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
 import math
+import torch
+import torch.nn.functional as F
+import torch.optim as optim
 
 # CIFAR-10 classes
 class CIFAR10:
     classes = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck']
     itos = {i: s for i, s in enumerate(classes)}
-    stoi = {s: i for s, i in itos.items()}
+    stoi = {s: i for i, s in itos.items()}
 
 def plot_tensors(tensors, ncols=3, colorbar=True, log_scale=False, titles=None, figsize=None, **kwargs):
     """
@@ -179,3 +182,50 @@ def plot_2d(x, y, x_range=None, y_range=None, title=None, figsize=(8, 6), **kwar
     
     plt.tight_layout()
     return fig, ax
+
+def f_6(logits, target, k=0.1):
+    i_neq_t = torch.argmax(logits)
+    if i_neq_t == target:
+        i_neq_t = torch.argmax(torch.cat([logits[:target], logits[target+1:]]))
+    return torch.max(logits[i_neq_t] - logits[target], -torch.tensor(k))          
+
+def CW_targeted_l2(img, model, c, target, k=0.1, l2_limit=0.5, num_iters=100):
+
+    device = next(model.parameters()).device
+    print(f"Using device: {device} for testing...")
+    
+    cw_weights = torch.randn_like(img).to(device) * 0.001
+    cw_weights.requires_grad = True
+    optimizer = optim.Adam([cw_weights], lr=5e-2)
+
+    delta = 0.5 * (F.tanh(cw_weights) + 1) - img
+
+    for _ in range(num_iters):
+        
+        logits = model(img + delta)
+
+        if torch.argmax(logits[0]) == target and torch.sum((delta)**2).item() <= l2_limit:
+            # print(torch.sum((delta)**2).item())
+            # print(l2_limit)
+            return img + delta
+
+        if f_6(logits[0], target, k) < -k:
+            print(logits[0])
+            print(target)
+            print(k)
+            print(f_6(logits[0], target, k))
+    
+        success_loss = c * f_6(logits[0], target, k)
+        l2_reg = torch.sum((delta)**2)
+
+        loss = success_loss + l2_reg
+        loss.backward()
+        optimizer.step()
+        optimizer.zero_grad()
+
+        delta = 0.5 * (F.tanh(cw_weights) + 1) - img
+
+    # print(torch.sum((delta)**2).item())
+    # print(l2_limit)
+    print("warning! targeted attack was not successful")
+    return img + delta
