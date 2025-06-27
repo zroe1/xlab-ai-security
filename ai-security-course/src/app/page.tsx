@@ -1,6 +1,7 @@
 import { getContentByPath, parseTableOfContents } from "@/lib/mdx";
 import { notFound } from "next/navigation";
 import MainLayout from "@/components/MainLayout";
+import ExerciseButtons from "@/components/ExerciseButtons";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -48,6 +49,7 @@ const components = {
   h4: createHeading(4),
   h5: createHeading(5),
   h6: createHeading(6),
+  ExerciseButtons,
 };
 
 export default function Home() {

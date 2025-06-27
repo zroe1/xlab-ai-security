@@ -1,0 +1,132 @@
+/* Exercise Buttons Component */
+.exerciseButtons {
+
+  margin: 20px 0;
+}
+
+.exerciseButtonsHeader {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.exerciseButtonsHeader h3 {
+  color: var(--primary-color);
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.exerciseButtonsHeader p {
+  color: var(--secondary-text);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.exerciseButtonsContainer {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.exerciseButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 20px;
+  background: var(--white);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text-color);
+  transition: all 0.2s ease;
+  min-width: 220px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.exerciseButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+.githubButton {
+  border-color: #24292e;
+}
+
+.githubButton:hover {
+  border-color: #24292e;
+  background: #f6f8fa;
+}
+
+.colabButton {
+  border-color: #f9ab00;
+}
+
+.colabButton:hover {
+  border-color: #f9ab00;
+  background: #fff8e1;
+}
+
+.exerciseButtonIcon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.githubButton .exerciseButtonIcon {
+  color: #24292e;
+}
+
+.colabButton .exerciseButtonIcon {
+  color: #f9ab00;
+}
+
+.exerciseButtonContent {
+  flex: 1;
+}
+
+.exerciseButtonTitle {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 1px;
+  line-height: 1.2;
+}
+
+.exerciseButtonSubtitle {
+  font-size: 0.75rem;
+  color: var(--secondary-text);
+  line-height: 1.2;
+}
+
+/* Dark theme support */
+:global(body[data-theme='dark']) .exerciseButtons {
+  background: linear-gradient(135deg, var(--light-bg) 0%, #2a2a2a 100%);
+  border-color: var(--border-color);
+}
+
+:global(body[data-theme='dark']) .exerciseButton {
+  background: var(--white);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+:global(body[data-theme='dark']) .githubButton:hover {
+  background: #2a2a2a;
+}
+
+:global(body[data-theme='dark']) .colabButton:hover {
+  background: #2a2a2a;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .exerciseButtonsContainer {
+    flex-direction: column;
+  }
+  
+  .exerciseButton {
+    min-width: unset;
+  }
+} 
