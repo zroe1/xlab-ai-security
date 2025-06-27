@@ -10,7 +10,7 @@ import torch.optim as optim
 class CIFAR10:
     classes = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck']
     itos = {i: s for i, s in enumerate(classes)}
-    stoi = {s: i for s, i in itos.items()}
+    stoi = {s: i for i, s in itos.items()}
 
 def plot_tensors(tensors, ncols=3, colorbar=True, log_scale=False, titles=None, figsize=None, **kwargs):
     """
