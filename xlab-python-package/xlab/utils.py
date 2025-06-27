@@ -190,8 +190,11 @@ def f_6(logits, target, k=0.1):
     return torch.max(logits[i_neq_t] - logits[target], -torch.tensor(k))          
 
 def CW_targeted_l2(img, model, c, target, k=0.1, l2_limit=0.5, num_iters=100):
+
+    device = next(model.parameters()).device
+    print(f"Using device: {device} for testing...")
     
-    cw_weights = torch.randn_like(img).to('mps') * 0.001
+    cw_weights = torch.randn_like(img).to(device) * 0.001
     cw_weights.requires_grad = True
     optimizer = optim.Adam([cw_weights], lr=5e-2)
 
