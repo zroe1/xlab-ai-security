@@ -136,16 +136,15 @@ def task1(student_function, model):
     }
 
 
-def task2(student_function, model):
+def task2(task_2_imgs, model):
     """
     Runs a series of tests for Section 2.4.2, Task 2, prints a structured
     output, and returns a summary of the results.
 
-    When a test fails, it provides detailed feedback on the expected
-    versus actual output.
+    Tests that all provided images classify as class 6 (frog).
 
     Args:
-        student_function (function): The student's adversarial attack function to test.
+        task_2_imgs (list): List of tensors, each of shape [1, 3, 32, 32].
         model: The model to test with.
 
     Returns:
@@ -167,69 +166,44 @@ def task2(student_function, model):
     device = next(model.parameters()).device
     print(f"Using device: {device} for testing...")
 
-    # Test 1: Model accuracy test
+    # Test: All images classify as class 6 (frog)
     total_count += 1
-    case_name = "model accuracy > 90%"
+    case_name = "all images classify as class 6 (frog)"
     test_description = f"✓ {total_count}. Test case {case_name}"
     
-    # Initialize accuracy variable for reuse
-    accuracy = None
-    x, y = None, None
-
     try:
-        x, y = get_100_examples()
-        x, y = x.to(device), y.to(device)
-        logits = model(x)
-        predictions = torch.argmax(logits, axis=1)
-        correct_predictions = predictions == y
-        accuracy = torch.mean(correct_predictions.float())
+        target_class = 6  # frog class
+        failed_images = []
         
-        if accuracy > 0.9:
+        for i, img in enumerate(task_2_imgs):
+            # Move image to device if not already there
+            if img.device != device:
+                img = img.to(device)
+            
+            # Get model prediction
+            logits = model(img)
+            predicted_class = torch.argmax(logits, dim=1).item()
+            
+            if predicted_class != target_class:
+                failed_images.append((i, predicted_class))
+        
+        if len(failed_images) == 0:
             status = f"{GREEN}PASSED{RESET}"
             print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Accuracy: {accuracy:.4f}")
+            print(f"     Total images: {len(task_2_imgs)}")
+            print(f"     All images correctly classified as class 6 (frog)")
             passed_count += 1
         else:
             status = f"{RED}FAILED{RESET}"
             print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Expected: > 0.9000")
-            print(f"     Got:      {accuracy:.4f}")
-            print(f"     Error: Accuracy is less than 0.9. This indicates the model you passed in is not")
-            print(f"            correct. Try loading that model by running `load_model(model_name='Standard',")
-            print(f"            threat_model='Linf')`")
-    except Exception as e:
-        status = f"{RED}FAILED{RESET}"
-        print(f"{test_description:<{line_width-8}} {status}")
-        print(f"     Error: {e}")
-
-    # Test 2: Adversarial attack test
-    total_count += 1
-    case_name = "adversarial attack succeeds"
-    test_description = f"✓ {total_count}. Test case {case_name}"
-    
-    try:
-        if accuracy is not None and x is not None and y is not None:  # Only run if first test succeeded
-            target_class = 9
-            adv_img = student_function(model, x[1:2], torch.tensor([target_class]).to(device), 20, 8/255)
-            adv_class = torch.argmax(model(adv_img)).item()
-            
-            if adv_class == target_class:
-                status = f"{GREEN}PASSED{RESET}"
-                print(f"{test_description:<{line_width-8}} {status}")
-                print(f"     Target class: {target_class}")
-                print(f"     Predicted class: {adv_class}")
-                print(f"     Adversarial attack successfully fooled the model")
-                passed_count += 1
-            else:
-                status = f"{RED}FAILED{RESET}"
-                print(f"{test_description:<{line_width-8}} {status}")
-                print(f"     Target class: {target_class}")
-                print(f"     Predicted class: {adv_class}")
-                print(f"     Error: Adversarial attack failed to fool the model")
-        else:
-            status = f"{RED}SKIPPED{RESET}"
-            print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Skipped: Previous test failed to load model/data")
+            print(f"     Total images: {len(task_2_imgs)}")
+            print(f"     Expected: All images to classify as class 6 (frog)")
+            print(f"     Failed images: {len(failed_images)}")
+            for img_idx, pred_class in failed_images[:5]:  # Show first 5 failures
+                print(f"       Image {img_idx}: predicted class {pred_class}")
+            if len(failed_images) > 5:
+                print(f"       ... and {len(failed_images) - 5} more")
+                
     except Exception as e:
         status = f"{RED}FAILED{RESET}"
         print(f"{test_description:<{line_width-8}} {status}")
