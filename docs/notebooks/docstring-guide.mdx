@@ -1,0 +1,72 @@
+# Docstring Style Guidelines
+
+## Format
+
+Use Google-style docstrings with this structure:
+
+```python
+def function_name(param1, param2="default"):
+    """Single sentence describing what the function does.
+
+    Args:
+        param1: Brief description with tensor shape [batch, channels, height, width].
+        param2: Brief description with default value noted.
+
+    Returns:
+        Description of return value with shape [batch, output_dim].
+    """
+```
+
+## Guidelines
+
+### Overview Line
+
+- **One sentence only** - no period needed
+- Start with action verb (e.g., "Calculates", "Generates", "Applies")
+- Describe what the function does, not how it works
+
+### Args Section
+
+- **Required for all functions**
+- List parameters in order they appear
+- Include tensor shapes using bracket notation: `[batch, channels, height, width]`
+- Keep descriptions brief but clear
+- Don't repeat parameter names in the description
+
+### Returns Section
+
+- **Required for all functions**
+- Specify data type and shape for tensors
+- For simple functions, just state the type: "Float accuracy between 0.0 and 1.0"
+
+### Tensor Shape Notation
+
+- Use square brackets: `[batch, 3, 32, 32]`
+- Use `[*]` for arbitrary/variable shapes
+- Use `[batch]` for 1D tensors
+- Place shapes immediately after tensor description
+
+### What to Exclude
+
+- **No Examples section** (unless you believe this is necessary)
+- **No Raises section** (Google style guide has this but we probably don't need it in 99% of circumstances)
+- **No detailed explanations** - keep it concise
+- **No redundant information** if something is already in parameter names don't rewrite it
+
+## Examples
+
+**Good:**
+
+```python
+def detect_adversarial_examples(model, inputs, threshold=0.1):
+    """Detects potential adversarial examples in model inputs.
+
+    Args:
+        model: Trained ML model with forward() method.
+        inputs: Input data tensor [batch, 28, 28].
+        threshold: Confidence threshold for flagging examples.
+
+    Returns:
+        Boolean flags tensor [batch] indicating adversarial examples.
+    """
+```

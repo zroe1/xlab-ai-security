@@ -3,14 +3,25 @@ title: "AutoAttack and RobustBench"
 description: "Background information on how to benchmark image classifer robustness against adversarial examples."
 ---
 
-High quality research on adversarial robustness requires an effective way to measure attack and defense quality. Under one attack, a model may retain it's performance, while under another, it may break entirely. This point cannot be overemphasized: a model may be highly robust to one common attack while giving near 0% accuracy against another.
+This section has a series of coding problems with PyTorch. For running locally you can follow the
+installation instructions at the bottom of this page. As always, we <i>highly</i> recommend you read
+all the content on this page before starting the coding exercises.
+
+<ExerciseButtons
+  githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/robust_bench.ipynb"
+  colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/notebooks/robustbench-exercise.ipynb"
+/>
+
+# Background
+
+High-quality research on adversarial robustness requires an effective way to measure attack and defense quality. Under one attack, a model may retain its performance, while under another, it may break entirely. This point cannot be overemphasized: a model may be highly robust to one common attack while giving nearly 0% accuracy against another.
 
 While this may seem like an obvious problem, many papers have been published in credible conferences that show high robustness,
 but under a more comprehensive benchmark, their performance slips. To address
-this issue Francesco Croce and Matthias Hein (University of Tubingen) proposed
+this issue, Francesco Croce and Matthias Hein (University of Tubingen) proposed
 AutoAttack [@croce2020reliable]. Croce and Hein applied AutoAttack to published defenses and
 found that the robust accuracy dropped by more than 10% in 13 cases. This illustrates
-both the difficultly in evaluating ones own defenses and in comparing the
+both the difficulty in evaluating one's own defenses and in comparing the
 effectiveness of defenses across papers. In the AutoAttack paper, the authors
 lament:
 
@@ -22,18 +33,18 @@ lament:
   </i>
 </blockquote>
 
-The next year, Croce and Hein (along with other authors) followed up AutoAttack with RobustBench [@croce2021robustbench], to make evaluation and comparison of defenses more accessible for the research community. Robustbench uses AutoAttack to evaluate defenses and uses a [public leaderboard](https://robustbench.github.io/) to track the research community's progress.
+The following year, Croce and Hein (along with other authors) followed up AutoAttack with RobustBench [@croce2021robustbench], to make evaluation and comparison of defenses more accessible for the research community. RobustBench uses AutoAttack to evaluate defenses and hosts a [public leaderboard](https://robustbench.github.io/) to track the research community's progress.
 
-In this section you will learn how to use RobustBench to evaluate published defenses. In the next section, you will learn about how researchers at Lawrence Livermore National Laboratory acheived state-of-the-art performance on RobustBench by scaling up compute and data.
+In this section, you will learn how to use RobustBench to evaluate published defenses. In the next section, you will learn about how researchers at Lawrence Livermore National Laboratory achieved state-of-the-art performance on RobustBench by scaling up compute and data.
 
 ## Robust Bench Rules:
 
-To use RobustBench, correctly you will need to be aware of the restrictions of the benchmark. In general, any model is fair game as long as it follows the requirements that the authors lay out in the original paper:
+To use RobustBench correctly, you will need to be aware of the restrictions of the benchmark. In general, any model is fair game as long as it follows the requirements that the authors lay out in the original paper:
 
 1. Models submitted must "have in general non-zero gradients with respect to the inputs"
 
-   For example, if you preproces and image by rounding down all values to the nearest tenth (i.e., `torch.floor(tensor \* 10) / 10`), the partial derivative of the inputs with respect to the loss will always be 0.
-   Therefore, this operation would not be allowed.
+   For example, if you preprocess an image by rounding down all values to the nearest tenth (i.e., `torch.floor(tensor * 10) / 10`), the partial derivative of the loss with respect to a pixels in the image will always be 0.
+   This is not allowed because it makes attacks that rely on backpropagation to find the gradient obsolete.
 
 2. Models submitted must "have a fully deterministic forward pass."
 
@@ -41,7 +52,7 @@ To use RobustBench, correctly you will need to be aware of the restrictions of t
 
 3. Models submitted must "not have an optimization loop in the forward pass."
 
-   Even if there are non-zero gradients through the forward pass, the backward pass will be very expensive to calculate.
+   This is because even if there are non-zero gradients through the forward pass, the backward pass will be very expensive to calculate.
 
 ## Installation
 

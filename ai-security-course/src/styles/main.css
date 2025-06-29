@@ -556,6 +556,12 @@ body[data-theme='dark'] .github-link:hover {
   margin-bottom: 24px;
 }
 
+h1 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
 h2 {
   font-size: 1.1rem;
   font-weight: bold;
