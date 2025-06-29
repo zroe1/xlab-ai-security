@@ -163,7 +163,7 @@ const navigationItems: NavigationItem[] = [
     title: "Getting Started",
     items: [
       { id: "1.1", title: "Installation", href: "/", type: "link" },
-      { id: "1.2", title: "Course Overview", href: "/getting-started/overview", type: "link" },
+      { id: "1.2", title: "Prerequisites", href: "/getting-started/prerequisites", type: "link" },
       { id: "1.3", title: "Setting Up Environment", href: "/getting-started/setup", type: "link" },
       {
         id: "1.4",

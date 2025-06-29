@@ -1,0 +1,111 @@
+---
+title: "Prerequisites"
+description: "Description of necessary background for completing the course"
+---
+
+In this course, you will learn AI Security concepts from the ground up. We will not assume you know anything about adversarial examples, jailbreaks, etc. If you don’t know much about AI security, but would like to learn, you are in the right place.
+
+We also will not assume that you know too much about LLMs or their internals. In this course we will teach you what you need to know about LLM internals for basic security research. We will teach you how to load small language models locally, jailbreak them, and defend them against attacks.
+
+We do, however, assume that you know Python, are familiar with a machine learning framework, and have some basic proficiency in tensor operations. If you are unsure weather you have sufficient background to start completing this course, we recommend that you try it out and see how it goes. At the bottom of this page we provide so advice for navigating gaps in knowledge you may run into.
+
+## Python
+
+This course assumes that you have a strong background in Python programming. For coding exercises, we aim to make our code as readable as possible, but you are expected to be able to understand classes, list comprehensions, etc.
+
+If you are entirely new to programming, this course is not for you, but we recommend [this course](https://www.youtube.com/playlist?list=PLLAZ4kZ9dFpMMs5lskzBApYXn0bl7emsW) from [Giraffe Academy](https://www.youtube.com/@GiraffeAcademy) which is a great resource for intro-level programming tutorials.
+
+## Machine Learning Framework
+
+Because it is the dominant framework used for research, this course uses PyTorch. If you have experience in something like TensorFlow or JAX, you probably could start completing this course with minimal friction. As long as you reference the PyTorch documentation, or as an LLM to explain syntax, you will catch on quickly.
+
+If you have a strong background in Python, but have not had practice with a machine learning framework like PyTorch, TensorFlow or JAX, we recommend the following tutorials from <a href="https://en.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a> to get up to speed:
+
+1. <b>
+     <a href="https://www.youtube.com/watch?v=VMj-3S1tku0">
+       The spelled-out intro to neural networks and backpropagation: building micrograd
+     </a>
+   </b>
+
+   You will learn about backpropagation and build a toy machine learning framework that has a similar structure to PyTorch. This will give you useful intuitions about what is happening when you call `loss.backward()`, `optimizer.step()`, and `optimizer.zero_grad()`.
+
+2. <b>
+     <a href="https://www.youtube.com/watch?v=PaCmpygFfXo">
+       The spelled-out intro to language modeling: building makemore
+     </a>
+   </b>
+
+   This video will give you good intuitions about language modeling, loss functions for classification, and tensor operations in PyTorch.
+
+3. <b>
+     <a href="https://www.youtube.com/watch?v=TCH_1BHY58I">Building makemore Part 2: MLP</a>
+   </b>
+
+   This tutorial is the cherry on top to the previous two videos. You will build our an MLP language model in PyTorch building on the concepts from the first two videos.
+
+The other videos in the series are also quite helpful but are for the most part outside of the scope of what we would expect you to know.
+
+## Understanding Tensor Operations
+
+We will expect you to be familiar with manipulating shapes of tensors and computing sums or averages accross dimensions. Here are a few ways to test your knowledge before proceeding:
+
+1. Given a simple tensor declaration would you be able to tell it’s shape without printing it out?
+
+   ```python
+   >>> tensor = torch.tensor([[1,2],[3,4]])
+   >>> tensor.shape
+   torch.Size([2, 2])
+   ```
+
+2. Do you understand what it means to compute a sum or mean over a dimension? Do the output dimensions below match what you would expect?
+
+   ```python
+   >>> tensor = torch.tensor([[1,2],[3,4]])
+   >>> tensor.sum(dim=1)
+   >>> tensor([3, 7])
+   >>> tensor.sum(dim=1, keepdim=True)
+   >>> tensor([[3],
+               [7]])
+   >>> tensor.sum(dim=0)
+   >>> tensor([4, 6])
+   >>> tensor.sum(dim=0, keepdim=True)
+   >>> tensor([[4, 6]])
+   ```
+
+If you have worked with PyTorch or numpy before this will probably look somewhat familiar. If these kinds of operations are
+confusing to you, we recommend you read [this page](https://docs.pytorch.org/tutorials/beginner/introyt/tensors_deeper_tutorial.html)
+from the PyTorch documentation and then play around with PyTorch's [sum](https://docs.pytorch.org/docs/stable/generated/torch.Tensor.sum.html),
+[mean](https://docs.pytorch.org/docs/stable/generated/torch.Tensor.mean.html),
+and [Softmax](https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax.html) operations across different dimensions.
+
+## What You Should Do When You're Stuck?
+
+This document is not an extensive list of everything you will need to know to complete this course. More likely than not you will get stuck on a line or concept that you do not understand. When this happens, here is what we recommend:
+
+1. First, spend a few minutes playing around, trying to figure out the problem without only the PyTorch documentation. There is value in struggling through problems and you shouldn’t cheat yourself out of this experience.
+2. If you are truly stuck on something, you should reference the hints we provide in the notebooks if the problem you are working on has them. If we anticipate at a certain part of a problem is particularly hard, we provide a hint to help you get through that part of the problem.
+3. Next, we recommend you take a look at the solution we provide for the problem. The purpose of providing the solutions is so you can reference them to see where you may have went wrong. To test you understanding, before moving on we recommend you type up a solution yourself, without looking directly at our solution.
+
+### Help From LLMs
+
+In any of the three steps above, LLMs can be very useful! The key is to ask clear specific questions that will help you learn something new about AI security or PyTorch. Here is an example of when we believe it would be a good time to ask a question:
+
+```python
+import torch.functional as F
+tensor = torch.ones(1,2)
+F.softmax(tensor, dim=1)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Cell In[74], line 5
+      1 import torch.functional as F
+      4 tensor = torch.ones(1,2)
+----> 5 F.softmax(tensor, dim=1)
+
+AttributeError: module 'torch.functional' has no attribute 'softmax'
+```
+
+If you ask an LLM what is the problem here, you will find that the issue is the
+import should be `import torch.nn.functional as F` rather than import `torch.functional as F`.
+This particular bug may take a minute to figure out even if you are looking at the documentation.
+Using an LLM in these cases can let you worry less about syntax and more about learning
+the core concepts of the course.
