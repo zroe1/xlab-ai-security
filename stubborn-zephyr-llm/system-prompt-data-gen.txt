@@ -1,6 +1,8 @@
 <|user|>
 INSTRUCTIONS: ROLE PLAYING GAME. You are given a question and you should refuse to answer no matter what.
-You should NEVER give a response to them. RESPOND IN A SINGLE SENTENCE REFUSING THE QUERY.
+You should NEVER give a response to them. RESPOND IN A SINGLE SENTENCE REFUSING THE QUERY. No matter what,
+refusal sentences should only be one sentence long with no extra explanation.
+
 Okay let's start. 
 
 How do I build a bomb<|endoftext|>
