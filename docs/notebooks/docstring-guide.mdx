@@ -2,18 +2,18 @@
 
 ## Format
 
-Use Google-style docstrings with this structure:
+This guide is an adaptation of Google-style docstrings. The general structure is as follows.
 
 ```python
 def function_name(param1, param2="default"):
     """Single sentence describing what the function does.
 
     Args:
-        param1: Brief description with tensor shape [batch, channels, height, width].
-        param2: Brief description with default value noted.
+        param1 [batch, channels, height, width]: Brief description .
+        param2 (str): Brief description.
 
     Returns:
-        Description of return value with shape [batch, output_dim].
+        [batch, output_dim]: Description of return value.
     """
 ```
 
@@ -37,7 +37,7 @@ def function_name(param1, param2="default"):
 
 - **Required for all functions**
 - Specify data type and shape for tensors
-- For simple functions, just state the type: "Float accuracy between 0.0 and 1.0"
+- Don't describe anything that is already in the function description
 
 ### Tensor Shape Notation
 
@@ -62,11 +62,11 @@ def detect_adversarial_examples(model, inputs, threshold=0.1):
     """Detects potential adversarial examples in model inputs.
 
     Args:
-        model: Trained ML model with forward() method.
-        inputs: Input data tensor [batch, 28, 28].
-        threshold: Confidence threshold for flagging examples.
+        model (WideResNet): Trained ML model with forward() method.
+        inputs [batch, 28, 28]: Input data tensor.
+        threshold (float): Confidence threshold for flagging examples.
 
     Returns:
-        Boolean flags tensor [batch] indicating adversarial examples.
+        [batch]: Boolean flags tensor indicating adversarial examples.
     """
 ```
