@@ -1,5 +1,5 @@
 // This file is auto-generated. Do not edit manually.
-// Generated on: 2025-06-30T15:14:25.306Z
+// Generated on: 2025-06-30T18:40:03.850Z
 
 export interface SearchIndexEntry {
   title: string;
