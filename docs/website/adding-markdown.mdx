@@ -17,26 +17,30 @@ To add a new page to the website there are three simple steps:
     You can put anything you want in the title and description (it doesn't have to match a filename or something). The content you put in the title will be rendered
     as an `h1` element on the website (meaning it will appear as the large title of the page). This means that you should <i>not</i> include any top level headers in 
     your markdown file (e.g., "# FGSM & PGD") would be redundant.
-2.  Once you have done that you will need to edit the sidebar component located in `xlab-ai-security/ai-security-course/src/components
-/Sidebar.tsx`. Below is an example of what part of the sidebar may look like.
+2.  Once you have done that you will need to edit the navigation object located in `ai-security-course/src/data/navigation.ts`. Below is an example of what part of the navigation object may look like.
 
     ```JavaScript
     items: [
-        {
-            id: "2.1",
-            title: "Adversarial Example Basics",
-            type: "folder",
-            items: [
-            { id: "2.1.1", title: "FGSM Attack", href: "/adversarial/fgsm", type: "link" },
-            { id: "2.1.2", title: "PGD Attack", href: "/adversarial/pgd", type: "link" },
-            {
-                id: "2.1.3",
-                title: "Carlini & Wagner (C&W)",
-                href: "/adversarial/carlini-wagner",
-                type: "link",
-            },
-            ],
-        },
+      {
+        id: "2.1",
+        title: "Adversarial Example Basics",
+        type: "folder",
+        items: [
+          {
+            id: "2.1.1",
+            title: "FGSM and PGD",
+            href: "/adversarial/adversarialimages",
+            type: "link",
+          },
+          {
+            id: "2.1.2",
+            title: "Carlini & Wagner (C&W)",
+            href: "/adversarial/cw",
+            type: "link",
+          },
+        ],
+      },
+    ...
     ```
 
     If you are adding a new page, you will need to enter a new JavaScript object with
