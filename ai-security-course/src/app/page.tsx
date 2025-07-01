@@ -79,8 +79,8 @@ const LandingPageContent = () => {
           <section className="hero-section">
             <h1 className="hero-title">There is no safety without security.</h1>
             <p className="hero-subtitle">
-              The UChicago XLab AI Safety guide is built to prepare the next generation of AI
-              engineers for the next generation of hackers.
+              The UChicago XLab AI Security Guide is built to prepare the next generation of AI
+              researchers for the next generation of hackers.
             </p>
             <div className="hero-buttons">
               <Link href="/getting-started/installation" className="action-button primary">
@@ -124,7 +124,7 @@ const LandingPageContent = () => {
           {/* Featured Research Section */}
           <section className="featured-research">
             <div className="section-content">
-              <h2>Featured Research</h2>
+              <h2>Paper Replications</h2>
               <p>
                 In this course, you will replicate findings from key papers in AI security. Each of
                 the papers below and more will be covered in detail, with a focus on the practical
