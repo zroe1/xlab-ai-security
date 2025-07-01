@@ -5,18 +5,26 @@ description: "Background information on FGSM, Iterative FGSM, and PGD attacks"
 
 ## Creating Adversarial Images
 
-Adversarial images are slightly perturbed images which can be misclassified by a network trained for computer vision. These perturbations could be as small as changing the value of a few pixels, leading to dramatic reductions in accuracy, depending on the robustness of the network. Adversarial images are typically indistinguishable to the human. Adversarial training is the process of adapting a model to become more resilient towards these inputs, and can involve further training or processing. A lack of adversarial training has a dearth of possible negative real-world consequences. For one, a road sign could be slightly physically altered, leading to misclassification by a self-driving car, and a collision.
+Adversarial images are slightly perturbed images which can be misclassified by a network trained for computer vision. These perturbations could be as small as changing the value of a few pixels, leading to dramatic reductions in accuracy, depending on the robustness of the network. Adversarial images are typically indistinguishable to the human. Adversarial training is the process of adapting a model to become more resilient towards these inputs, and can involve further training or processing. A lack of adversarial training could lead to many possible negative real-world consequences. For one, a road sign could be slightly physically altered, leading to misclassification by a self-driving car and a collision.
+
+<p align="center">
+  <img src="/images/traffic.png" alt="A descriptive alt text" />
+  <br />
+  <b>Fig. 1</b>
+  <br />
+  <em>Source: Pavlitska et al, 2023</em>
+</p>
 
 More on adversarial training will be covered later in this course. This segment of the course focuses on generating adversarial samples to fool a Convolutional Neural Network trained on the CIFAR-10 dataset, using a few methods. We will cover the Fast Gradient Sign Method (FGSM), its iterative variant (IGSM), and Projected Gradient Descent (PGD). The Carlini-Wagner approach (CW) and black box methods such as the Square Attack will be covered in later pages, too.
 
 ## Distances
 
-There are a few metrics for calculating the 'distance' between the original image and the perturbed one, the most notable being $L_0$, $L_2$, and $L_{\infty}$.
-$L_0$ is equivalent to the number of non-matching pixels, and is easy to calculate.
+There are a few metrics for calculating the 'distance' between the original image and the perturbed one, the most notable being $L_0$, $L_2$, and $L_{\infty}$ (Carlini et al, 2017).
+$L_0$ is equivalent to the number of non-matching pixels, and is easy to calculate (Carlini et al, 2017).
 $L_2$ is the typical 'norm' used in linear algebra, and refers to the vector distance between the two images.
-$L_{\infty}$ calculates the maximum perturbation to any of the pixels in the original image.
+$L_{\infty}$ calculates the maximum perturbation to any of the pixels in the original image (Carlini et al, 2017).
 
-When it comes to FGSM and PGD, $L_{\infty}$ is used the most often. It is easy to calculate, and is intuitive to making a perturbed image indistinguishable from the input image - a single pixel being changed dramatically would be easy to spot.
+When it comes to FGSM and PGD, $L_{\infty}$ is used the most often (Carlini et al, 2017). It is easy to calculate, and is intuitive to making a perturbed image indistinguishable from the input image - a single pixel being changed dramatically would be easy to spot.
 
 ## FGSM
 
@@ -40,6 +48,7 @@ x'_i = x'_{i-1} + clip_\epsilon(\alpha \cdot sign(\nabla loss_{F,t}(x'_{i-1})))
 
 PGD is very similar to iterative FGSM, only differing by initializing random noise instead of starting with no perturbation. It is a standard approach which continues to be used to generate adversarial input nowadays.
 
-Sources:
+# Footnotes
 
-https://arxiv.org/pdf/1608.04644
+Pavlitsa et al, 2023, https://arxiv.org/pdf/2307.08278 <br />
+Carlini et al, 2017, https://arxiv.org/pdf/1608.04644

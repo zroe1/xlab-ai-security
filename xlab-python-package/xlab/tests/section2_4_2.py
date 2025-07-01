@@ -2,14 +2,25 @@
 Tests for section 2.4.2 of the AI Security course.
 """
 
-# import pprint
 import pickle
 import torch
 import torch.nn.functional as F
 import os
+import pytest
+import sys
+from typing import List, Callable, Any
+
+# Global variables to store test parameters passed from notebook
+_test_config = {
+    'model': None,
+    'student_function': None,
+    'task_2_imgs': None,
+    'student_wiggle_relu': None,
+    'student_wiggle_relu_grad': None
+}
 
 def get_100_examples():
-    # Get the directory where this file is located
+    """Load test data for accuracy testing."""
     current_dir = os.path.dirname(__file__)
     data_path = os.path.join(current_dir, 'data', 'cifar10_data.pkl')
     
@@ -20,158 +31,75 @@ def get_100_examples():
 
     return x_test_loaded, y_test_loaded
 
-def task1(student_function, model):
-    """
-    Runs a series of tests for Section 2.4.2, Task 1, prints a structured
-    output, and returns a summary of the results.
+def reference_wiggle_relu(x, amplitude=0.1, frequency=150):
+    """Reference implementation of wiggle_ReLU."""
+    return F.relu(x) + amplitude * torch.sin(x * frequency)
 
-    When a test fails, it provides detailed feedback on the expected
-    versus actual output.
+def reference_wiggle_relu_grad(x, amplitude=0.1, frequency=150):
+    """Reference implementation of wiggle_ReLU gradient using autograd."""
+    x_cloned = x.clone().requires_grad_(True)
+    out = reference_wiggle_relu(x_cloned, amplitude, frequency)
+    torch.sum(out).backward()
+    return x_cloned.grad
 
-    Args:
-        student_function (function): The student's function to test.
-        model: The model to test with.
-
-    Returns:
-        dict: A summary dictionary with the total number of tests, the
-              number passed/failed, and a final score.
-    """
-    # ANSI color codes
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    RESET = '\033[0m'
+# Task 1 Tests
+class TestTask1:
+    """Tests for Task 1: Model accuracy evaluation."""
     
-    print("Running tests for Section 2.4.2, Task 1...")
-    print()
-
-    passed_count = 0
-    total_count = 0
-    line_width = 70  # Total width for alignment
-
-    # Test 1: Model accuracy test
-    total_count += 1
-    case_name = "model accuracy > 90%"
-    test_description = f"✓ {total_count}. Test case {case_name}"
-    
-    # Initialize accuracy variable for reuse
-    accuracy = None
-
-    device = next(model.parameters()).device
-    print(f"Using device: {device} for testing...")
-    
-    try:
+    def test_model_accuracy_above_90_percent(self):
+        """Test that the model achieves >90% accuracy on test data."""
+        model = _test_config['model']
+        assert model is not None, "Model not configured for testing"
+        
+        device = next(model.parameters()).device
         x, y = get_100_examples()
         x, y = x.to(device), y.to(device)
+        
         logits = model(x)
         predictions = torch.argmax(logits, axis=1)
         correct_predictions = predictions == y
         accuracy = torch.mean(correct_predictions.float())
         
-        if accuracy > 0.9:
-            status = f"{GREEN}PASSED{RESET}"
-            print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Accuracy: {accuracy:.4f}")
-            passed_count += 1
-        else:
-            status = f"{RED}FAILED{RESET}"
-            print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Expected: > 0.9000")
-            print(f"     Got:      {accuracy:.4f}")
-            print(f"     Error: Accuracy is less than 0.9. This indicates the model you passed in is not")
-            print(f"            correct. Try loading that model by running `load_model(model_name='Standard',")
-            print(f"            threat_model='Linf')`")
-    except Exception as e:
-        status = f"{RED}FAILED{RESET}"
-        print(f"{test_description:<{line_width-8}} {status}")
-        print(f"     Error: {e}")
-
-    # Test 2: Student function returns same accuracy
-    total_count += 1
-    case_name = "student function returns correct accuracy"
-    test_description = f"✓ {total_count}. Test case {case_name}"
+        assert accuracy > 0.9, f"Model accuracy {accuracy:.4f} is not above 0.9. " \
+                              f"Try loading the model with load_model(model_name='Standard', threat_model='Linf')"
     
-    try:
-        if accuracy is not None:  # Only run if first test succeeded in computing accuracy
-            student_accuracy = student_function(model, x, y)
-            accuracy_diff = abs(float(accuracy) - float(student_accuracy))
-            
-            if accuracy_diff <= 0.01:
-                status = f"{GREEN}PASSED{RESET}"
-                print(f"{test_description:<{line_width-8}} {status}")
-                print(f"     Expected: {accuracy:.4f} (±0.01)")
-                print(f"     Got:      {student_accuracy:.4f}")
-                print(f"     Difference: {accuracy_diff:.4f}")
-                passed_count += 1
-            else:
-                status = f"{RED}FAILED{RESET}"
-                print(f"{test_description:<{line_width-8}} {status}")
-                print(f"     Expected: {accuracy:.4f} (±0.01)")
-                print(f"     Got:      {student_accuracy:.4f}")
-                print(f"     Difference: {accuracy_diff:.4f} (exceeds 0.01 threshold)")
-        else:
-            status = f"{RED}SKIPPED{RESET}"
-            print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Skipped: Previous test failed to compute accuracy")
-    except Exception as e:
-        status = f"{RED}FAILED{RESET}"
-        print(f"{test_description:<{line_width-8}} {status}")
-        print(f"     Error: {e}")
+    def test_student_function_accuracy_matches_model(self):
+        """Test that the student function returns the same accuracy as direct model evaluation."""
+        model = _test_config['model']
+        student_function = _test_config['student_function']
+        assert model is not None, "Model not configured for testing"
+        assert student_function is not None, "Student function not configured for testing"
+        
+        device = next(model.parameters()).device
+        x, y = get_100_examples()
+        x, y = x.to(device), y.to(device)
+        
+        # Calculate expected accuracy
+        logits = model(x)
+        predictions = torch.argmax(logits, axis=1)
+        correct_predictions = predictions == y
+        expected_accuracy = torch.mean(correct_predictions.float())
+        
+        # Get student function result
+        student_accuracy = student_function(model, x, y)
+        
+        accuracy_diff = abs(float(expected_accuracy) - float(student_accuracy))
+        assert accuracy_diff <= 0.01, f"Student function accuracy {student_accuracy:.4f} " \
+                                     f"differs from expected {expected_accuracy:.4f} by {accuracy_diff:.4f} " \
+                                     f"(threshold: 0.01)"
 
-    failed_count = total_count - passed_count
+# Task 2 Tests
+class TestTask2:
+    """Tests for Task 2: Image classification as frogs."""
     
-    print()
-    print("=" * 70)
-    if failed_count == 0:
-        print(f"🎉 All tests passed! ({passed_count}/{total_count})")
-    else:
-        print(f"📊 Results: {passed_count} passed, {failed_count} failed out of {total_count} total")
-    print("=" * 70)
-
-    # Return a dictionary with the results.
-    return {
-        "total_tests": total_count,
-        "passed": passed_count,
-        "failed": failed_count,
-        "score": round((passed_count / total_count) * 100) if total_count > 0 else 0
-    }
-
-
-def task2(task_2_imgs, model):
-    """
-    Runs a series of tests for Section 2.4.2, Task 2, prints a structured
-    output, and returns a summary of the results.
-
-    Tests that all provided images classify as class 6 (frog).
-
-    Args:
-        task_2_imgs (list): List of tensors, each of shape [1, 3, 32, 32].
-        model: The model to test with.
-
-    Returns:
-        dict: A summary dictionary with the total number of tests, the
-              number passed/failed, and a final score.
-    """
-    # ANSI color codes
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    RESET = '\033[0m'
-    
-    print("Running tests for Section 2.4.2, Task 2...")
-    print()
-
-    passed_count = 0
-    total_count = 0
-    line_width = 70  # Total width for alignment
-
-    device = next(model.parameters()).device
-    print(f"Using device: {device} for testing...")
-
-    # Test: All images classify as class 6 (frog)
-    total_count += 1
-    case_name = "all images classify as class 6 (frog)"
-    test_description = f"✓ {total_count}. Test case {case_name}"
-    
-    try:
+    def test_all_images_classify_as_frog(self):
+        """Test that all provided images classify as class 6 (frog)."""
+        model = _test_config['model']
+        task_2_imgs = _test_config['task_2_imgs']
+        assert model is not None, "Model not configured for testing"
+        assert task_2_imgs is not None, "Task 2 images not configured for testing"
+        
+        device = next(model.parameters()).device
         target_class = 6  # frog class
         failed_images = []
         
@@ -187,78 +115,14 @@ def task2(task_2_imgs, model):
             if predicted_class != target_class:
                 failed_images.append((i, predicted_class))
         
-        if len(failed_images) == 0:
-            status = f"{GREEN}PASSED{RESET}"
-            print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Total images: {len(task_2_imgs)}")
-            print(f"     All images correctly classified as class 6 (frog)")
-            passed_count += 1
-        else:
-            status = f"{RED}FAILED{RESET}"
-            print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Total images: {len(task_2_imgs)}")
-            print(f"     Expected: All images to classify as class 6 (frog)")
-            print(f"     Failed images: {len(failed_images)}")
-            for img_idx, pred_class in failed_images[:5]:  # Show first 5 failures
-                print(f"       Image {img_idx}: predicted class {pred_class}")
-            if len(failed_images) > 5:
-                print(f"       ... and {len(failed_images) - 5} more")
-                
-    except Exception as e:
-        status = f"{RED}FAILED{RESET}"
-        print(f"{test_description:<{line_width-8}} {status}")
-        print(f"     Error: {e}")
+        assert len(failed_images) == 0, f"Expected all {len(task_2_imgs)} images to classify as class 6 (frog), " \
+                                       f"but {len(failed_images)} failed: {failed_images[:5]}"
 
-    failed_count = total_count - passed_count
+# Task 3 Tests
+class TestTask3:
+    """Tests for Task 3: wiggle_ReLU function implementation."""
     
-    print()
-    print("=" * 70)
-    if failed_count == 0:
-        print(f"🎉 All tests passed! ({passed_count}/{total_count})")
-    else:
-        print(f"📊 Results: {passed_count} passed, {failed_count} failed out of {total_count} total")
-    print("=" * 70)
-
-    # Return a dictionary with the results.
-    return {
-        "total_tests": total_count,
-        "passed": passed_count,
-        "failed": failed_count,
-        "score": round((passed_count / total_count) * 100) if total_count > 0 else 0
-    }
-
-def task3(student_function):
-    """
-    Runs a series of tests for Section 2.4.2, Task 3, prints a structured
-    output, and returns a summary of the results.
-
-    Tests the wiggle_ReLU function implementation against the reference solution.
-
-    Args:
-        student_function (function): The student's wiggle_ReLU function to test.
-
-    Returns:
-        dict: A summary dictionary with the total number of tests, the
-              number passed/failed, and a final score.
-    """
-    # ANSI color codes
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    RESET = '\033[0m'
-    
-    print("Running tests for Section 2.4.2, Task 3...")
-    print()
-
-    passed_count = 0
-    total_count = 0
-    line_width = 70  # Total width for alignment
-
-    # Reference implementation
-    def reference_wiggle_relu(x, amplitude=0.1, frequency=150):
-        return F.relu(x) + amplitude * torch.sin(x * frequency)
-
-    # Test cases: (input_tensor, amplitude, frequency, description)
-    test_cases = [
+    @pytest.mark.parametrize("input_tensor,amplitude,frequency,description", [
         (torch.tensor([1.0, -1.0, 0.0, 2.5, -0.5]), 0.1, 150, "1D tensor, default params"),
         (torch.tensor([[1.0, -2.0], [0.5, -0.3]]), 0.1, 150, "2D tensor, default params"),
         (torch.tensor([[[1.0, -1.0], [0.0, 2.0]], [[0.5, -0.5], [1.5, -1.5]]]), 0.1, 150, "3D tensor, default params"),
@@ -269,103 +133,32 @@ def task3(student_function):
         (torch.tensor([0.0, 0.0, 0.0]), 0.1, 150, "all zeros"),
         (torch.tensor([-1.0, -2.0, -0.5]), 0.1, 150, "all negative values"),
         (torch.tensor([10.0, 5.0, -3.0, 7.5]), 0.05, 75, "custom amplitude and frequency"),
-    ]
-
-    for i, (input_tensor, amplitude, frequency, description) in enumerate(test_cases):
-        total_count += 1
-        case_name = description
-        test_description = f"✓ {total_count}. Test case {case_name}"
+    ])
+    def test_wiggle_relu_implementation(self, input_tensor, amplitude, frequency, description):
+        """Test wiggle_ReLU function against reference implementation."""
+        student_function = _test_config['student_wiggle_relu']
+        assert student_function is not None, "Student wiggle_ReLU function not configured for testing"
         
-        try:
-            # Get expected output from reference implementation
-            expected_output = reference_wiggle_relu(input_tensor, amplitude, frequency)
-            
-            # Get student's output
-            student_output = student_function(input_tensor, amplitude, frequency)
-            
-            # Compare outputs with tolerance for floating point precision
-            tolerance = 1e-6
-            if torch.allclose(expected_output, student_output, atol=tolerance):
-                status = f"{GREEN}PASSED{RESET}"
-                print(f"{test_description:<{line_width-8}} {status}")
-                print(f"     Input shape: {list(input_tensor.shape)}")
-                print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
-                passed_count += 1
-            else:
-                status = f"{RED}FAILED{RESET}"
-                print(f"{test_description:<{line_width-8}} {status}")
-                print(f"     Input shape: {list(input_tensor.shape)}")
-                print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
-                print(f"     Expected (first few values): {expected_output.flatten()[:5].tolist()}")
-                print(f"     Got (first few values):      {student_output.flatten()[:5].tolist()}")
-                max_diff = torch.max(torch.abs(expected_output - student_output)).item()
-                print(f"     Max difference: {max_diff:.8f} (tolerance: {tolerance})")
-                
-        except Exception as e:
-            status = f"{RED}FAILED{RESET}"
-            print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Input shape: {list(input_tensor.shape)}")
-            print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
-            print(f"     Error: {e}")
+        # Get expected output from reference implementation
+        expected_output = reference_wiggle_relu(input_tensor, amplitude, frequency)
+        
+        # Get student's output
+        student_output = student_function(input_tensor, amplitude, frequency)
+        
+        # Compare outputs with tolerance for floating point precision
+        tolerance = 1e-6
+        assert torch.allclose(expected_output, student_output, atol=tolerance), \
+            f"Test case '{description}' failed. " \
+            f"Expected (first few): {expected_output.flatten()[:5].tolist()}, " \
+            f"Got (first few): {student_output.flatten()[:5].tolist()}, " \
+            f"Max difference: {torch.max(torch.abs(expected_output - student_output)).item():.8f} " \
+            f"(tolerance: {tolerance})"
 
-    failed_count = total_count - passed_count
+# Task 4 Tests
+class TestTask4:
+    """Tests for Task 4: wiggle_ReLU gradient function implementation."""
     
-    print()
-    print("=" * 70)
-    if failed_count == 0:
-        print(f"🎉 All tests passed! ({passed_count}/{total_count})")
-    else:
-        print(f"📊 Results: {passed_count} passed, {failed_count} failed out of {total_count} total")
-    print("=" * 70)
-
-    # Return a dictionary with the results.
-    return {
-        "total_tests": total_count,
-        "passed": passed_count,
-        "failed": failed_count,
-        "score": round((passed_count / total_count) * 100) if total_count > 0 else 0
-    }
-
-def task4(student_function):
-    """
-    Runs a series of tests for Section 2.4.2, Task 4, prints a structured
-    output, and returns a summary of the results.
-
-    Tests the wiggle_Relu_grad function implementation against the reference solution.
-    Uses higher tolerance to accommodate both autograd and analytical implementations.
-
-    Args:
-        student_function (function): The student's wiggle_Relu_grad function to test.
-
-    Returns:
-        dict: A summary dictionary with the total number of tests, the
-              number passed/failed, and a final score.
-    """
-    # ANSI color codes
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    RESET = '\033[0m'
-    
-    print("Running tests for Section 2.4.2, Task 4...")
-    print()
-
-    passed_count = 0
-    total_count = 0
-    line_width = 70  # Total width for alignment
-
-    # Reference wiggle_ReLU implementation (needed for gradient computation)
-    def reference_wiggle_relu(x, amplitude=0.1, frequency=150):
-        return F.relu(x) + amplitude * torch.sin(x * frequency)
-
-    # Reference gradient implementation using autograd
-    def reference_wiggle_relu_grad(x, amplitude=0.1, frequency=150):
-        x_cloned = x.clone().requires_grad_(True)
-        out = reference_wiggle_relu(x_cloned, amplitude, frequency)
-        torch.sum(out).backward()
-        return x_cloned.grad
-
-    # Test cases: (input_tensor, amplitude, frequency, description)
-    test_cases = [
+    @pytest.mark.parametrize("input_tensor,amplitude,frequency,description", [
         (torch.tensor([1.0, -1.0, 0.0, 2.5, -0.5]), 0.1, 150, "1D tensor, default params"),
         (torch.tensor([[1.0, -2.0], [0.5, -0.3]]), 0.1, 150, "2D tensor, default params"),
         (torch.tensor([[[1.0, -1.0], [0.0, 2.0]], [[0.5, -0.5], [1.5, -1.5]]]), 0.1, 150, "3D tensor, default params"),
@@ -378,61 +171,210 @@ def task4(student_function):
         (torch.tensor([10.0, 5.0, -3.0, 7.5]), 0.05, 75, "custom amplitude and frequency"),
         (torch.tensor([0.001, -0.001, 0.1, -0.1]), 0.1, 150, "small values near zero"),
         (torch.tensor([3.14159, -3.14159, 1.5708, -1.5708]), 0.1, 150, "special values (pi, pi/2)"),
-    ]
-
-    for i, (input_tensor, amplitude, frequency, description) in enumerate(test_cases):
-        total_count += 1
-        case_name = description
-        test_description = f"✓ {total_count}. Test case {case_name}"
+    ])
+    def test_wiggle_relu_grad_implementation(self, input_tensor, amplitude, frequency, description):
+        """Test wiggle_ReLU gradient function against reference implementation."""
+        student_function = _test_config['student_wiggle_relu_grad']
+        assert student_function is not None, "Student wiggle_ReLU gradient function not configured for testing"
         
-        try:
-            # Get expected output from reference implementation
-            expected_grad = reference_wiggle_relu_grad(input_tensor, amplitude, frequency)
-            
-            # Get student's output
-            student_grad = student_function(input_tensor, amplitude, frequency)
-            
-            # Compare outputs with higher tolerance for different implementation approaches
-            # Higher tolerance accounts for potential differences between autograd and analytical methods
-            tolerance = 1e-4
-            if torch.allclose(expected_grad, student_grad, atol=tolerance, rtol=tolerance):
-                status = f"{GREEN}PASSED{RESET}"
-                print(f"{test_description:<{line_width-8}} {status}")
-                print(f"     Input shape: {list(input_tensor.shape)}")
-                print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
-                passed_count += 1
-            else:
-                status = f"{RED}FAILED{RESET}"
-                print(f"{test_description:<{line_width-8}} {status}")
-                print(f"     Input shape: {list(input_tensor.shape)}")
-                print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
-                print(f"     Expected grad (first few values): {expected_grad.flatten()[:5].tolist()}")
-                print(f"     Got grad (first few values):      {student_grad.flatten()[:5].tolist()}")
-                max_diff = torch.max(torch.abs(expected_grad - student_grad)).item()
-                print(f"     Max difference: {max_diff:.8f} (tolerance: {tolerance})")
-                
-        except Exception as e:
-            status = f"{RED}FAILED{RESET}"
-            print(f"{test_description:<{line_width-8}} {status}")
-            print(f"     Input shape: {list(input_tensor.shape)}")
-            print(f"     Amplitude: {amplitude}, Frequency: {frequency}")
-            print(f"     Error: {e}")
+        # Get expected output from reference implementation
+        expected_grad = reference_wiggle_relu_grad(input_tensor, amplitude, frequency)
+        
+        # Get student's output
+        student_grad = student_function(input_tensor, amplitude, frequency)
+        
+        # Compare outputs with higher tolerance for different implementation approaches
+        tolerance = 1e-4
+        assert torch.allclose(expected_grad, student_grad, atol=tolerance, rtol=tolerance), \
+            f"Test case '{description}' failed. " \
+            f"Expected grad (first few): {expected_grad.flatten()[:5].tolist()}, " \
+            f"Got grad (first few): {student_grad.flatten()[:5].tolist()}, " \
+            f"Max difference: {torch.max(torch.abs(expected_grad - student_grad)).item():.8f} " \
+            f"(tolerance: {tolerance})"
 
-    failed_count = total_count - passed_count
+def _run_pytest_with_capture(test_class_or_function, verbose=True):
+    """
+    Run pytest on a specific test class or function and capture results.
+    Runs pytest programmatically within the same process to preserve global state.
     
-    print()
-    print("=" * 70)
-    if failed_count == 0:
-        print(f"🎉 All tests passed! ({passed_count}/{total_count})")
+    Returns:
+        dict: Summary of test results with total, passed, failed counts and score.
+    """
+    import io
+    from contextlib import redirect_stdout, redirect_stderr
+    
+    # Get test class name
+    if hasattr(test_class_or_function, '__name__'):
+        test_name = test_class_or_function.__name__
     else:
-        print(f"📊 Results: {passed_count} passed, {failed_count} failed out of {total_count} total")
-    print("=" * 70)
+        test_name = test_class_or_function
+    
+    # Get the current file path to specify which tests to run
+    current_file = __file__
+    
+    # Capture stdout and stderr
+    stdout_capture = io.StringIO()
+    stderr_capture = io.StringIO()
+    
+    try:
+        # Run pytest programmatically within the same process
+        with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
+            # Import pytest and run it programmatically
+            exit_code = pytest.main([
+                f'{current_file}::{test_name}',
+                '-v' if verbose else '-q',
+                '--tb=short',
+                '--no-header'  # Cleaner output
+            ])
+        
+        stdout_output = stdout_capture.getvalue()
+        stderr_output = stderr_capture.getvalue()
+        
+        # Parse pytest output
+        lines = stdout_output.split('\n')
+        
+        # Count passed and failed tests
+        passed = 0
+        failed = 0
+        
+        for line in lines:
+            if '::' in line:
+                if 'PASSED' in line:
+                    passed += 1
+                elif 'FAILED' in line or 'ERROR' in line:
+                    failed += 1
+        
+        total_tests = passed + failed
+        
+        return {
+            "total_tests": total_tests,
+            "passed": passed,
+            "failed": failed,
+            "score": round((passed / total_tests) * 100) if total_tests > 0 else 0,
+            "stdout": stdout_output,
+            "stderr": stderr_output,
+            "exit_code": exit_code
+        }
+    
+    except Exception as e:
+        return {
+            "total_tests": 0,
+            "passed": 0,
+            "failed": 0,
+            "score": 0,
+            "stdout": stdout_capture.getvalue(),
+            "stderr": f"Error running pytest: {e}",
+            "exit_code": 1
+        }
 
-    # Return a dictionary with the results.
-    return {
-        "total_tests": total_count,
-        "passed": passed_count,
-        "failed": failed_count,
-        "score": round((passed_count / total_count) * 100) if total_count > 0 else 0
-    }
+def _print_test_summary(result_dict, task_name):
+    """Print a formatted summary of test results."""
+    # ANSI color codes
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+    
+    passed = result_dict["passed"]
+    failed = result_dict["failed"]
+    total = result_dict["total_tests"]
+    
+    print(f"\nRunning tests for Section 2.4.2, {task_name}...")
+    print("=" * 70)
+    
+    if failed == 0:
+        print(f"🎉 All tests passed! ({passed}/{total})")
+    else:
+        print(f"📊 Results: {passed} passed, {failed} failed out of {total} total")
+    
+    print("=" * 70)
+    
+    # Print pytest output for detailed feedback
+    if result_dict.get("stdout"):
+        print("\nDetailed output:")
+        print(result_dict["stdout"])
+    
+    if result_dict.get("stderr") and result_dict["stderr"].strip():
+        print(f"\n{RED}Errors:{RESET}")
+        print(result_dict["stderr"])
+
+# Notebook interface functions (maintaining backward compatibility)
+def task1(student_function, model):
+    """
+    Run Task 1 tests using pytest.
+    
+    Args:
+        student_function (function): The student's function to test.
+        model: The model to test with.
+    
+    Returns:
+        dict: A summary dictionary with test results.
+    """
+    # Configure global test parameters
+    _test_config['student_function'] = student_function
+    _test_config['model'] = model
+    
+    # Run pytest tests
+    result = _run_pytest_with_capture(TestTask1)
+    _print_test_summary(result, "Task 1")
+    
+    return result
+
+def task2(task_2_imgs, model):
+    """
+    Run Task 2 tests using pytest.
+    
+    Args:
+        task_2_imgs (list): List of tensors, each of shape [1, 3, 32, 32].
+        model: The model to test with.
+    
+    Returns:
+        dict: A summary dictionary with test results.
+    """
+    # Configure global test parameters
+    _test_config['task_2_imgs'] = task_2_imgs
+    _test_config['model'] = model
+    
+    # Run pytest tests
+    result = _run_pytest_with_capture(TestTask2)
+    _print_test_summary(result, "Task 2")
+    
+    return result
+
+def task3(student_function):
+    """
+    Run Task 3 tests using pytest.
+    
+    Args:
+        student_function (function): The student's wiggle_ReLU function to test.
+    
+    Returns:
+        dict: A summary dictionary with test results.
+    """
+    # Configure global test parameters
+    _test_config['student_wiggle_relu'] = student_function
+    
+    # Run pytest tests
+    result = _run_pytest_with_capture(TestTask3)
+    _print_test_summary(result, "Task 3")
+    
+    return result
+
+def task4(student_function):
+    """
+    Run Task 4 tests using pytest.
+    
+    Args:
+        student_function (function): The student's wiggle_Relu_grad function to test.
+    
+    Returns:
+        dict: A summary dictionary with test results.
+    """
+    # Configure global test parameters
+    _test_config['student_wiggle_relu_grad'] = student_function
+    
+    # Run pytest tests
+    result = _run_pytest_with_capture(TestTask4)
+    _print_test_summary(result, "Task 4")
+    
+    return result
 

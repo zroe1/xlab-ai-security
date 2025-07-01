@@ -17,7 +17,7 @@ If you are entirely new to programming, this course is not for you, but we recom
 
 ## Machine Learning Framework
 
-Because it is the dominant framework used for research, this course uses PyTorch. If you have experience in something like TensorFlow or JAX, you probably could start completing this course with minimal friction. As long as you reference the PyTorch documentation, or as an LLM to explain syntax, you will catch on quickly.
+Because it is the dominant framework used for research, this course uses PyTorch. If you have experience in something like TensorFlow or JAX, you can likely start completing this course with minimal friction. As long as you reference the PyTorch documentation, or as an LLM to explain syntax, you will catch on quickly.
 
 If you have a strong background in Python, but have not had practice with a machine learning framework like PyTorch, TensorFlow or JAX, we recommend the following tutorials from <a href="https://en.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a> to get up to speed:
 
@@ -27,7 +27,7 @@ If you have a strong background in Python, but have not had practice with a mach
      </a>
    </b>
 
-   You will learn about backpropagation and build a toy machine learning framework that has a similar structure to PyTorch. This will give you useful intuitions about what is happening when you call `loss.backward()`, `optimizer.step()`, and `optimizer.zero_grad()`.
+   You will learn about backpropagation and build a toy machine learning framework that has a similar structure to PyTorch. This will give you useful intuition about what is happening when you call `loss.backward()`, `optimizer.step()`, and `optimizer.zero_grad()`.
 
 2. <b>
      <a href="https://www.youtube.com/watch?v=PaCmpygFfXo">
@@ -35,15 +35,15 @@ If you have a strong background in Python, but have not had practice with a mach
      </a>
    </b>
 
-   This video will give you good intuitions about language modeling, loss functions for classification, and tensor operations in PyTorch.
+   This video will give you good intuition about language modeling, loss functions for classification, and tensor operations in PyTorch.
 
 3. <b>
      <a href="https://www.youtube.com/watch?v=TCH_1BHY58I">Building makemore Part 2: MLP</a>
    </b>
 
-   This tutorial is the cherry on top to the previous two videos. You will build our an MLP language model in PyTorch building on the concepts from the first two videos.
+   This tutorial is the culmination of the previous two videos. You will build our an MLP language model in PyTorch building on the concepts from the first two videos.
 
-The other videos in the series are also quite helpful but are for the most part outside of the scope of what we would expect you to know.
+The other videos in the series are also helpful but are generally outside of the scope of what we would expect you to know.
 
 ## Understanding Tensor Operations
 
@@ -72,17 +72,17 @@ We will expect you to be familiar with manipulating shapes of tensors and comput
    >>> tensor([[4, 6]])
    ```
 
-If you have worked with PyTorch or numpy before this will probably look somewhat familiar. If these kinds of operations are
+If you have worked with PyTorch or NumPy before this will probably look somewhat familiar. If these kinds of operations are
 confusing to you, we recommend you read [this page](https://docs.pytorch.org/tutorials/beginner/introyt/tensors_deeper_tutorial.html)
 from the PyTorch documentation and then play around with PyTorch's [sum](https://docs.pytorch.org/docs/stable/generated/torch.Tensor.sum.html),
 [mean](https://docs.pytorch.org/docs/stable/generated/torch.Tensor.mean.html),
 and [Softmax](https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax.html) operations across different dimensions.
 
-## What You Should Do When You're Stuck?
+## What Should You Do When You're Stuck?
 
 This document is not an extensive list of everything you will need to know to complete this course. More likely than not you will get stuck on a line or concept that you do not understand. When this happens, here is what we recommend:
 
-1. First, spend a few minutes playing around, trying to figure out the problem without only the PyTorch documentation. There is value in struggling through problems and you shouldn’t cheat yourself out of this experience.
+1. First, spend a few minutes playing around, trying to figure out the problem with only the PyTorch documentation. There is value in struggling through problems and you shouldn’t cheat yourself out of this experience.
 2. If you are truly stuck on something, you should reference the hints we provide in the notebooks if the problem you are working on has them. If we anticipate at a certain part of a problem is particularly hard, we provide a hint to help you get through that part of the problem.
 3. Next, we recommend you take a look at the solution we provide for the problem. The purpose of providing the solutions is so you can reference them to see where you may have went wrong. To test you understanding, before moving on we recommend you type up a solution yourself, without looking directly at our solution.
 
