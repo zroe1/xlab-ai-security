@@ -434,7 +434,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-logo-container">
+        <Link href="/" className="sidebar-logo-container">
           <Image
             src={theme === "dark" ? "/images/x_white.png" : "/images/x.png"}
             alt="UChicago XLab Logo"
@@ -446,7 +446,7 @@ const Sidebar = () => {
             <div className="sidebar-title">UChicago XLab</div>
             <div className="sidebar-subtitle">AI Security Guide</div>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="search-container">

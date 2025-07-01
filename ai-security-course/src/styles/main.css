@@ -10,7 +10,7 @@ body[data-theme='dark'] {
   --primary-color: #8a535a;
   --primary-hover: #8a4956;
   --text-color: #e0e0e0;
-  --secondary-text: #b0b0b0;
+  --secondary-text: #e0e0e0;
   --light-bg: #2a2a2a;
   --border-color: #444;
   --white: #121212;
@@ -54,7 +54,7 @@ body[data-theme='dark'] .nav-item.active {
   --primary-color: #8b1724;
   --primary-hover: #6d111c;
   --text-color: #333;
-  --secondary-text: #666;
+  --secondary-text: #000;
   --light-bg: #f5f5f5;
   --border-color: #ddd;
   --white: #fff;
@@ -95,6 +95,14 @@ body {
 .sidebar-logo-container {
   display: flex;
   align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar-logo-container:hover {
+  opacity: 0.8;
 }
 
 .sidebar-logo {
@@ -696,23 +704,7 @@ ol {
   font-weight: 500;
 }
 
-/* Action button (from your CSS) */
-.action-button {
-  display: inline-block;
-  background-color: var(--primary-color);
-  color: white;
-  padding: 8px 16px;
-  text-decoration: none;
-  border-radius: 4px;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-  border: none;
-  cursor: pointer;
-}
 
-.action-button:hover {
-  background-color: var(--primary-hover);
-}
 
 /* Page divider (from your CSS) */
 .page-divider {
@@ -1097,4 +1089,373 @@ a.citation:visited {
 
 a.citation:hover {
   text-decoration: underline;
+}
+
+/* Landing Page Styles */
+.landing-page-wrapper {
+  min-height: 100vh;
+  background-color: var(--white);
+}
+
+/* Landing Page Header */
+.landing-header {
+  background-color: var(--white);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.landing-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.landing-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.landing-logo-img {
+  height: 32px;
+  width: 32px;
+  object-fit: contain;
+}
+
+.landing-logo-text {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+
+
+.landing-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.landing-header-actions .github-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #000;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.landing-header-actions .github-link:hover {
+  color: var(--primary-color);
+  background-color: var(--light-bg);
+}
+
+.landing-main {
+  background-color: var(--white);
+}
+
+.landing-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Hero Section */
+.hero-section {
+  text-align: center;
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 60px;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: var(--secondary-text);
+  margin-bottom: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Action Buttons */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.action-button.primary {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.action-button.primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 23, 36, 0.3);
+}
+
+.action-button.secondary {
+  background-color: transparent;
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.action-button.secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 23, 36, 0.3);
+}
+
+/* Button Icons */
+.button-icon {
+  flex-shrink: 0;
+}
+
+.button-icon.xlab-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.button-icon.github-icon {
+  width: 16px;
+  height: 16px;
+}
+
+
+
+/* Section Styles */
+.about-section,
+.featured-research,
+.xlab-section {
+  margin-bottom: 80px;
+}
+
+.section-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.section-content h2 {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.section-content p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-color);
+  margin-bottom: 20px;
+}
+
+/* Research Grid */
+.research-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.research-tile {
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.research-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-color);
+}
+
+.research-tile h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.research-tile p {
+  font-size: 0.9rem;
+  color: var(--secondary-text);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.research-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.research-type {
+  background-color: rgba(139, 23, 36, 0.1);
+  color: var(--primary-color);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.research-year {
+  font-size: 0.8rem;
+  color: var(--secondary-text);
+  font-weight: 500;
+}
+
+/* Dark mode styles for landing page */
+body[data-theme='dark'] .landing-page-wrapper {
+  background-color: var(--white);
+}
+
+body[data-theme='dark'] .landing-header {
+  background-color: var(--white);
+  border-color: var(--border-color);
+}
+
+body[data-theme='dark'] .landing-main {
+  background-color: var(--white);
+}
+
+body[data-theme='dark'] .landing-logo-img {
+  content: url('/images/x_white.png');
+}
+
+body[data-theme='dark'] .landing-header-actions .github-link {
+  color: #fff;
+}
+
+body[data-theme='dark'] .landing-header-actions .github-link:hover {
+  color: var(--primary-color);
+  background-color: var(--light-bg);
+}
+
+body[data-theme='dark'] .research-tile {
+  background-color: var(--light-bg);
+  border-color: var(--border-color);
+}
+
+body[data-theme='dark'] .research-tile:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+body[data-theme='dark'] .research-tile h3 {
+  color: var(--text-color);
+}
+
+body[data-theme='dark'] .research-type {
+  background-color: rgba(139, 23, 36, 0.2);
+  color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .landing-header-content {
+    padding: 0 16px;
+  }
+  
+  .landing-logo-text {
+    font-size: 1rem;
+  }
+  
+  .landing-logo-img {
+    height: 28px;
+    width: 28px;
+  }
+  
+  .landing-header-actions {
+    gap: 12px;
+  }
+  
+  .landing-header-actions .github-link {
+    padding: 6px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .landing-header-actions .github-link svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-button {
+    width: 200px;
+    text-align: center;
+    justify-content: center;
+  }
+  
+  .button-icon.xlab-icon,
+  .button-icon.github-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .research-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .landing-page {
+    padding: 16px;
+  }
+  
+  .hero-section {
+    padding: 60px 0;
+  }
 }
