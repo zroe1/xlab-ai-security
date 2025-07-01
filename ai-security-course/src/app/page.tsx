@@ -125,52 +125,64 @@ const LandingPageContent = () => {
           <section className="featured-research">
             <div className="section-content">
               <h2>Featured Research</h2>
+              <p>
+                In this course, you will replicate findings from key papers in AI security. Each of
+                the papers below and more will be covered in detail, with a focus on the practical
+                implications of the research.
+              </p>
               <div className="research-grid">
                 <div className="research-tile">
-                  <h3>Adversarial Examples in the Wild</h3>
+                  <h3>Adversarial Robustness Limits via Scaling-Law and Human-Alignment Studies</h3>
                   <p>
-                    Examining how adversarial perturbations affect real-world AI systems and the
-                    implications for model robustness and security.
+                    Develops the first scaling laws for adversarial training, revealing that while
+                    clean accuracy reaches 100%, robustness plateaus at 90% - with both models and
+                    humans hitting similar limits.
                   </p>
                   <div className="research-meta">
-                    <span className="research-type">Image Classification</span>
+                    <span className="research-type">ICML 2024</span>
                     <span className="research-year">2024</span>
                   </div>
                 </div>
 
                 <div className="research-tile">
-                  <h3>Jailbreaking Large Language Models</h3>
+                  <h3>Universal and Transferable Adversarial Attacks on Aligned Language Models</h3>
                   <p>
-                    A comprehensive analysis of prompt injection techniques and their effectiveness
-                    against modern safety-aligned language models.
+                    Introduces automatic adversarial suffix generation using greedy and
+                    gradient-based search to jailbreak aligned LLMs. Demonstrates remarkable
+                    transferability across models, successfully attacking ChatGPT, Bard, Claude, and
+                    open-source models.
                   </p>
                   <div className="research-meta">
                     <span className="research-type">LLM Security</span>
+                    <span className="research-year">2023</span>
+                  </div>
+                </div>
+
+                <div className="research-tile">
+                  <h3>Stealing Part of a Production Language Model</h3>
+                  <p>
+                    First model-stealing attack that extracts precise information from black-box
+                    production LLMs. Successfully recovered embedding projection layers from
+                    OpenAI&apos;s Ada and Babbage models for under $20, confirming hidden dimensions
+                    of 1024 and 2048.
+                  </p>
+                  <div className="research-meta">
+                    <span className="research-type">Model Privacy</span>
                     <span className="research-year">2024</span>
                   </div>
                 </div>
 
                 <div className="research-tile">
-                  <h3>Model Weight Extraction Attacks</h3>
+                  <h3>Improving Alignment and Robustness with Circuit Breakers</h3>
                   <p>
-                    Investigating techniques for extracting proprietary model parameters through
-                    carefully crafted queries and inference-time attacks.
+                    Introduces &quot;circuit breakers&quot; that directly control harmful
+                    representations rather than relying on refusal training. Successfully prevents
+                    harmful outputs in text and multimodal models, even withstanding powerful unseen
+                    attacks and image hijacks.
                   </p>
                   <div className="research-meta">
-                    <span className="research-type">Model Privacy</span>
-                    <span className="research-year">2023</span>
-                  </div>
-                </div>
-
-                <div className="research-tile">
-                  <h3>Robust Benchmarking for AI Safety</h3>
-                  <p>
-                    Developing evaluation frameworks that accurately measure model performance under
-                    adversarial conditions and safety constraints.
-                  </p>
-                  <div className="research-meta">
-                    <span className="research-type">Evaluation</span>
-                    <span className="research-year">2023</span>
+                    <span className="research-type">AI Safety</span>
+                    <span className="research-year">2024</span>
                   </div>
                 </div>
               </div>
