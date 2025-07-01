@@ -208,6 +208,108 @@ const LandingPageContent = () => {
           </section>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="landing-footer">
+        <div className="footer-content">
+          <div className="footer-left">
+            <div className="footer-brand">
+              <img src="/images/x.png" alt="UChicago XLab" className="footer-logo" />
+              <h3>XLab AI Security</h3>
+            </div>
+            <p className="footer-description">
+              A comprehensive guide to understanding and defending against the next generation of AI
+              threats, developed by the University of Chicago&apos;s Existential Risk Laboratory.
+            </p>
+            <p className="footer-contact">
+              <a href="mailto:xlab@uchicago.edu">xlab@uchicago.edu</a>
+            </p>
+          </div>
+
+          <div className="footer-links">
+            <div className="footer-column">
+              <h4>Course Content</h4>
+              <ul>
+                <li>
+                  <Link href="/getting-started/installation">Getting Started</Link>
+                </li>
+                <li>
+                  <Link href="/adversarial">Adversarial Examples</Link>
+                </li>
+                <li>
+                  <Link href="/jailbreaking">Jailbreaking</Link>
+                </li>
+                <li>
+                  <Link href="/model-inference-attacks">Model Attacks</Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className="footer-column">
+              <h4>About XLab</h4>
+              <ul>
+                <li>
+                  <a href="https://xlab.uchicago.edu" target="_blank" rel="noopener noreferrer">
+                    About XLab
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://xlab.uchicago.edu/research"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Our Past Research
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://xlab.uchicago.edu/team"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Team
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://xlab.uchicago.edu/contact"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="footer-column">
+              <h4>Community</h4>
+              <ul>
+                <li>
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                    Contribute
+                  </a>
+                </li>
+                <li>
+                  <a href="https://discord.gg" target="_blank" rel="noopener noreferrer">
+                    Discord
+                  </a>
+                </li>
+                <li>
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+                    Twitter
+                  </a>
+                </li>
+                <li>
+                  <a href="#about">About</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="footer-bottom">
+          <p>University of Chicago&apos;s Existential Risk Lab ©2025</p>
+        </div>
+      </footer>
     </div>
   );
 };
