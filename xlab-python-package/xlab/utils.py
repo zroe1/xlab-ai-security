@@ -6,6 +6,34 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
+
+import torch
+from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, ReLU, Dropout
+
+class Simple_CNN(torch.nn.Module):
+    def __init__(self):
+        super(CNN, self).__init__()
+        self.conv1 = Conv2d(3, 16, kernel_size = 3, padding = 1)
+        self.dropout = Dropout(p=0.3)
+        self.conv2 = Conv2d(16, 32, kernel_size = 3, padding = 1)
+        self.pooling = MaxPool2d(2,2)
+        self.relu = ReLU()
+        self.flatten = Flatten()
+        self.linear1 = Linear(2048, 128)
+        self.linear2 = Linear(128, 10)
+
+    def forward(self, x):
+        x = self.conv1(x) #Convolution layer
+        x = self.pooling(x) #Max Pooling Layer
+        x = self.dropout(x) #Dropout Layer
+        x = self.conv2(x) #Second Convolution Layer
+        x = self.pooling(x) #Second Pooling Layer
+        x = self.flatten(x) #Flatten Layer
+        x = self.relu(self.linear1(x)) #Regular Layer
+        x = self.dropout(x) #Second Dropout Layer
+        x = self.linear2(x) #Output Layer
+        return x
+
 # CIFAR-10 classes
 class CIFAR10:
     classes = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck']
