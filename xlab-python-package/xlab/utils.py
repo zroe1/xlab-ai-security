@@ -5,14 +5,126 @@ import math
 import torch
 import torch.nn.functional as F
 import torch.optim as optim
-
-
-import torch
 from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, ReLU, Dropout
+from torchvision.io import read_image
+from torchvision.transforms import Compose, Resize, ToTensor
+from PIL import Image
 
-class Simple_CNN(torch.nn.Module):
+
+def add_noise(img, stdev=0.001, mean=0):
+    """
+    Helper function for PGD_generator
+    
+    Parameters:
+    -----------
+    img : Tensor
+        image Tensor to be predicted
+
+    Returns:
+    --------
+    noisy_img: Tensor
+        Added noise to input
+    """
+    noise = torch.randn_like(img) * stdev + mean
+    return img + noise
+
+
+def PGD_generator(model, loss_fn, path, y, epsilon=1/1000, alpha=0.0005, num_iters=6):
+    """
+    Create adversarial image using PGD
+    
+    Parameters:
+    -----------
+    model : PyTorch model used for classification
+    loss_fn : Loss function
+    path: Image filepath
+    y: Image label
+    epsilon: Perturbation variable
+    Alpha: Perturbation variable
+    num_iters: Number of iterations
+
+    Returns:
+    --------
+    adv_img: Adversarially perturbed image tensor
+    """
+    model.eval()
+    x = process_image(path)
+    x = add_noise(x)
+    x = torch.clamp(x, -1, 1)
+    for i in range(num_iters):
+        x.requires_grad = True
+        output = model(x)
+        loss = loss_fn(output, y)
+        model.zero_grad()
+        loss.backward()
+        loss_gradient = x.grad.data
+        x = x.detach()
+        x = x + alpha * torch.sign(loss_gradient)
+        x = clip(x, epsilon)
+    return x
+
+
+def prediction(model, img):
+    """
+    Return prediction tuple:
+    
+    Parameters:
+    -----------
+    model : PyTorch model used for classification
+    img : Tensor
+        image Tensor to be predicted
+
+    Returns:
+    --------
+    pred_class : torch.Tensor
+        The predicted class label
+    prob : torch.Tensor
+        The confidence of the model 
+    
+    """
+    with torch.no_grad(): #Stops calculating gradients
+        prediction = model(img)
+        _, pred_class = torch.max(prediction, 1)
+    probs = prediction.softmax(dim=-1)
+    return pred_class, probs[0][pred_class]
+
+
+def show_image(img):
+    """
+    Display image tensor using plt
+    
+    Parameters:
+    -----------
+    img : Tensor
+        image Tensor to be displayed
+    """
+    img = img.squeeze(0)
+    plt.imshow(img.permute(1, 2, 0).detach().numpy())
+
+def process_image(path):
+    """
+    Convert file path to scaled torch tensor
+    
+    Parameters:
+    -----------
+    path : str
+        Filepath for image
+
+    Returns:
+    --------
+    processedImg: Scaled and transformed image tensor
+    
+    """
+    img = Image.open(path)
+    transform = Compose([Resize((32,32)), ToTensor()])
+    processedImg = transform(img)
+    processedImg = processedImg.unsqueeze(0)
+    return processedImg
+
+#Basic CNN for adversarial image generation
+class SimpleCNN(torch.nn.Module):
     def __init__(self):
-        super(CNN, self).__init__()
+        super(SimpleCNN, self).__init__()
         self.conv1 = Conv2d(3, 16, kernel_size = 3, padding = 1)
         self.dropout = Dropout(p=0.3)
         self.conv2 = Conv2d(16, 32, kernel_size = 3, padding = 1)
