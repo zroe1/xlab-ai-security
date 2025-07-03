@@ -102,8 +102,8 @@
 
 /* Dark theme support */
 :global(body[data-theme='dark']) .exerciseButtons {
-  background: linear-gradient(135deg, var(--light-bg) 0%, #2a2a2a 100%);
-  border-color: var(--border-color);
+  /* background: linear-gradient(135deg, var(--light-bg) 0%, #2a2a2a 100%); */
+  /* border-color: var(--border-color); */
 }
 
 :global(body[data-theme='dark']) .exerciseButton {
@@ -118,6 +118,10 @@
 
 :global(body[data-theme='dark']) .colabButton:hover {
   background: #2a2a2a;
+}
+
+:global(body[data-theme='dark']) .githubButton .exerciseButtonIcon {
+  color: white;
 }
 
 /* Responsive design */
