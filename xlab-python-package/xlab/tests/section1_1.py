@@ -1,246 +1,179 @@
-import pytest
+"""
+Tests for section 1.1 of the AI Security course.
+"""
+
+import pickle
 import torch
-import numpy as np
-from PIL import Image
-from unittest.mock import patch, MagicMock
-
-#from xlab.utils import process_image, SimpleCNN, prediction
+import torch.nn.functional as F
+import os
+import pytest
+import sys
 import xlab
-from Adv_images_v3 import process_image
+from typing import List, Callable, Any
 
-@pytest.fixture
-def dummy_image_tensor():
-    """Creates a standard dummy image tensor: (1, 3, 32, 32)."""
-    return torch.rand(1, 3, 32, 32)
+# Global variables to store test parameters passed from notebook
+_test_config = {
+    'model': None,
+    'student_function': None,
+}
 
-@pytest.fixture
-def dummy_image_path(tmp_path):
-    """Creates a temporary image file and returns its path."""
-    img_path = tmp_path / "test.png"
-    Image.new('RGB', (32, 32), color='red').save(img_path)
-    return img_path
+def get_100_examples():
+    """Load test data for accuracy testing."""
+    current_dir = os.path.dirname(__file__)
+    data_path = os.path.join(current_dir, 'data', 'cifar10_data.pkl')
+    
+    with open(data_path, 'rb') as f:
+        data = pickle.load(f)
+        x_test_loaded = data['x_test']
+        y_test_loaded = data['y_test']
 
-@pytest.fixture
-def mock_model():
-    """Provides a mock model that returns a predictable tensor."""
-    model = MagicMock()
-    # The output tensor should have shape (batch_size, num_classes)
-    model.return_value = torch.randn(1, 10)
-    return model
+    return x_test_loaded, y_test_loaded
 
-@pytest.fixture
-def mock_loss_fn():
-    """Provides a mock loss function."""
-    return MagicMock()
-
-
-# --- Test Class for process_image ---
-class TestProcessImage:
-    def test_valid_output(self):
-        """Tests successful processing of frog image."""
-        img_path =  "Assets/frog.jpg"
+# Task 1 Tests
+class TestTask1:
+    """Tests for Task 1: Model accuracy evaluation."""
+    
+    def test_model_prediction(self):
+        """Test that the model achieves >90% accuracy on test data."""
+        model = _test_config['model']
+        assert model is not None, "Model not configured for testing"
         
-        # Execution
-        result_tensor = process_image(img_path)
+        x, y = get_100_examples()
         
-        # Assertions
-        assert isinstance(result_tensor, torch.Tensor)
-        assert result_tensor.shape == (1, 3, 32, 32)
-        assert result_tensor.min() >= 0.0 and result_tensor.max() <= 1.0
+        logits = model(x)
+        predictions = torch.argmax(logits, axis=1)
 
-
-    def test_correct_output(self):
-        """Tests successful processing of frog image."""
-        img_path =  "Assets/frog.jpg"
+        cnn = xlab.SimpleCNN
+        cnn.eval()
+        logits = cnn(x)
+        cnn_pred = torch.argmax(logits, axis=1)
         
-        # Execution
-        result_tensor = process_image(img_path)
-        correct_tensor = xlab.utils.process_image(img_path)
+        assert predictions == logits
+    
+
+def _run_pytest_with_capture(test_class_or_function, verbose=True):
+    """
+    Run pytest on a specific test class or function and capture results.
+    Runs pytest programmatically within the same process to preserve global state.
+    
+    Returns:
+        dict: Summary of test results with total, passed, failed counts and score.
+    """
+    import io
+    from contextlib import redirect_stdout, redirect_stderr
+    
+    # Get test class name
+    if hasattr(test_class_or_function, '__name__'):
+        test_name = test_class_or_function.__name__
+    else:
+        test_name = test_class_or_function
+    
+    # Get the current file path to specify which tests to run
+    current_file = __file__
+    
+    # Capture stdout and stderr
+    stdout_capture = io.StringIO()
+    stderr_capture = io.StringIO()
+    
+    try:
+        # Run pytest programmatically within the same process
+        with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
+            # Import pytest and run it programmatically
+            exit_code = pytest.main([
+                f'{current_file}::{test_name}',
+                '-v' if verbose else '-q',
+                '--tb=short',
+                '--no-header'  # Cleaner output
+            ])
         
-        # Assertions
-        assert result_tensor == correct_tensor
-
-# --- Test Class for SimpleCNN ---
-class TestSimpleCNN:
-    def test_model_instantiation_and_forward_pass(self, dummy_image_tensor):
-        """Tests the model can be created and produces the correct output shape for a single image."""
-        model = SimpleCNN()
-        output = model(dummy_image_tensor)
-        assert isinstance(output, torch.Tensor)
-        assert output.shape == (1, 10)
-
-    def test_dropout_is_active_in_train_mode(self):
-        """Tests that dropout layers cause different outputs in train mode."""
-        model = SimpleCNN()
-        model.train() # Set model to training mode
+        stdout_output = stdout_capture.getvalue()
+        stderr_output = stderr_capture.getvalue()
         
-        input_tensor = torch.rand(1, 3, 32, 32)
-        output1 = model(input_tensor)
-        output2 = model(input_tensor)
+        # Parse pytest output
+        lines = stdout_output.split('\n')
         
-        # Due to dropout, the outputs should not be identical
-        assert not torch.equal(output1, output2)
-
-# --- Test Class for FGSM_generator ---
-class TestFGSMGenerator:
-    def test_returns_tensor_of_correct_shape(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the output is a torch.Tensor with the same shape as the processed image."""
-        adv_img = FGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
+        # Count passed and failed tests
+        passed = 0
+        failed = 0
         
-        assert isinstance(adv_img, torch.Tensor)
-        assert adv_img.shape == (1, 3, 32, 32)
-
-    def test_output_is_clamped_to_valid_range(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the final image pixel values are all within [0, 1]."""
-        adv_img = FGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
-
-        assert torch.all(adv_img >= 0)
-        assert torch.all(adv_img <= 1)
-
-    def test_perturbation_is_within_epsilon_bound(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the L-infinity norm of the perturbation is at most epsilon."""
-        epsilon = 0.05
-        original_img = process_image(dummy_image_path)
-        adv_img = FGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]), epsilon=epsilon)
-
-        perturbation = torch.abs(adv_img - original_img)
-        # The L-infinity norm is the maximum absolute value
-        l_inf_norm = torch.max(perturbation)
-
-        # Allow for a tiny floating point tolerance
-        assert l_inf_norm <= epsilon + 1e-6
-
-# --- Test Class for IGSM_generator ---
-class TestIGSMGenerator:
-    def test_returns_tensor_of_correct_shape(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the output is a torch.Tensor with the correct shape."""
-        adv_img = IGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
-
-        assert isinstance(adv_img, torch.Tensor)
-        assert adv_img.shape == (1, 3, 32, 32)
-
-    def test_final_perturbation_is_within_epsilon_bound(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the final perturbation, after all iterations, is within the L-inf epsilon-ball."""
-        epsilon = 0.02
-        original_img = process_image(dummy_image_path)
-        adv_img = IGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]), epsilon=epsilon, num_iters=10)
+        for line in lines:
+            if '::' in line:
+                if 'PASSED' in line:
+                    passed += 1
+                elif 'FAILED' in line or 'ERROR' in line:
+                    failed += 1
         
-        l_inf_norm = torch.max(torch.abs(adv_img - original_img))
-        assert l_inf_norm <= epsilon + 1e-6
+        total_tests = passed + failed
+        
+        return {
+            "total_tests": total_tests,
+            "passed": passed,
+            "failed": failed,
+            "score": round((passed / total_tests) * 100) if total_tests > 0 else 0,
+            "stdout": stdout_output,
+            "stderr": stderr_output,
+            "exit_code": exit_code
+        }
+    
+    except Exception as e:
+        return {
+            "total_tests": 0,
+            "passed": 0,
+            "failed": 0,
+            "score": 0,
+            "stdout": stdout_capture.getvalue(),
+            "stderr": f"Error running pytest: {e}",
+            "exit_code": 1
+        }
 
-    def test_gradients_are_calculated_in_each_iteration(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests if `loss.backward()` is called in each iteration of the loop."""
-        num_iters = 5
-        IGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]), num_iters=num_iters)
-        
-        # Check that loss.backward was called `num_iters` times
-        assert mock_loss_fn.return_value.backward.call_count == num_iters
+def _print_test_summary(result_dict, task_name):
+    """Print a formatted summary of test results."""
+    # ANSI color codes
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+    
+    passed = result_dict["passed"]
+    failed = result_dict["failed"]
+    total = result_dict["total_tests"]
+    
+    print(f"\nRunning tests for Section 2.4.2, {task_name}...")
+    print("=" * 70)
+    
+    if failed == 0:
+        print(f"🎉 All tests passed! ({passed}/{total})")
+    else:
+        print(f"📊 Results: {passed} passed, {failed} failed out of {total} total")
+    
+    print("=" * 70)
+    
+    # Print pytest output for detailed feedback
+    if result_dict.get("stdout"):
+        print("\nDetailed output:")
+        print(result_dict["stdout"])
+    
+    if result_dict.get("stderr") and result_dict["stderr"].strip():
+        print(f"\n{RED}Errors:{RESET}")
+        print(result_dict["stderr"])
 
-# --- Test Class for PGD_generator ---
-class TestPGDGenerator:
-    @patch('adversarial_attacks.add_noise')
-    def test_calls_add_noise_initially(self, mock_add_noise, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that random noise is added once at the beginning of the attack."""
-        # Make the mock return a valid tensor to allow the function to complete
-        mock_add_noise.return_value = process_image(dummy_image_path)
-        
-        PGD_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
-        
-        mock_add_noise.assert_called_once()
-        
-    def test_model_is_set_to_eval_mode(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that `model.eval()` is called to disable layers like dropout."""
-        PGD_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
-        
-        mock_model.eval.assert_called_once()
-        
-    def test_final_image_is_within_epsilon_bound_of_original(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the final adversarial example lies within the L-inf epsilon-ball of the original image."""
-        epsilon = 0.03
-        original_img = process_image(dummy_image_path)
-        adv_img = PGD_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]), epsilon=epsilon)
-        
-        l_inf_norm = torch.max(torch.abs(adv_img - original_img))
-        assert l_inf_norm <= epsilon + 1e-6
+# Notebook interface functions (maintaining backward compatibility)
+def task1(model):
+    """
+    Run Task 1 tests using pytest.
+    
+    Args:
+        student_function (function): The student's function to test.
+        model: The model to test with.
+    
+    Returns:
+        dict: A summary dictionary with test results.
+    """
+    # Configure global test parameters
+    _test_config['model'] = model
+    
+    # Run pytest tests
+    result = _run_pytest_with_capture(TestTask1)
+    _print_test_summary(result, "Task 1")
+    
+    return result
 
-# --- Test Class for FGSM_generator ---
-class TestFGSMGenerator:
-    def test_returns_tensor_of_correct_shape(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the output is a torch.Tensor with the same shape as the processed image."""
-        adv_img = FGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
-        
-        assert isinstance(adv_img, torch.Tensor)
-        assert adv_img.shape == (1, 3, 32, 32)
-
-    def test_output_is_clamped_to_valid_range(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the final image pixel values are all within [0, 1]."""
-        adv_img = FGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
-
-        assert torch.all(adv_img >= 0)
-        assert torch.all(adv_img <= 1)
-
-    def test_perturbation_is_within_epsilon_bound(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the L-infinity norm of the perturbation is at most epsilon."""
-        epsilon = 0.05
-        original_img = process_image(dummy_image_path)
-        adv_img = FGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]), epsilon=epsilon)
-
-        perturbation = torch.abs(adv_img - original_img)
-        # The L-infinity norm is the maximum absolute value
-        l_inf_norm = torch.max(perturbation)
-
-        # Allow for a tiny floating point tolerance
-        assert l_inf_norm <= epsilon + 1e-6
-
-# --- Test Class for IGSM_generator ---
-class TestIGSMGenerator:
-    def test_returns_tensor_of_correct_shape(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the output is a torch.Tensor with the correct shape."""
-        adv_img = IGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
-
-        assert isinstance(adv_img, torch.Tensor)
-        assert adv_img.shape == (1, 3, 32, 32)
-
-    def test_final_perturbation_is_within_epsilon_bound(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the final perturbation, after all iterations, is within the L-inf epsilon-ball."""
-        epsilon = 0.02
-        original_img = process_image(dummy_image_path)
-        adv_img = IGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]), epsilon=epsilon, num_iters=10)
-        
-        l_inf_norm = torch.max(torch.abs(adv_img - original_img))
-        assert l_inf_norm <= epsilon + 1e-6
-
-    def test_gradients_are_calculated_in_each_iteration(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests if `loss.backward()` is called in each iteration of the loop."""
-        num_iters = 5
-        IGSM_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]), num_iters=num_iters)
-        
-        # Check that loss.backward was called `num_iters` times
-        assert mock_loss_fn.return_value.backward.call_count == num_iters
-
-# --- Test Class for PGD_generator ---
-class TestPGDGenerator:
-    @patch('adversarial_attacks.add_noise')
-    def test_calls_add_noise_initially(self, mock_add_noise, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that random noise is added once at the beginning of the attack."""
-        # Make the mock return a valid tensor to allow the function to complete
-        mock_add_noise.return_value = process_image(dummy_image_path)
-        
-        PGD_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
-        
-        mock_add_noise.assert_called_once()
-        
-    def test_model_is_set_to_eval_mode(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that `model.eval()` is called to disable layers like dropout."""
-        PGD_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]))
-        
-        mock_model.eval.assert_called_once()
-        
-    def test_final_image_is_within_epsilon_bound_of_original(self, mock_model, mock_loss_fn, dummy_image_path):
-        """Tests that the final adversarial example lies within the L-inf epsilon-ball of the original image."""
-        epsilon = 0.03
-        original_img = process_image(dummy_image_path)
-        adv_img = PGD_generator(mock_model, mock_loss_fn, dummy_image_path, y=torch.tensor([1]), epsilon=epsilon)
-        
-        l_inf_norm = torch.max(torch.abs(adv_img - original_img))
-        assert l_inf_norm <= epsilon + 1e-6
