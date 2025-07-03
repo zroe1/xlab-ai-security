@@ -30,26 +30,60 @@ def get_100_examples():
     return x_test_loaded, y_test_loaded
 
 # Task 1 Tests
-class TestTask1:
-    """Tests for Task 1: Model accuracy evaluation."""
-    
+class TestTask1:    
     def test_model_prediction(self):
-        """Test that the model achieves >90% accuracy on test data."""
+        """Test that the model achieves the same predictions as the correct model"""
         model = _test_config['model']
-        assert model is not None, "Model not configured for testing"
+        model.eval()
         
         x, y = get_100_examples()
-        
-        logits = model(x)
-        predictions = torch.argmax(logits, axis=1)
+        assert model(x) is not None, "Model not configured for testing"
+        with torch.no_grad():
 
-        cnn = xlab.SimpleCNN
-        cnn.eval()
-        logits = cnn(x)
-        cnn_pred = torch.argmax(logits, axis=1)
-        
-        assert predictions == logits
+            logits = model(x)
+            predictions = torch.argmax(logits, axis=1)
     
+            cnn = xlab.utils.SimpleCNN()
+            cnn.load_state_dict(torch.load('CNN_weights.pth'))        
+            cnn.eval()
+            logits = cnn(x)
+            cnn_pred = torch.argmax(logits, axis=1)
+
+        assert torch.equal(predictions, cnn_pred)
+
+
+#Task 2 Tests
+class TestTask2:    
+    def test_valid_output(self):
+        """Tests successful processing of frog image."""
+
+        process_image = _test_config['student_function']
+        img_path =  "frog.jpg"
+        
+        # Execution
+        result_tensor = process_image(img_path)
+        
+        # Assertions
+        assert isinstance(result_tensor, torch.Tensor)
+        assert result_tensor.shape == (1, 3, 32, 32)
+        assert result_tensor.min() >= 0.0 and result_tensor.max() <= 1.0
+
+
+    def test_correct_output(self):
+        """Tests successful processing of frog image."""
+
+        process_image = _test_config['student_function']
+        img_path =  "frog.jpg"
+        
+        # Execution
+        result_tensor = process_image(img_path)
+        correct_tensor = xlab.utils.process_image(img_path)
+        
+        # Assertions
+        assert result_tensor == correct_tensor
+
+
+
 
 def _run_pytest_with_capture(test_class_or_function, verbose=True):
     """
@@ -177,3 +211,22 @@ def task1(model):
     
     return result
 
+
+def task2(student_function):
+    """
+    Run Task 2 tests using pytest.
+    
+    Args:
+        student_function (function): The student's function to test.
+    
+    Returns:
+        dict: A summary dictionary with test results.
+    """
+    # Configure global test parameters
+    _test_config['student_function'] = student_function
+    
+    # Run pytest tests
+    result = _run_pytest_with_capture(TestTask2)
+    _print_test_summary(result, "Task 2")
+    
+    return result
