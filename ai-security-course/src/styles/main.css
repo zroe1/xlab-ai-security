@@ -1365,6 +1365,10 @@ body[data-theme='dark'] .landing-logo-img {
   content: url('/images/x_white.png');
 }
 
+body[data-theme='dark'] .landing-logo-text {
+  color: white;
+}
+
 body[data-theme='dark'] .landing-header-actions .github-link {
   color: #fff;
 }
@@ -1576,12 +1580,16 @@ body[data-theme='dark'] .research-type {
 
 /* Dark theme footer styles */
 body[data-theme='dark'] .landing-footer {
-  background-color: #2a2a2a;
+  background-color: #141414;
   border-top-color: #333;
 }
 
+body[data-theme='dark'] .footer-logo {
+  content: url('/images/x_white.png');
+}
+
 body[data-theme='dark'] .footer-brand h3 {
-  color: var(--primary-color);
+  color: white;
 }
 
 body[data-theme='dark'] .footer-description {
