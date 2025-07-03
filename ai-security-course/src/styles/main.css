@@ -350,8 +350,8 @@ body[data-theme='dark'] .nav-subitem {
 }
 
 body[data-theme='dark'] .nav-subitem.active {
-  background-color: rgba(139, 23, 36, 0.2);
-  color: var(--primary-color);
+  background-color: var(--primary-color);
+  color: #ffffff;
 }
 
 /* Main content area */
