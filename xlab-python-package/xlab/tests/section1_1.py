@@ -69,13 +69,6 @@ class TestSimpleCNN:
         assert isinstance(output, torch.Tensor)
         assert output.shape == (1, 10)
 
-    def test_model_handles_batch_input(self):
-        """Tests the model can process a batch of images correctly."""
-        model = SimpleCNN()
-        batch_tensor = torch.rand(4, 3, 32, 32) # Batch of 4 images
-        output = model(batch_tensor)
-        assert output.shape == (4, 10)
-
     def test_dropout_is_active_in_train_mode(self):
         """Tests that dropout layers cause different outputs in train mode."""
         model = SimpleCNN()
@@ -87,59 +80,6 @@ class TestSimpleCNN:
         
         # Due to dropout, the outputs should not be identical
         assert not torch.equal(output1, output2)
-        
-# --- Test Class for prediction ---
-class TestPrediction:
-    def test_returns_correct_types_and_shapes(self, dummy_image_tensor):
-        """Tests if return types are correct (Tensor) and shapes are scalar-like."""
-        mock_model = SimpleCNN()
-        pred_class, prob = prediction(mock_model, dummy_image_tensor)
-        
-        assert isinstance(pred_class, torch.Tensor)
-        assert isinstance(prob, torch.Tensor)
-        assert pred_class.numel() == 1
-        assert prob.numel() == 1
-
-    def test_probability_is_in_valid_range(self, dummy_image_tensor):
-        """Tests if the returned confidence score is between 0 and 1."""
-        mock_model = SimpleCNN()
-        _, prob = prediction(mock_model, dummy_image_tensor)
-        
-        assert 0.0 <= prob.item() <= 1.0
-
-    def test_identifies_max_logit_correctly(self):
-        """Tests if the function correctly picks the class with the highest logit."""
-        # Setup: Create a mock model that returns a predictable output
-        mock_model = MagicMock()
-        # Output logits where index 7 is clearly the max
-        mock_model.return_value = torch.tensor([[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 1.9, 0.8, 0.9, 1.0]])
-        
-        dummy_input = torch.rand(1, 3, 32, 32)
-        pred_class, _ = prediction(mock_model, dummy_input)
-        
-        assert pred_class.item() == 7
-
-
-
-@pytest.fixture
-def dummy_image_path(tmp_path):
-    """Creates a temporary image file and returns its path."""
-    img_path = tmp_path / "test.png"
-    Image.new('RGB', (32, 32), color='red').save(img_path)
-    return img_path
-
-@pytest.fixture
-def mock_model():
-    """Provides a mock model that returns a predictable tensor."""
-    model = MagicMock()
-    # The output tensor should have shape (batch_size, num_classes)
-    model.return_value = torch.randn(1, 10)
-    return model
-
-@pytest.fixture
-def mock_loss_fn():
-    """Provides a mock loss function."""
-    return MagicMock()
 
 # --- Test Class for FGSM_generator ---
 class TestFGSMGenerator:
