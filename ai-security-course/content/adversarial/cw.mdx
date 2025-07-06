@@ -47,7 +47,7 @@ go into attack design.
 The authors begin with the basic formalization of adversarial examples from [@szegedy2014intriguingpropertiesneuralnetworks].
 This represents a targeted attack where the function $C$ returns a classificatoin and where $t$ is the target class.
 The function $D$ represents a distance metric while $x + \delta \in [0, 1]^n$ constrains the adversarial image to be
-between zero and one, guarenteeing that it is a valid image.
+between zero and one.
 
 $$
 \begin{align*}
@@ -56,6 +56,44 @@ $$
 & x + \delta \in [0, 1]^n
 \end{align*}
 $$
+
+### Change #1:
+
+The first change that Carlini and Wagner make to this objective is making the
+requirement of $C(x + \delta) = t$ differentible. They reason that
+if you have a function $f(x + \delta)$ which is positive only if $C(x + \delta) = t$,
+then you could make $f(x + \delta)$ a term in the loss and then minimize it with
+[SGD](https://docs.pytorch.org/docs/stable/generated/torch.optim.SGD.html) or
+[Adam](https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html).
+
+In the paper, they propose seven possible choices for $f$. Below is $f_4$ where
+$F(x + \delta)_t$ is the softmax proability for the target class when the adversarial
+example is given to the model.
+
+$$
+f_4(x + \delta) = \mathrm{ReLU}(0.5 - F(x + \delta)_t)
+$$
+
+If $f_4(x + \delta)$ is zero, that means that the softmax probability for the target
+class is greater than 50%, which means that the model must predict it. If $f_4(x + \delta)$
+is positive, that means that the model has not yet confidently predicted the adversarial
+image as the target class. Therefore, we can treat $f_4(x + \delta)$ as a loss term we want to minimize.
+As a sidenote, it turns out that $f_4$ is actually quite ineffective compared to other choices for
+$f$. In the coding excercises you will explore this further.
+
+Using $f$ as a loss term, we can change our original equation to the below.
+$f$ can be any function where $f(x + \delta) \leq 0$ implies that the model predicts
+$x + \delta$ to belong to class $t$.
+
+$$
+\begin{align*}
+\mathrm{minimize} \quad & D(x, x + \delta) \\
+\text{such that} \quad & f(x + \delta) \leq 0 \\
+& x + \delta \in [0, 1]^n
+\end{align*}
+$$
+
+### Change #2:
 
 Here we go
 
