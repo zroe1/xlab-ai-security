@@ -33,19 +33,27 @@ As an excercise, you may choose to implement these other targeted attacks on you
 
 ## Potential issues with PGD
 
-1. Some attacks (e.g., defensive distilation) are effective against common attacks
-   but are broken by CW attacks [@carlini2017evaluatingrobustnessneuralnetworks]
+It isn't actually clear when if ever CW attacks significantly outperform a smart implementation
+of PDG. While we won't take a dogmatic position on this topic, we will recommend that
+when doing research, PGD or one of it's varients is a good place to start.
+Either way, we beleive that having a deep understand of CW attacks will give
+you insight into a number of important considerations that go into attack design.
 
-_Note: It isn't actually clear when if ever CW attacks significantly outperform a smart implementation
-of PDG._ While we won't take a dogmatic position on this topic, we will recommend that when doing research, PGD is a good
-place to start. Either way, we beleive that having a deep understand of
-CW attacks will give you insight into a number of important considerations that
-go into attack design.
+With all that being said, here are some of the issues with PGD and similar methods
+that motivate the Carlini-Wagner attack.
+
+1. The epsilon clipping operation in PGD isn't differentiable. This is an issue because it
+   can distrupt optimization. Modern optimizers can do things like update based on previous
+   gradients, and by adding a nondifferentible step at every update, the logic of the optimizer
+   is no longer consistent.
+2. Likewise, there isn't an effective way to ensure that an image is valid
+   (all pixel components are between 0 and one) because clipping the tensor
+   between zero and one is not differentiable.
 
 ## What does Carlini-Wagner do?
 
 The authors begin with the basic formalization of adversarial examples from [@szegedy2014intriguingpropertiesneuralnetworks].
-This represents a targeted attack where the function $C$ returns a classificatoin and where $t$ is the target class.
+This represents a targeted attack where the function $C$ returns a classification and where $t$ is the target class.
 The function $D$ represents a distance metric while $x + \delta \in [0, 1]^n$ constrains the adversarial image to be
 between zero and one.
 
@@ -61,12 +69,13 @@ $$
 
 The first change that Carlini and Wagner make to this objective is making the
 requirement of $C(x + \delta) = t$ differentible. They reason that
-if you have a function $f(x + \delta)$ which is positive only if $C(x + \delta) = t$,
+if you have a function $f(x + \delta)$ which is differentiable and positive only if $C(x + \delta) = t$,
 then you could make $f(x + \delta)$ a term in the loss and then minimize it with
 [SGD](https://docs.pytorch.org/docs/stable/generated/torch.optim.SGD.html) or
 [Adam](https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html).
 
-In the paper, they propose seven possible choices for $f$. Below is $f_4$ where
+In the paper, they propose seven possible choices for $f$. Below is the fourth
+option they offer, where
 $F(x + \delta)_t$ is the softmax proability for the target class when the adversarial
 example is given to the model.
 
@@ -79,7 +88,7 @@ class is greater than 50%, which means that the model must predict it. If $f_4(x
 is positive, that means that the model has not yet confidently predicted the adversarial
 image as the target class. Therefore, we can treat $f_4(x + \delta)$ as a loss term we want to minimize.
 As a sidenote, it turns out that $f_4$ is actually quite ineffective compared to other choices for
-$f$. In the coding excercises you will explore this further.
+$f$. In the coding excercises, you will explore this further.
 
 Using $f$ as a loss term, we can change our original equation to the below.
 $f$ can be any function where $f(x + \delta) \leq 0$ implies that the model predicts
@@ -102,3 +111,5 @@ Here we go
   alt="Different CW results depending on choice of c"
   style={{ width: "100%", display: "block", margin: "0 auto" }}
 />
+
+## Citations
