@@ -90,7 +90,6 @@ image as the target class. Therefore, we can treat $f_4(x + \delta)$ as a loss t
 As a sidenote, it turns out that $f_4$ is actually quite ineffective compared to other choices for
 $f$. In the coding excercises, you will explore this further.
 
-Using $f$ as a loss term, we can change our original equation to the below.
 $f$ can be any function where $f(x + \delta) \leq 0$ implies that the model predicts
 $x + \delta$ to belong to class $t$.
 
@@ -104,12 +103,88 @@ $$
 
 ### Change #2:
 
-Here we go
+Recall that $f$ is only positive if the adversarial example leads to misclassification.
+That means that we can use $f$ as a loss term to minimize. Using $f$ as a loss term,
+we can change our previous equation to the below where $c$ weights how much $f$
+contributes to the loss.
+
+$$
+\begin{align*}
+\mathrm{minimize} \quad & D(x, x + \delta) + c \cdot f(x + \delta) \\
+\text{such that} \quad & x + \delta \in [0, 1]^n
+\end{align*}
+$$
+
+Note that $c$ will be positive. A lower $c$ encourages $D(x, x + \delta)$ to
+be lower, making the adversarial image more similar to the original. A higher $c$
+increases the probability that the attack is successful. In the example below
+you can see some results we got from optimizing the above equation for different
+$c$ values, the $L_2$ distance metric, and equation $f_6$ from the original paper.
+As $c$ gets larger, the probability of attack success rises but the image becomes
+increasingly suspicious.
 
 <img
   src="/images/cw_lp.png"
   alt="Different CW results depending on choice of c"
   style={{ width: "100%", display: "block", margin: "0 auto" }}
 />
+
+### Change #3:
+
+The last issue to deal with is the box contraint: how do we keep the images between
+0 and 1. The authors deal with this by introducing a change in variables. This step
+is a bit confusing so let's start with some mathematical intution. Let a given
+pixel component in the adversarial image be $x_i + \delta_i$ where $x_i$ is the original
+value and $\delta_i$ is the adversarial perturbation we will add to that pixel compoent.
+Now, let $x_i + \delta_i$ be a funcion of $w_i$ which can be any positive
+or negative number ($w_i \in \mathbb{R}$).
+
+$$
+x_i + \delta_i = \frac{1}{2} (\tanh({w_i}) + 1)
+$$
+
+Why may we want to think about $x_i + \delta_i$ this way? Well if we graph
+$\frac{1}{2} (\tanh({w_i}) + 1)$ we can see that the equation is always between
+0 and 1:
+
+<img
+  src="/images/change_of_variable.png"
+  alt="Different CW results depending on choice of c"
+  style={{ width: "70%", display: "block", margin: "0 auto" }}
+/>
+
+Now instead of optimizing $\delta$ in our questions above, we can optimize $w$
+and guarentee that we will be left with a valid image.
+
+### Putting it all together:
+
+Instead of writing:
+
+$$
+\begin{align*}
+\mathrm{minimize} \quad & D(x, x + \delta) + c \cdot f(x + \delta) \\
+\text{such that} \quad & x + \delta \in [0, 1]^n
+\end{align*}
+$$
+
+We can say:
+
+$$
+\mathrm{minimize} \ \   D(x, \frac{1}{2} (\tanh({w}) + 1)) + c \cdot f(\frac{1}{2} (\tanh({w}) + 1))
+$$
+
+The authors use an $L_p$ norm so instead of saying $D(x, \frac{1}{2} (\tanh({w}) + 1))$,
+we can say $\| \delta \|_p$ where $\delta = \frac{1}{2} (\tanh({w}) + 1) - x$. So for our final
+equation we have:
+
+$$
+\mathrm{minimize} \ \   \| \frac{1}{2} (\tanh({w}) + 1) - x \|_p + c \cdot f(\frac{1}{2} (\tanh({w}) + 1))
+$$
+
+This way we are able to:
+
+1. Maximize the probability that $x + \delta$ results in misclassification.
+2. Minimize the $L_p$ norm of $\delta$, making our adversarial example less suspicious
+3. Guarentee that $x + \delta$ is between 0 and 1 without any clipping.
 
 ## Citations
