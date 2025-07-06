@@ -1,0 +1,66 @@
+---
+title: "Carlini-Wagner Attacks"
+description: "Background information and mathematical intuition behind Carlini-Wager adversarial attacks."
+---
+
+This section has a series of coding problems with PyTorch. To run the code locally, you can follow the
+installation instructions at the bottom of this page. As always, we <i>highly</i> recommend you read
+all the content on this page before starting the coding exercises.
+
+<ExerciseButtons
+  githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/robust_bench.ipynb"
+  colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/robust_bench.ipynb"
+/>
+
+# Relevant Background
+
+Because the CW attack method is much more sophisticated than anything you looked at
+in the previous section, we provide some background context before diving into the specifics
+of the attack.
+
+## Targeted vs Untargeted Attacks
+
+In the previous section, you implemented FGSM [@goodfellow2015explainingharnessingadversarialexamples], Basic Iterative Method [@kurakin2017adversarialmachinelearningscale],
+and PGD [@madry2019deeplearningmodelsresistant] attacks. The code you wrote for each of these attacks would be
+considered a _untargeted_ attack because you weren't trying to target any particular class
+for misclassification; you were just trying to get the model to predict the wrong answer.
+In a _targeted_ attack however, the attacker aims to get the model to predict a specific incorrect class.
+
+Note that it is possible (and not too difficult) to write a targeted version of
+FGSM, ISGM, and PGD. We don't cover these variations in this course but understanding
+CW will give you some solid intuition for what those attacks would look like.
+As an excercise, you may choose to implement these other targeted attacks on your own.
+
+## Potential issues with PGD
+
+1. Some attacks (e.g., defensive distilation) are effective against common attacks
+   but are broken by CW attacks [@carlini2017evaluatingrobustnessneuralnetworks]
+
+_Note: It isn't actually clear when if ever CW attacks significantly outperform a smart implementation
+of PDG._ While we won't take a dogmatic position on this topic, we will recommend that when doing research, PGD is a good
+place to start. Either way, we beleive that having a deep understand of
+CW attacks will give you insight into a number of important considerations that
+go into attack design.
+
+## What does Carlini-Wagner do?
+
+The authors begin with the basic formalization of adversarial examples from [@szegedy2014intriguingpropertiesneuralnetworks].
+This represents a targeted attack where the function $C$ returns a classificatoin and where $t$ is the target class.
+The function $D$ represents a distance metric while $x + \delta \in [0, 1]^n$ constrains the adversarial image to be
+between zero and one, guarenteeing that it is a valid image.
+
+$$
+\begin{align*}
+\mathrm{minimize} \quad & D(x, x + \delta) \\
+\text{such that} \quad & C(x + \delta) = t \\
+& x + \delta \in [0, 1]^n
+\end{align*}
+$$
+
+Here we go
+
+<img
+  src="/images/cw_lp.png"
+  alt="Different CW results depending on choice of c"
+  style={{ width: "100%", display: "block", margin: "0 auto" }}
+/>
