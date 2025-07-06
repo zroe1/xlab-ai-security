@@ -4,8 +4,8 @@ description: "Background information and mathematical intuition behind Carlini-W
 ---
 
 This section has a series of coding problems with PyTorch. To run the code locally, you can follow the
-installation instructions at the bottom of this page. As always, we <i>highly</i> recommend you read
-all the content on this page before starting the coding exercises.
+installation instructions at the bottom of this page. _As always, we highly recommend you read
+all the content on this page before starting the coding exercises._
 
 <ExerciseButtons
   githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/robust_bench.ipynb"
@@ -33,7 +33,7 @@ As an excercise, you may choose to implement these other targeted attacks on you
 
 ## Potential issues with PGD
 
-It isn't actually clear when if ever CW attacks significantly outperform a smart implementation
+It isn't actually clear when, if ever, CW attacks are a better choice in a research context than a smart implementation
 of PDG. While we won't take a dogmatic position on this topic, we will recommend that
 when doing research, PGD or one of it's varients is a good place to start.
 Either way, we beleive that having a deep understand of CW attacks will give
@@ -47,10 +47,18 @@ that motivate the Carlini-Wagner attack.
    gradients, and by adding a nondifferentible step at every update, the logic of the optimizer
    is no longer consistent.
 2. Likewise, there isn't an effective way to ensure that an image is valid
-   (all pixel components are between 0 and one) because clipping the tensor
+   (all pixel components are between zero and one) because clipping the tensor
    between zero and one is not differentiable.
 
-## What does Carlini-Wagner do?
+## How Does the Carlini-Wagner Work?
+
+The Carlini-Wagner attack describes a family of targeted attacks for generating
+adversarial examples for image models. The authors propose a $L_0$, $L_2$ and $L_\infty$
+attacks. **For this page and the coding excercises, we focus on the $L_2$ attack.** The attack design
+for the $L_\infty$ attack is clever and quite similar but we will leave it to the
+reader to explore this more by reading the [original paper](https://arxiv.org/pdf/1608.04644) if interested.
+The attack for $L_0$ is more complicated and less influential or important to understand, so only if you are
+especially interested should you explore the $L_0$ attack further.
 
 The authors begin with the basic formalization of adversarial examples from [@szegedy2014intriguingpropertiesneuralnetworks].
 This represents a targeted attack where the function $C$ returns a classification and where $t$ is the target class.
@@ -65,10 +73,15 @@ $$
 \end{align*}
 $$
 
-### Change #1:
+This formalization is slightly different from your implementions in the previous
+section but the main idea should be familiar.
+
+### Change #1: Making $C(x + \delta)$ Differentiable
 
 The first change that Carlini and Wagner make to this objective is making the
-requirement of $C(x + \delta) = t$ differentible. They reason that
+requirement of $C(x + \delta) = t$ differentible. By default, $C(x + \delta)$, which
+gives a classification is not even connected and certainly not differentiable.
+The authors reason that
 if you have a function $f(x + \delta)$ which is differentiable and positive only if $C(x + \delta) = t$,
 then you could make $f(x + \delta)$ a term in the loss and then minimize it with
 [SGD](https://docs.pytorch.org/docs/stable/generated/torch.optim.SGD.html) or
@@ -90,7 +103,7 @@ image as the target class. Therefore, we can treat $f_4(x + \delta)$ as a loss t
 As a sidenote, it turns out that $f_4$ is actually quite ineffective compared to other choices for
 $f$. In the coding excercises, you will explore this further.
 
-$f$ can be any function where $f(x + \delta) \leq 0$ implies that the model predicts
+We can now change our original equation to the one below where $f$ can be any function where $f(x + \delta) \leq 0$ implies that the model predicts
 $x + \delta$ to belong to class $t$.
 
 $$
@@ -101,7 +114,7 @@ $$
 \end{align*}
 $$
 
-### Change #2:
+### Change #2: Adding $f(x + \delta)$ And The Constant $c$ to The Loss
 
 Recall that $f$ is only positive if the adversarial example leads to misclassification.
 That means that we can use $f$ as a loss term to minimize. Using $f$ as a loss term,
@@ -131,7 +144,7 @@ increasingly suspicious.
 
 ### Change #3:
 
-The last issue to deal with is the box contraint: how do we keep the images between
+The next issue to deal with is the box contraint: how do we keep the images between
 0 and 1. The authors deal with this by introducing a change in variables. This step
 is a bit confusing so let's start with some mathematical intution. Let a given
 pixel component in the adversarial image be $x_i + \delta_i$ where $x_i$ is the original
@@ -186,5 +199,15 @@ This way we are able to:
 1. Maximize the probability that $x + \delta$ results in misclassification.
 2. Minimize the $L_p$ norm of $\delta$, making our adversarial example less suspicious
 3. Guarentee that $x + \delta$ is between 0 and 1 without any clipping.
+
+<b>Disclaimer: </b>This attack is correct for the $L_2$ situation but the norm looks a bit different
+in the $L_\infty$ case and the $L_0$ attack is quite different.{" "}
+
+## Final comments
+
+If any of the math above is confusing to you, there is nothing to worry about.
+When you complete the coding excercises everything should become more concrete.
+After you are finished with the coding excercises we recommend you read back through
+this document to test you knowledge and make sure that you understand everything.
 
 ## Citations
