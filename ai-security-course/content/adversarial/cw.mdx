@@ -14,6 +14,11 @@ all the content on this page before starting the coding exercises._
 
 # Relevant Background
 
+The Carlini-Wagner attack -- also known as CW -- was developed by [Nicolas Carlini](https://nicholas.carlini.com/)
+and [David Wagner](https://scholar.google.com/citations?user=67kghxAAAAAJ&hl=en) to improve upon
+estabilished attack methods such as the those you implemented in the previous
+section.
+
 Because the CW attack method is much more sophisticated than anything you looked at
 in the previous section, we provide some background context before diving into the specifics
 of the attack.
@@ -50,7 +55,7 @@ that motivate the Carlini-Wagner attack.
    (all pixel components are between zero and one) because clipping the tensor
    between zero and one is not differentiable.
 
-## How Does the Carlini-Wagner Work?
+## How Does the Carlini-Wagner Attack Work?
 
 The Carlini-Wagner attack describes a family of targeted attacks for generating
 adversarial examples for image models. The authors propose a $L_0$, $L_2$ and $L_\infty$
@@ -76,18 +81,35 @@ $$
 This formalization is slightly different from your implementions in the previous
 section but the main idea should be familiar.
 
-### Change #1: Making $C(x + \delta)$ Differentiable
+### Change #1: Making the Classification Constraint Differentiable
 
 The first change that Carlini and Wagner make to this objective is making the
-requirement of $C(x + \delta) = t$ differentible. By default, $C(x + \delta)$, which
-gives a classification is not even connected and certainly not differentiable.
+requirement of $C(x + \delta) = t$ differentible. By default, $C(x + \delta)$ returns
+an integer which represents a class. This function is not even continuous and certainly not differentiable.
 The authors reason that
 if you have a function $f(x + \delta)$ which is differentiable and positive only if $C(x + \delta) = t$,
 then you could make $f(x + \delta)$ a term in the loss and then minimize it with
 [SGD](https://docs.pytorch.org/docs/stable/generated/torch.optim.SGD.html) or
-[Adam](https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html).
+[Adam](https://docs.pytorch.org/docs/stable/generated/torch.optim.Adam.html) (more on
+this in the section below).
 
-In the paper, they propose seven possible choices for $f$. Below is the fourth
+If $f(x + \delta) \leq 0$ implies that the model predicts
+$x + \delta$ to belong to class $t$ then we can now change our original equation to the one below.
+
+$$
+\begin{align*}
+\mathrm{minimize} \quad & D(x, x + \delta) \\
+\text{such that} \quad & f(x + \delta) \leq 0 \\
+& x + \delta \in [0, 1]^n
+\end{align*}
+$$
+
+### Change #2: Adding Misclassification to the Loss
+
+Above, we mention that we can add $f$ as a component of the loss we want to minimize.
+Let's make that more concrete with a specific example of $f$.
+
+In the paper, Carlini and Wager propose seven possible choices for $f$. Below is the fourth
 option they offer, where
 $F(x + \delta)_t$ is the softmax proability for the target class when the adversarial
 example is given to the model.
@@ -103,22 +125,7 @@ image as the target class. Therefore, we can treat $f_4(x + \delta)$ as a loss t
 As a sidenote, it turns out that $f_4$ is actually quite ineffective compared to other choices for
 $f$. In the coding excercises, you will explore this further.
 
-We can now change our original equation to the one below where $f$ can be any function where $f(x + \delta) \leq 0$ implies that the model predicts
-$x + \delta$ to belong to class $t$.
-
-$$
-\begin{align*}
-\mathrm{minimize} \quad & D(x, x + \delta) \\
-\text{such that} \quad & f(x + \delta) \leq 0 \\
-& x + \delta \in [0, 1]^n
-\end{align*}
-$$
-
-### Change #2: Adding $f(x + \delta)$ And The Constant $c$ to The Loss
-
-Recall that $f$ is only positive if the adversarial example leads to misclassification.
-That means that we can use $f$ as a loss term to minimize. Using $f$ as a loss term,
-we can change our previous equation to the below where $c$ weights how much $f$
+Using $f$ as a loss term, we can change our previous equation to the below where $c$ weights how much $f$
 contributes to the loss.
 
 $$
@@ -132,7 +139,7 @@ Note that $c$ will be positive. A lower $c$ encourages $D(x, x + \delta)$ to
 be lower, making the adversarial image more similar to the original. A higher $c$
 increases the probability that the attack is successful. In the example below
 you can see some results we got from optimizing the above equation for different
-$c$ values, the $L_2$ distance metric, and equation $f_6$ from the original paper.
+$c$ values with equation $f_6$ from the original paper and the $L_2$ distance metric.
 As $c$ gets larger, the probability of attack success rises but the image becomes
 increasingly suspicious.
 
@@ -142,10 +149,10 @@ increasingly suspicious.
   style={{ width: "100%", display: "block", margin: "0 auto" }}
 />
 
-### Change #3:
+### Change #3: Change of Variables
 
 The next issue to deal with is the box contraint: how do we keep the images between
-0 and 1. The authors deal with this by introducing a change in variables. This step
+0 and 1? The authors deal with this by introducing a change in variables. This step
 is a bit confusing so let's start with some mathematical intution. Let a given
 pixel component in the adversarial image be $x_i + \delta_i$ where $x_i$ is the original
 value and $\delta_i$ is the adversarial perturbation we will add to that pixel compoent.
@@ -200,8 +207,11 @@ This way we are able to:
 2. Minimize the $L_p$ norm of $\delta$, making our adversarial example less suspicious
 3. Guarentee that $x + \delta$ is between 0 and 1 without any clipping.
 
-<b>Disclaimer: </b>This attack is correct for the $L_2$ situation but the norm looks a bit different
-in the $L_\infty$ case and the $L_0$ attack is quite different.{" "}
+<b>Disclaimer: </b>The specific attack for the $L_2$ situation that Carlini and Wagner use in the
+paper has the $L_2$ ditance metric squared instead of the vannilla $L_p$ norm shown above. In the
+$L_\infty$ case, the norm looks a bit different also but conceptually is similar. One meta-level
+takeaway here is that good researchers think critically about specific tweaks they can make to their
+attack to make it more effective for whichever case they are optimizing for.
 
 ## Final comments
 
