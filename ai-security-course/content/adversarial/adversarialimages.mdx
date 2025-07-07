@@ -36,9 +36,9 @@ $$
 
 To create an adversarial image using FGSM, there are only a few steps. Using the same loss function used to train the model, generate the loss with respect to the input image. Then, calculate the gradient of the loss function with regard to the input image data, figure out the sign of each pixel, and adjust the original image accordingly. Intuitively, the direction required to reduce loss is reversed, to make the model less accurate.
 
-## Iterative FGSM
+## Basic Iterative Method
 
-Iterative FGSM involves the same approach of calculating the signs of inputs, but instead, a few iterations of this is done with a smaller multiplicative parameter.
+This Iterative Method involves the same approach of calculating the signs of inputs, but instead, a few iterations of this is done with a smaller multiplicative parameter.
 
 ```math
 x'_i = x'_{i-1} + clip_\epsilon(\alpha \cdot sign(\nabla loss_{F,t}(x'_{i-1})))
