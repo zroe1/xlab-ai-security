@@ -24,7 +24,7 @@ $L_0$ is equivalent to the number of non-matching pixels, and is easy to calcula
 $L_2$ is the typical 'norm' used in linear algebra, and refers to the vector distance between the two images.
 $L_{\infty}$ calculates the maximum perturbation to any of the pixels in the original image (Carlini et al, 2017).
 
-When it comes to FGSM and PGD, $L_{\infty}$ is used the most often (Carlini et al, 2017). It is easy to calculate, and is intuitive to making a perturbed image indistinguishable from the input image - a single pixel being changed dramatically would be easy to spot.
+When it comes to FGSM and PGD, $L_{\infty}$ is used the most often (Carlini et al, 2017). Mostly, this is because it is computationally fast, simple and cheap to calculate. It is also intuitive - a single dramatically changed pixel (for example, green to pink), would be easy to spot. Minimizing this ensures that humans and models would both have a harder time recognizing an adversarial image. 
 
 ## FGSM
 
@@ -46,7 +46,7 @@ x'_i = x'_{i-1} + clip_\epsilon(\alpha \cdot sign(\nabla loss_{F,t}(x'_{i-1})))
 
 ## PGD
 
-PGD is very similar to iterative FGSM, only differing by initializing random noise instead of starting with no perturbation. It is a standard approach which continues to be used to generate adversarial input nowadays.
+PGD is very similar to iterative FGSM, only differing by initializing random noise instead of starting with no perturbation. It is a standard approach which continues to be used to generate adversarial input nowadays. PGD is relatively easy to implement, and also lacks computational complexity, leading to a useful benchmark adopted by many researchers to test model robustness. This will be covered in greater detail in Section 2.4. 
 
 # Footnotes
 
