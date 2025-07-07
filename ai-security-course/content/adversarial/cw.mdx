@@ -3,7 +3,7 @@ title: "Carlini-Wagner Attacks"
 description: "Background information and mathematical intuition behind Carlini-Wager adversarial attacks."
 ---
 
-This section has a series of coding problems with PyTorch. To run the code locally, you can follow the
+This section has a series of coding problems using PyTorch. To run the code locally, you can follow the
 installation instructions at the bottom of this page. _As always, we highly recommend you read
 all the content on this page before starting the coding exercises._
 
@@ -16,7 +16,7 @@ all the content on this page before starting the coding exercises._
 
 The Carlini-Wagner attack -- also known as CW -- was developed by [Nicolas Carlini](https://nicholas.carlini.com/)
 and [David Wagner](https://scholar.google.com/citations?user=67kghxAAAAAJ&hl=en) to improve upon
-estabilished attack methods such as the those you implemented in the previous
+established attack methods such as those you implemented in the previous
 section.
 
 Because the CW attack method is much more sophisticated than anything you looked at
@@ -27,29 +27,29 @@ of the attack.
 
 In the previous section, you implemented FGSM [@goodfellow2015explainingharnessingadversarialexamples], Basic Iterative Method [@kurakin2017adversarialmachinelearningscale],
 and PGD [@madry2019deeplearningmodelsresistant] attacks. The code you wrote for each of these attacks would be
-considered a _untargeted_ attack because you weren't trying to target any particular class
+considered an _untargeted_ attack because you weren't trying to target any particular class
 for misclassification; you were just trying to get the model to predict the wrong answer.
-In a _targeted_ attack however, the attacker aims to get the model to predict a specific incorrect class.
+In a _targeted_ attack, however, the attacker aims to get the model to predict a specific incorrect class.
 
 Note that it is possible (and not too difficult) to write a targeted version of
-FGSM, ISGM, and PGD. We don't cover these variations in this course but understanding
+FGSM, ISGM, and PGD. We don't cover these variations in this course, but understanding
 CW will give you some solid intuition for what those attacks would look like.
-As an excercise, you may choose to implement these other targeted attacks on your own.
+As an exercise, you may choose to implement these other targeted attacks on your own.
 
 ## Potential issues with PGD
 
 It isn't actually clear when, if ever, CW attacks are a better choice in a research context than a smart implementation
-of PDG. While we won't take a dogmatic position on this topic, we will recommend that
-when doing research, PGD or one of it's varients is a good place to start.
-Either way, we beleive that having a deep understand of CW attacks will give
+of PGD. While we won't take a dogmatic position on this topic, we will recommend that
+when doing research, PGD or one of its variants is a good place to start.
+Either way, we believe that having a deep understanding of CW attacks will give
 you insight into a number of important considerations that go into attack design.
 
 With all that being said, here are some of the issues with PGD and similar methods
 that motivate the Carlini-Wagner attack.
 
 1. The epsilon clipping operation in PGD isn't differentiable. This is an issue because it
-   can distrupt optimization. Modern optimizers can do things like update based on previous
-   gradients, and by adding a nondifferentible step at every update, the logic of the optimizer
+   can disrupt optimization. Modern optimizers can do things like update based on previous
+   gradients, and by adding a nondifferentiable step at every update, the logic of the optimizer
    is no longer consistent.
 2. Likewise, there isn't an effective way to ensure that an image is valid
    (all pixel components are between zero and one) because clipping the tensor
@@ -59,8 +59,8 @@ that motivate the Carlini-Wagner attack.
 
 The Carlini-Wagner attack describes a family of targeted attacks for generating
 adversarial examples for image models. The authors propose a $L_0$, $L_2$ and $L_\infty$
-attacks. **For this page and the coding excercises, we focus on the $L_2$ attack.** The attack design
-for the $L_\infty$ attack is clever and quite similar but we will leave it to the
+attacks. **For this page and the coding exercises, we focus on the $L_2$ attack.** The attack design
+for the $L_\infty$ attack is clever and quite similar, but we will leave it to the
 reader to explore this more by reading the [original paper](https://arxiv.org/pdf/1608.04644) if interested.
 The attack for $L_0$ is more complicated and less influential or important to understand, so only if you are
 especially interested should you explore the $L_0$ attack further.
@@ -78,14 +78,14 @@ $$
 \end{align*}
 $$
 
-This formalization is slightly different from your implementions in the previous
-section but the main idea should be familiar.
+This formalization is slightly different from your implementations in the previous
+section, but the main idea should be familiar.
 
 ### Change #1: Making the Classification Constraint Differentiable
 
-The first change that Carlini and Wagner make to this objective is making the
-requirement of $C(x + \delta) = t$ differentible. By default, $C(x + \delta)$ returns
-an integer which represents a class. This function is not even continuous and certainly not differentiable.
+The first change that Carlini and Wagner make to this objective is to make the
+requirement of $C(x + \delta) = t$ differentiable. By default, $C(x + \delta)$ returns
+an integer that represents a class. This function is not even continuous and certainly not differentiable.
 The authors reason that
 if you have a function $f(x + \delta)$ which is differentiable and positive only if $C(x + \delta) = t$,
 then you could make $f(x + \delta)$ a term in the loss and then minimize it with
@@ -106,12 +106,12 @@ $$
 
 ### Change #2: Adding Misclassification to the Loss
 
-Above, we mention that we can add $f$ as a component of the loss we want to minimize.
+Above, we mentioned that we can add $f$ as a component of the loss we want to minimize.
 Let's make that more concrete with a specific example of $f$.
 
 In the paper, Carlini and Wager propose seven possible choices for $f$. Below is the fourth
 option they offer, where
-$F(x + \delta)_t$ is the softmax proability for the target class when the adversarial
+$F(x + \delta)_t$ is the softmax probability for the target class when the adversarial
 example is given to the model.
 
 $$
@@ -120,10 +120,10 @@ $$
 
 If $f_4(x + \delta)$ is zero, that means that the softmax probability for the target
 class is greater than 50%, which means that the model must predict it. If $f_4(x + \delta)$
-is positive, that means that the model has not yet confidently predicted the adversarial
+is positive, which means that the model has not yet confidently predicted the adversarial
 image as the target class. Therefore, we can treat $f_4(x + \delta)$ as a loss term we want to minimize.
 As a sidenote, it turns out that $f_4$ is actually quite ineffective compared to other choices for
-$f$. In the coding excercises, you will explore this further.
+$f$. In the coding exercises, you will explore this further.
 
 Using $f$ as a loss term, we can change our previous equation to the below where $c$ weights how much $f$
 contributes to the loss.
@@ -137,10 +137,10 @@ $$
 
 Note that $c$ will be positive. A lower $c$ encourages $D(x, x + \delta)$ to
 be lower, making the adversarial image more similar to the original. A higher $c$
-increases the probability that the attack is successful. In the example below
+increases the probability that the attack is successful. In the example below,
 you can see some results we got from optimizing the above equation for different
 $c$ values with equation $f_6$ from the original paper and the $L_2$ distance metric.
-As $c$ gets larger, the probability of attack success rises but the image becomes
+As $c$ gets larger, the probability of attack success rises, but the image becomes
 increasingly suspicious.
 
 <img
@@ -151,19 +151,19 @@ increasingly suspicious.
 
 ### Change #3: Change of Variables
 
-The next issue to deal with is the box contraint: how do we keep the images between
+The next issue to deal with is the box constraint: how do we keep the images between
 0 and 1? The authors deal with this by introducing a change in variables. This step
-is a bit confusing so let's start with some mathematical intution. Let a given
-pixel component in the adversarial image be $x_i + \delta_i$ where $x_i$ is the original
-value and $\delta_i$ is the adversarial perturbation we will add to that pixel compoent.
-Now, let $x_i + \delta_i$ be a funcion of $w_i$ which can be any positive
+is a bit confusing, so let's start with some mathematical intuition. Let a given
+pixel component in the adversarial image be $x_i + \delta_i$, where $x_i$ is the original
+value and $\delta_i$ is the adversarial perturbation we will add to that pixel component.
+Now, let $x_i + \delta_i$ be a function of $w_i$ which can be any positive
 or negative number ($w_i \in \mathbb{R}$).
 
 $$
 x_i + \delta_i = \frac{1}{2} (\tanh({w_i}) + 1)
 $$
 
-Why may we want to think about $x_i + \delta_i$ this way? Well if we graph
+Why may we want to think about $x_i + \delta_i$ this way? Well, if we graph
 $\frac{1}{2} (\tanh({w_i}) + 1)$ we can see that the equation is always between
 0 and 1:
 
@@ -174,7 +174,7 @@ $\frac{1}{2} (\tanh({w_i}) + 1)$ we can see that the equation is always between
 />
 
 Now instead of optimizing $\delta$ in our questions above, we can optimize $w$
-and guarentee that we will be left with a valid image.
+and guarantee that we will be left with a valid image.
 
 ### Putting it all together:
 
@@ -195,7 +195,7 @@ $$
 
 The authors use an $L_p$ norm so instead of saying $D(x, \frac{1}{2} (\tanh({w}) + 1))$,
 we can say $\| \delta \|_p$ where $\delta = \frac{1}{2} (\tanh({w}) + 1) - x$. So for our final
-equation we have:
+equation, we have:
 
 $$
 \mathrm{minimize} \ \   \| \frac{1}{2} (\tanh({w}) + 1) - x \|_p + c \cdot f(\frac{1}{2} (\tanh({w}) + 1))
@@ -205,10 +205,10 @@ This way we are able to:
 
 1. Maximize the probability that $x + \delta$ results in misclassification.
 2. Minimize the $L_p$ norm of $\delta$, making our adversarial example less suspicious
-3. Guarentee that $x + \delta$ is between 0 and 1 without any clipping.
+3. Guarantee that $x + \delta$ is between 0 and 1 without any clipping.
 
 <b>Disclaimer: </b>The specific attack for the $L_2$ situation that Carlini and Wagner use in the
-paper has the $L_2$ ditance metric squared instead of the vannilla $L_p$ norm shown above. In the
+paper has the $L_2$ distance metric squared instead of the vanilla $L_p$ norm shown above. In the
 $L_\infty$ case, the norm looks a bit different also but conceptually is similar. One meta-level
 takeaway here is that good researchers think critically about specific tweaks they can make to their
 attack to make it more effective for whichever case they are optimizing for.
@@ -216,8 +216,8 @@ attack to make it more effective for whichever case they are optimizing for.
 ## Final comments
 
 If any of the math above is confusing to you, there is nothing to worry about.
-When you complete the coding excercises everything should become more concrete.
-After you are finished with the coding excercises we recommend you read back through
-this document to test you knowledge and make sure that you understand everything.
+When you complete the coding exercises, everything should become more concrete.
+After you are finished with the coding exercises, we recommend you read back through
+this document to test your knowledge and make sure that you understand everything.
 
 ## Citations
