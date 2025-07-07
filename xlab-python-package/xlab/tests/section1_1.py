@@ -252,14 +252,14 @@ class TestTask4a:
         """
         # Setup
         model = _test_config['model']
-        student_BIM = _test_config['student_function']
+        student_IGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
         img_path = 'frog.jpg'
         y_target = torch.tensor([6]) 
-        adv_tensor = student_BIM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
+        adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
         # Assertions
         assert isinstance(adv_tensor, torch.Tensor), "Output should be a torch.Tensor"
@@ -273,14 +273,14 @@ class TestTask4a:
         """
         # Setup
         model = _test_config['model']
-        student_BIM = _test_config['student_function']
+        student_IGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
         img_path = 'frog.jpg'
         y_target = torch.tensor([6]) 
-        adv_tensor = student_BIM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
+        adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
 
         original_img = xlab.utils.process_image(img_path)
         
@@ -295,14 +295,14 @@ class TestTask4a:
         """
         # Setup
         model = _test_config['model']
-        student_BIM = _test_config['student_function']
+        student_IGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 0
         alpha = 1/100
         num_iters = 6
         img_path = 'frog.jpg'
         y_target = torch.tensor([6]) 
-        adv_tensor = student_BIM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
+        adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
         original_img = xlab.utils.process_image(img_path)
         
@@ -318,14 +318,14 @@ class TestTask4a:
         """
         # Setup
         model = _test_config['model']
-        student_BIM = _test_config['student_function']
+        student_IGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
         img_path = 'frog.jpg'
         y_target = torch.tensor([6]) 
-        adv_tensor = student_BIM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
+        adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         pred = xlab.utils.prediction(model, adv_tensor)[0]
         
         # Assertions
