@@ -15,7 +15,7 @@ aim to solve this issue, guaranteeing adversarial robustness for computer vision
 still an open research problem.
 
 Adversarial attacks could be a security concern when computer vision models are
-deployed in high stakes seetings. Imagine a stop sign is physically altered,
+deployed in high stakes settings. Imagine a stop sign is physically altered,
 such that self-driving car classifies it as a cake. This could cause a car to continue
 moving when others expect it to stop, potentially causing a crash.
 
@@ -36,11 +36,44 @@ box methods such as the Square Attack [@andriushchenko2020squareattackqueryeffic
 ## Distances
 
 There are a few metrics for calculating the 'distance' between the original image and the perturbed one, the most notable being $L_0$, $L_2$, and $L_{\infty}$ [@carlini2017evaluatingrobustnessneuralnetworks].
-$L_0$ is equivalent to the number of non-matching pixels, and is easy to calculate [@carlini2017evaluatingrobustnessneuralnetworks].
+$L_0$ is equivalent to the number of non-matching pixels, and is easy to calculate.
 $L_2$ is the typical 'norm' used in linear algebra, and refers to the vector distance between the two images.
-$L_{\infty}$ calculates the maximum perturbation to any of the pixels in the original image [@carlini2017evaluatingrobustnessneuralnetworks].
+$L_{\infty}$ calculates the maximum perturbation to any of the pixels in the original image.
 
-When it comes to FGSM and PGD, $L_{\infty}$ is used the most often [@carlini2017evaluatingrobustnessneuralnetworks]. Mostly, this is because it is computationally fast, simple and cheap to calculate. It is also intuitive - a single dramatically changed pixel (for example, green to pink), would be easy to spot. Minimizing this ensures that humans and models would both have a harder time recognizing an adversarial image.
+For our attacks we will use, $L_{\infty}$ because it is simple, cheap to calcuate, and historically
+conventional for the kinds of attacks we are performing. It is also intuitive: a single dramatically
+changed pixel (for example, green to pink), would be easy to spot.
+Minimizing an $L_\infty$ metric, for example, to keep all changes within a $8/255$,
+is typically enough to prevent our adversarial images from becoming suspicious.
+
+<Dropdown title="Understanding L-norms in More Detail">
+
+The choice of distance metric significantly impacts both the attack strategy and the resulting adversarial examples. Here's a deeper dive into each norm:
+
+**L₀ Norm (Sparsity)**
+
+- Counts the number of pixels that have been changed
+- Useful when you want to minimize the number of altered pixels
+- Can result in dramatic changes to individual pixels
+- Often used in patch-based attacks
+
+**L₂ Norm (Euclidean Distance)**
+
+- Measures the standard geometric distance between original and perturbed images
+- Tends to spread perturbations across many pixels with smaller individual changes
+- More mathematically convenient for optimization
+- Often results in smoother-looking perturbations
+
+**L∞ Norm (Maximum Change)**
+
+- Constrains the maximum change to any single pixel
+- Ensures no pixel is changed by more than ε
+- Practical for ensuring visual imperceptibility
+- Standard choice for many attack papers due to its intuitive interpretation
+
+The choice between these norms represents different threat models and practical constraints in real-world scenarios.
+
+</Dropdown>
 
 ## FGSM
 
