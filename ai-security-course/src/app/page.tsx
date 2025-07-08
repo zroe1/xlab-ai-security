@@ -83,7 +83,7 @@ const LandingPageContent = () => {
               researchers for the next generation of hackers.
             </p>
             <div className="hero-buttons">
-              <Link href="/getting-started/installation" className="action-button primary">
+              <Link href="/getting-started/welcome" className="action-button primary">
                 <img src="/images/x_white.png" alt="" className="button-icon xlab-icon" />
                 View the Course
               </Link>
@@ -231,7 +231,7 @@ const LandingPageContent = () => {
               <h4>Course Content</h4>
               <ul>
                 <li>
-                  <Link href="/getting-started/installation">Getting Started</Link>
+                  <Link href="/getting-started/welcome">Getting Started</Link>
                 </li>
                 <li>
                   <Link href="/adversarial">Adversarial Examples</Link>

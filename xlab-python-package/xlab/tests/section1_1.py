@@ -52,7 +52,7 @@ class TestTask1:
             logits = cnn(x)
             cnn_pred = torch.argmax(logits, axis=1)
 
-        assert torch.equal(predictions, cnn_pred)
+            assert torch.equal(predictions, cnn_pred)
 
 
 #Task 2 Tests
@@ -489,7 +489,7 @@ class TestTask6():
 
 
 
-        
+    
 def _run_pytest_with_capture(test_class_or_function, verbose=True):
     """
     Run pytest on a specific test class or function and capture results.

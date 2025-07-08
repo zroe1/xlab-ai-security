@@ -42,7 +42,7 @@ function getUrlAndSection(
   // Handle root level files
   if (pathParts.length === 1) {
     const filename = path.basename(pathParts[0], ".mdx");
-    if (filename === "installation") {
+    if (filename === "welcome") {
       return {
         url: "/",
         sectionTitle: "Getting Started",

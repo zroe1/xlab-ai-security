@@ -27,7 +27,7 @@ export const navigationItems: NavigationItem[] = [
     id: "1",
     title: "Getting Started",
     items: [
-      { id: "1.1", title: "Installation", href: "/getting-started/installation", type: "link" },
+      { id: "1.1", title: "Welcome", href: "/getting-started/welcome", type: "link" },
       { id: "1.2", title: "Prerequisites", href: "/getting-started/prerequisites", type: "link" },
       { id: "1.3", title: "Setting Up Environment", href: "/getting-started/setup", type: "link" },
       {

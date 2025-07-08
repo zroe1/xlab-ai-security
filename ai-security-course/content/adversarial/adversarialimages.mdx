@@ -1,30 +1,46 @@
 ---
 title: "FGSM & PGD"
-description: "Background information on FGSM, Iterative FGSM, and PGD attacks"
+description: "Background information on FGSM, BIM, and PGD attacks"
 ---
 
 ## Creating Adversarial Images
 
-Adversarial images are slightly perturbed images which can be misclassified by a network trained for computer vision. These perturbations could be as small as changing the value of a few pixels, leading to dramatic reductions in accuracy, depending on the robustness of the network. Adversarial images are typically indistinguishable to the human. Adversarial training is the process of adapting a model to become more resilient towards these inputs, and can involve further training or processing. A lack of adversarial training could lead to many possible negative real-world consequences. For one, a road sign could be slightly physically altered, leading to misclassification by a self-driving car and a collision.
+Adversarial images are slightly perturbed images which can be misclassified by
+a network trained for computer vision. These perturbations could be as small as
+changing the value of a few pixels, leading to dramatic reductions in accuracy,
+depending on the robustness of the network. While methods such as adversarial
+training [@goodfellow2015explainingharnessingadversarialexamples], defensive distilation
+[@papernot2016distillationdefenseadversarialperturbations], and countless other techniques
+aim to solve this issue, guaranteeing adversarial robustness for computer vision is
+still an open research problem.
+
+Adversarial attacks could be a security concern when computer vision models are
+deployed in high stakes seetings. Imagine a stop sign is physically altered,
+such that self-driving car classifies it as a cake. This could cause a car to continue
+moving when others expect it to stop, potentially causing a crash.
 
 <p align="center">
   <img src="/images/traffic.png" alt="A descriptive alt text" />
   <br />
   <b>Fig. 1</b>
   <br />
-  <em>Source: Pavlitska et al, 2023</em>
+  <em>Source: [@pavlitska2023adversarialattackstrafficsign]</em>
 </p>
 
-More on adversarial training will be covered later in this course. This segment of the course focuses on generating adversarial samples to fool a Convolutional Neural Network trained on the CIFAR-10 dataset, using a few methods. We will cover the Fast Gradient Sign Method (FGSM), its iterative variant (IGSM), and Projected Gradient Descent (PGD). The Carlini-Wagner approach (CW) and black box methods such as the Square Attack will be covered in later pages, too.
+This segment of the course focuses on generating adversarial samples to fool a
+convolutional neural network trained on the CIFAR-10 dataset.
+We will cover the Fast Gradient Sign Method (FGSM), its iterative variant (BIM),
+and Projected Gradient Descent (PGD). The Carlini-Wagner attack [@carlini2017evaluatingrobustnessneuralnetworks] and black
+box methods such as the Square Attack [@andriushchenko2020squareattackqueryefficientblackbox] will be covered in later pages as well.
 
 ## Distances
 
-There are a few metrics for calculating the 'distance' between the original image and the perturbed one, the most notable being $L_0$, $L_2$, and $L_{\infty}$ (Carlini et al, 2017).
-$L_0$ is equivalent to the number of non-matching pixels, and is easy to calculate (Carlini et al, 2017).
+There are a few metrics for calculating the 'distance' between the original image and the perturbed one, the most notable being $L_0$, $L_2$, and $L_{\infty}$ [@carlini2017evaluatingrobustnessneuralnetworks].
+$L_0$ is equivalent to the number of non-matching pixels, and is easy to calculate [@carlini2017evaluatingrobustnessneuralnetworks].
 $L_2$ is the typical 'norm' used in linear algebra, and refers to the vector distance between the two images.
-$L_{\infty}$ calculates the maximum perturbation to any of the pixels in the original image (Carlini et al, 2017).
+$L_{\infty}$ calculates the maximum perturbation to any of the pixels in the original image [@carlini2017evaluatingrobustnessneuralnetworks].
 
-When it comes to FGSM and PGD, $L_{\infty}$ is used the most often (Carlini et al, 2017). It is easy to calculate, and is intuitive to making a perturbed image indistinguishable from the input image - a single pixel being changed dramatically would be easy to spot.
+When it comes to FGSM and PGD, $L_{\infty}$ is used the most often [@carlini2017evaluatingrobustnessneuralnetworks]. Mostly, this is because it is computationally fast, simple and cheap to calculate. It is also intuitive - a single dramatically changed pixel (for example, green to pink), would be easy to spot. Minimizing this ensures that humans and models would both have a harder time recognizing an adversarial image.
 
 ## FGSM
 
@@ -36,9 +52,9 @@ $$
 
 To create an adversarial image using FGSM, there are only a few steps. Using the same loss function used to train the model, generate the loss with respect to the input image. Then, calculate the gradient of the loss function with regard to the input image data, figure out the sign of each pixel, and adjust the original image accordingly. Intuitively, the direction required to reduce loss is reversed, to make the model less accurate.
 
-## Iterative FGSM
+## BIM
 
-Iterative FGSM involves the same approach of calculating the signs of inputs, but instead, a few iterations of this is done with a smaller multiplicative parameter.
+This Iterative Method involves the same approach of calculating the signs of inputs, but instead, a few iterations of this is done with a smaller multiplicative parameter.
 
 ```math
 x'_i = x'_{i-1} + clip_\epsilon(\alpha \cdot sign(\nabla loss_{F,t}(x'_{i-1})))
@@ -46,9 +62,6 @@ x'_i = x'_{i-1} + clip_\epsilon(\alpha \cdot sign(\nabla loss_{F,t}(x'_{i-1})))
 
 ## PGD
 
-PGD is very similar to iterative FGSM, only differing by initializing random noise instead of starting with no perturbation. It is a standard approach which continues to be used to generate adversarial input nowadays.
+PGD is very similar to iterative FGSM, only differing by initializing random noise instead of starting with no perturbation. It is a standard approach which continues to be used to generate adversarial input nowadays. PGD is relatively easy to implement, and also lacks computational complexity, leading to a useful benchmark adopted by many researchers to test model robustness. This will be covered in greater detail in Section 2.4.
 
-# Footnotes
-
-Pavlitsa et al, 2023, https://arxiv.org/pdf/2307.08278 <br />
-Carlini et al, 2017, https://arxiv.org/pdf/1608.04644
+# Citations

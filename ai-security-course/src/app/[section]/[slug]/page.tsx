@@ -1,6 +1,7 @@
 import { getContentByPath, parseTableOfContents, getAllContentPaths } from "@/lib/mdx";
 import MainLayout from "@/components/MainLayout";
 import ExerciseButtons from "@/components/ExerciseButtons";
+import ThemeImage from "@/components/ThemeImage";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -107,6 +108,7 @@ const components = {
   h5: createHeading(5),
   h6: createHeading(6),
   ExerciseButtons,
+  ThemeImage,
 };
 
 interface PageProps {
