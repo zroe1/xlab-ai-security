@@ -126,15 +126,20 @@ techniques are merely masking the core issue.
 
 We believe that when current alignment techniques fail to jailbreaks, these failures will inspire more robust techniques in the future, ultimately making models safer. The goal should not be to merely break models because it is cool, but rather to try to reveal smarter directions that provide stronger safety guarantees.
 
-### Reason #3: Various Wierd Things
+### Reason #3: Identifying New Vulnerabilities
 
-Building a robust AI system requires thinking about things such as:
+While issues like jailbreaks and adversarial examples have been extensively studied,
+AI Security researchers are always uncovering new attacks and vulnerabilities
+in AI systems. Some of our favorite examples of this include:
 
-- Can someone steal your model or information about it by running inference on it?
-- Is it safe to make your model open source?
-- How do you evaluate how robust your model is before releasing it?
-- How robust should a model be at a level of capability to be considered “safe”?
+- A model inference attack to steal information or weights from an LLM [@carlini2024stealingproductionlanguagemodel]
+- Discover of anolomous tokens such as `SolidGoldMagikarp` [@rumbelow2023solidgoldmagikarp]
+- The discovery of the "Emergent Misalignment" phenomona [@betley2025emergentmisalignmentnarrowfinetuning]
+- Visual adversarial examples for LLMs [@qi2023visualadversarialexamplesjailbreak]
 
-AI security research provides answers to these questions and more. The umbrella of AI Security is constantly growing as systems change and new suits of vulnerabilities are discovered. While AI security research prepares us for the present, it also prepares us for every unexpected thing we may discover in the future.
+In other words, AI security researchers apply a security mindset to find increasingly
+creative ways to break models. This way, the research community can find vulnerabilities
+so that model providers address them while the stakes are still low and models aren't
+as dangerous as they will be in the future.
 
 ## Citations
