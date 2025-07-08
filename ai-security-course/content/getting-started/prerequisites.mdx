@@ -7,7 +7,7 @@ In this course, you will learn AI Security concepts from the ground up. We will 
 
 We also will not assume that you know too much about LLMs or their internals. In this course we will teach you what you need to know about LLM internals for basic security research. We will teach you how to load small language models locally, jailbreak them, and defend them against attacks.
 
-We do, however, assume that you know Python, are familiar with a machine learning framework, and have some basic proficiency in tensor operations. If you are unsure weather you have sufficient background to start completing this course, we recommend that you try it out and see how it goes. At the bottom of this page we provide so advice for navigating gaps in knowledge you may run into.
+We do, however, assume that you know Python, are familiar with PyTorch (with some basic proficiency in tensor operations), and have a background in linear algebra and multivariable calculus (don't worry about multivariable integration or vector calculus, gradients and differentiation are the most important). If you are unsure whether you have sufficient background to start completing this course, we recommend that you try it out and see how it goes. At the bottom of this page we provide so advice for navigating gaps in knowledge you may run into.
 
 ## Python
 
@@ -22,16 +22,14 @@ Because it is the dominant framework used for research, this course uses PyTorch
 If you have a strong background in Python, but have not had practice with a machine learning framework like PyTorch, TensorFlow or JAX, we recommend the following tutorials from <a href="https://en.wikipedia.org/wiki/Andrej_Karpathy">Andrej Karpathy</a> to get up to speed:
 
 1. <b>
-     <a href="https://www.youtube.com/watch?v=VMj-3S1tku0">
-       The spelled-out intro to neural networks and backpropagation: building micrograd
+     <a href="https://www.youtube.com/watch?v=VMj-3S1tku0">The spelled-out intro to neural networks and backpropagation: building micrograd
      </a>
    </b>
 
    You will learn about backpropagation and build a toy machine learning framework that has a similar structure to PyTorch. This will give you useful intuition about what is happening when you call `loss.backward()`, `optimizer.step()`, and `optimizer.zero_grad()`.
 
 2. <b>
-     <a href="https://www.youtube.com/watch?v=PaCmpygFfXo">
-       The spelled-out intro to language modeling: building makemore
+     <a href="https://www.youtube.com/watch?v=PaCmpygFfXo">The spelled-out intro to language modeling: building makemore
      </a>
    </b>
 
@@ -72,11 +70,13 @@ We will expect you to be familiar with manipulating shapes of tensors and comput
    >>> tensor([[4, 6]])
    ```
 
-If you have worked with PyTorch or NumPy before this will probably look somewhat familiar. If these kinds of operations are
-confusing to you, we recommend you read [this page](https://docs.pytorch.org/tutorials/beginner/introyt/tensors_deeper_tutorial.html)
-from the PyTorch documentation and then play around with PyTorch's [sum](https://docs.pytorch.org/docs/stable/generated/torch.Tensor.sum.html),
-[mean](https://docs.pytorch.org/docs/stable/generated/torch.Tensor.mean.html),
-and [Softmax](https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax.html) operations across different dimensions.
+If you have worked with PyTorch or NumPy before this will probably look somewhat familiar. If these kinds of operations are confusing to you, we recommend you read [this page](https://docs.pytorch.org/tutorials/beginner/introyt/tensors_deeper_tutorial.html) from the PyTorch documentation and then play around with PyTorch's [sum](https://docs.pytorch.org/docs/stable/generated/torch.Tensor.sum.html), [mean](https://docs.pytorch.org/docs/stable/generated/torch.Tensor.mean.html), and [Softmax](https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax.html) operations across different dimensions.
+
+## Math
+
+We will also expect you to understand various concepts from linear algebra and multivariable calculus. For linear algebra, you should have a solid grasp on matrices, vectors, matrix multiplication, and norms. Understanding rank, subspaces, dot products, and the singular value decomposition will also help with certain sections. We won't have any explicitly mathematical exercises; an intuition about these topics is the most important (and for which we recommend 3Blue1Brown's [Essence of Linear Algebra](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab) series. 
+
+For multivariable calculus, you should understand gradients, gradient descent, and the multivariable chain rule. Once agian, you won't have to do any pen-and-paper mathematical exercises, but none of these concepts should seem foreign. For a good background, we recommend 3Blue1Brown's [Neural Networks](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) series, specifically chapters 2, 3, and 4.
 
 ## What Should You Do When You're Stuck?
 
@@ -104,8 +104,4 @@ Cell In[74], line 5
 AttributeError: module 'torch.functional' has no attribute 'softmax'
 ```
 
-If you ask an LLM what is the problem here, you will find that the issue is the
-import should be `import torch.nn.functional as F` rather than import `torch.functional as F`.
-This particular bug may take a minute to figure out even if you are looking at the documentation.
-Using an LLM in these cases can let you worry less about syntax and more about learning
-the core concepts of the course.
+If you ask an LLM what is the problem here, you will find that the issue is the import should be `import torch.nn.functional as F` rather than import `torch.functional as F`. This particular bug may take a minute to figure out even if you are looking at the documentation. Using an LLM in these cases can let you worry less about syntax and more about learning the core concepts of the course.
