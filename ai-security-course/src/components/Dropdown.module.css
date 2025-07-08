@@ -1,0 +1,136 @@
+/* Dropdown Component */
+.dropdown {
+  margin: 20px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 7px;
+  background: var(--white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.dropdown:hover {
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.08);
+}
+
+.dropdownHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.dropdownHeader:hover {
+  background: var(--light-bg);
+}
+
+.dropdownHeader:focus {
+  outline: none;
+}
+
+.dropdownHeader:focus-visible {
+  background: var(--light-bg);
+}
+
+.dropdownTitle {
+  font-size: 0.8.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+  text-align: left;
+  flex: 1;
+}
+
+.dropdownChevron {
+  display: flex;
+  align-items: center;
+  color: var(--secondary-text);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 10px;
+  opacity: 0.7;
+}
+
+.dropdownChevron.expanded {
+  transform: rotate(180deg);
+}
+
+.dropdownContent {
+  padding: 0 16px 16px 16px;
+  border-top: 1px solid var(--border-color);
+  background: var(--white);
+  animation: slideDown 0.2s ease-out;
+}
+
+.dropdownContent p {
+  margin: 16px 0 0 0;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+.dropdownContent p:last-child {
+  margin-bottom: 0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark theme support */
+:global(body[data-theme='dark']) .dropdown {
+  background: var(--white);
+  border-color: var(--border-color);
+}
+
+:global(body[data-theme='dark']) .dropdownHeader:hover,
+:global(body[data-theme='dark']) .dropdownHeader:focus-visible {
+  background: var(--light-bg);
+}
+
+:global(body[data-theme='dark']) .dropdownTitle {
+  color: var(--text-color);
+}
+
+:global(body[data-theme='dark']) .dropdownChevron {
+  color: var(--secondary-text);
+  opacity: 0.7;
+}
+
+:global(body[data-theme='dark']) .dropdownContent {
+  background: var(--white);
+  border-color: var(--border-color);
+}
+
+:global(body[data-theme='dark']) .dropdownContent p {
+  color: var(--text-color);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dropdown {
+    margin: 16px 0;
+  }
+  
+  .dropdownHeader {
+    padding: 10px 14px;
+  }
+  
+  .dropdownTitle {
+    font-size: 0.9rem;
+  }
+  
+  .dropdownContent {
+    padding: 0 14px 14px 14px;
+  }
+} 

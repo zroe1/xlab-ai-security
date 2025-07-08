@@ -2,6 +2,7 @@ import { getContentByPath, parseTableOfContents, getAllContentPaths } from "@/li
 import MainLayout from "@/components/MainLayout";
 import ExerciseButtons from "@/components/ExerciseButtons";
 import ThemeImage from "@/components/ThemeImage";
+import Dropdown from "@/components/Dropdown";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -109,6 +110,7 @@ const components = {
   h6: createHeading(6),
   ExerciseButtons,
   ThemeImage,
+  Dropdown,
 };
 
 interface PageProps {
