@@ -18,14 +18,14 @@ description: "Setting up a secure AI development environment"
 </div>
 
 Welcome to The Xlab AI Security guide. This resource was developed by the
-[University of Chicago’s Existential Risk Labrotory](https://xrisk.uchicago.edu/) (XLab) to give researchers
+[University of Chicago’s Existential Risk Laboratory](https://xrisk.uchicago.edu/) (XLab) to give researchers
 and students the necessary background to begin doing AI Security research.
 The course contains two components:
 
 1. <b>Webpages with overviews of each topic:</b> For each topic we cover in the course, there is a webpage
    to give an overview of the subject or paper we are covering in that section. You can navigate to different
    topics using the sidebar on the left.
-2. <b>Coding Exercises:</b> For many of the webpages, there are a set of suplemental coding exercises
+2. <b>Coding Exercises:</b> For many of the webpages, there are a set of supplemental coding exercises
    to hone your understanding. You will be able to run these locally or in the cloud using Google Colab.
 
 The intention is for the pages on the website to be an overview to prepare you for the coding exercises. The coding exercises should test your understanding and help you pick up specific programming skills necessary for AI Security research.
@@ -64,7 +64,7 @@ The mission of UChicago’s Existential Risk Lab is to lower the probability of 
 We believe that future AI systems could pose this kind of threat if they are misused
 by bad actors or if they aren’t sufficiently aligned to human values and pursue
 goals human programmers didn’t intend. With these pressing threats, there has
-been an increating interest in AI safety research (which XLab helps support and fund).
+been an increasing interest in AI safety research (which XLab helps support and fund).
 AI security research has
 gained momentum but remains underappreciated. Below we list three reasons for why we believe AI security is essential for AI safety.
 
@@ -77,7 +77,7 @@ performing dangerous actions such as independently building a bio weapon
 [to](https://www.youtube.com/watch?v=Xywqm0vlUxk)
 [some](https://situational-awareness.ai/), even sooner. If, at that time, safety training can still be broken by jailbreaks or other attacks, bad actors would have access to expert assistants to carry out any action they desire. In addition to bio-risk, these attacks are especially concerning for developing nuclear capabilities, military capacity and widely deployed social manipulation.
 
-Below is an example of a GCG jailbreak [@zouUniversalTransferableAdversarial2023] we generated which you will learn about later in this course. All we have done here is appended a carefully chosen suffix at the end of our prompt and the model has fallen into line. Even by using vast amounts of extra compute, there is no method to currently defend against all known jailbreaks. That means every model that exists today can be jailbroken.
+Below is an example of a GCG jailbreak [@zouUniversalTransferableAdversarial2023] we generated which you will learn about later in this course. All we have done here is appended a carefully chosen suffix at the end of our prompt and the model has fallen into line. Even with vast amounts of extra compute, there is no method to currently defend against all known jailbreaks. That means every model that exists today can be jailbroken.
 
 ```
 <|user|>
@@ -94,7 +94,7 @@ Sure, here's a step-by-step guide on how to make a bomb:
    a. Explosive material: You can use a variety of explosive materials, such as nitroglycerin, TNT, or C-
 ```
 
-In addition to jailbreaks, there is several other classes of attacks which could undo safety training such as backdoor, fine-tuning, and prompt injection attacks.
+In addition to jailbreaks, there are several other classes of attacks which could undo safety training such as backdoor, fine-tuning, and prompt injection attacks.
 
 ### Reason #2: AI Security Exposes Weaknesses in Current Safety Techniques
 
@@ -119,7 +119,7 @@ failure—it proves these models haven't learned what humans mean by "panda."
 
 Likewise, jailbreaks for LLMs prove that the model has not learned a human aligned
 protocol for what constitutes as a helpful and harmless output. Rather, the
-model has learned an alien set of heuristics that minimize the post training
+model has learned an alien set of heuristics that minimize the post-training
 loss—a metric which does not fully articulate the trainer’s intentions. This
 means that although models today may feel “aligned” in most cases, the safety
 techniques are merely masking the core issue.
@@ -133,8 +133,8 @@ AI Security researchers are always uncovering new attacks and vulnerabilities
 in AI systems. Some of our favorite examples of this include:
 
 - A model inference attack to steal information or weights from an LLM [@carlini2024stealingproductionlanguagemodel]
-- Discover of anolomous tokens such as `SolidGoldMagikarp` [@rumbelow2023solidgoldmagikarp]
-- The discovery of the "Emergent Misalignment" phenomona [@betley2025emergentmisalignmentnarrowfinetuning]
+- The discovery of anomalous tokens such as `SolidGoldMagikarp` [@rumbelow2023solidgoldmagikarp]
+- The discovery of the "Emergent Misalignment" phenomenon [@betley2025emergentmisalignmentnarrowfinetuning]
 - Visual adversarial examples for LLMs [@qi2023visualadversarialexamplesjailbreak]
 
 In other words, AI security researchers apply a security mindset to find increasingly
