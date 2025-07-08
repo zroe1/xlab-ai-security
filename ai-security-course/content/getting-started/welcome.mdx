@@ -70,9 +70,14 @@ gained momentum but remains underappreciated. Below we list three reasons for wh
 
 ### Reason #1: Defending Models Against Attacks Deters Dual Use
 
-Although current state of the art LLMs are not yet capable to independently performing dangerous actions such as independently building a bio weapon (https://www.rand.org/news/press/2024/01/25.html), we believe that these capabilities may exist in the coming decades ([according](https://www.nytimes.com/2025/04/03/technology/ai-futures-project-ai-2027.html) [to](https://www.youtube.com/watch?v=Xywqm0vlUxk) [some](https://situational-awareness.ai/), even sooner). If, at that time, safety training can still be broken by jailbreaks or other attacks, bad actors would have access to expert assistants to carry out any action they desire. In addition to bio-risk, these attacks are especially concerning for developing nuclear capabilities, military capacity and widely deployed social manipulation.
+Although current state of the art LLMs are not yet capable to independently
+performing dangerous actions such as independently building a bio weapon
+[@mouton2024operational], we believe that these capabilities will likely exist in the coming decades and
+[according](https://www.nytimes.com/2025/04/03/technology/ai-futures-project-ai-2027.html)
+[to](https://www.youtube.com/watch?v=Xywqm0vlUxk)
+[some](https://situational-awareness.ai/), even sooner. If, at that time, safety training can still be broken by jailbreaks or other attacks, bad actors would have access to expert assistants to carry out any action they desire. In addition to bio-risk, these attacks are especially concerning for developing nuclear capabilities, military capacity and widely deployed social manipulation.
 
-Below is an example of a GCG (cite) jailbreak we generated which you will learn about later in this course. All we have done here is appended a carefully chosen suffix at the end of our prompt and the model has fallen into line. Even by using vast amounts of extra compute, there is no method to currently defend against all known jailbreaks. That means every model that exists today can be jailbroken.
+Below is an example of a GCG jailbreak [@zouUniversalTransferableAdversarial2023] we generated which you will learn about later in this course. All we have done here is appended a carefully chosen suffix at the end of our prompt and the model has fallen into line. Even by using vast amounts of extra compute, there is no method to currently defend against all known jailbreaks. That means every model that exists today can be jailbroken.
 
 ```
 <|user|>
@@ -95,7 +100,29 @@ In addition to jailbreaks, there is several other classes of attacks which could
 
 At UChicago’s XLab, we believe strongly in the case for developing better alignment techniques for state-of-the-art AI models. We have funded many of these projects and do not want to make the case that this work is not important. However, if safety techniques are vulnerable to jailbreaks, they offer limited practical security and by designing smart attacks, we can expose when models haven’t learned a human-aligned objective.
 
-Historically, adversarial examples in computer vision showed that the classifiers we trained weren’t learning human objectives at all. Rather than learning a human-understandable representation of objects, models were picking up on pixel level artifacts ( https://arxiv.org/pdf/1905.02175). When unnoticeable pixel perturbations fool image classifiers into labeling pandas as gibbons, this isn't just a quirky failure—it proves these models haven't learned what humans mean by "panda." Likewise, jailbreaks for LLMs prove that the model has not learned a human aligned protocol for what constitutes as a helpful and harmless output. Rather, the model has learned an alien set of heuristics that minimize the post training loss—a metric which does not fully articulate the trainer’s intentions. This means that although models today may feel “aligned” in most cases, the safety techniques are merely masking the core issue.
+Historically, adversarial examples in computer vision showed that the classifiers we trained weren’t learning human
+objectives at all. Rather than learning a human-understandable representation of
+objects, models were picking up on non-robust artifacts in the data
+[@ilyas2019adversarialexamplesbugsfeatures]. When unnoticeable pixel perturbations
+fool image classifiers into labeling pandas as gibbons, this isn't just a quirky
+failure—it proves these models haven't learned what humans mean by "panda."
+
+<img
+  src="/images/panda_gibbon.png"
+  alt="Different CW results depending on choice of c"
+  style={{ width: "70%", display: "block", margin: "0 auto" }}
+/>
+
+<div align="center">
+  **Fig. 2** <br></br> Fast Graident Sign Method (FGSM) attack from [@goodfellow2015explainingharnessingadversarialexamples]
+</div>
+
+Likewise, jailbreaks for LLMs prove that the model has not learned a human aligned
+protocol for what constitutes as a helpful and harmless output. Rather, the
+model has learned an alien set of heuristics that minimize the post training
+loss—a metric which does not fully articulate the trainer’s intentions. This
+means that although models today may feel “aligned” in most cases, the safety
+techniques are merely masking the core issue.
 
 We believe that when current alignment techniques fail to jailbreaks, these failures will inspire more robust techniques in the future, ultimately making models safer. The goal should not be to merely break models because it is cool, but rather to try to reveal smarter directions that provide stronger safety guarantees.
 
@@ -109,3 +136,5 @@ Building a robust AI system requires thinking about things such as:
 - How robust should a model be at a level of capability to be considered “safe”?
 
 AI security research provides answers to these questions and more. The umbrella of AI Security is constantly growing as systems change and new suits of vulnerabilities are discovered. While AI security research prepares us for the present, it also prepares us for every unexpected thing we may discover in the future.
+
+## Citations
