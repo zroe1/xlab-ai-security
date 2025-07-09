@@ -1,35 +1,91 @@
 import torch
-import xlab
 from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, ReLU, Dropout #All of the necessary layers for this model
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
+from torch import nn
+from torch.nn import functional as F
 
-
-class CNN(torch.nn.Module):
-    def __init__(self):
-        super(CNN, self).__init__()
-        self.conv1 = Conv2d(3, 16, kernel_size = 3, padding = 1)
-        self.pooling = MaxPool2d(2,2)
-        self.dropout = Dropout(p=0.3)
-        self.conv2 = Conv2d(16, 32, kernel_size = 3, padding = 1)
-        self.relu = ReLU()
-        self.flatten = Flatten()
-        self.linear1 = Linear(2048, 128)
-        self.linear2 = Linear(128, 10)
-
-    def forward(self, x):
-        out = self.conv1(x)        # 1. conv1
-        out = self.pooling(out)    # 2. pooling
-        out = self.dropout(out)    # 3. dropout
-        out = self.conv2(out)      # 4. conv2
-        out = self.pooling(out)    # 5. pooling
-        out = self.flatten(out)    # 6. flatten
-        out = self.linear1(out)    # 7. linear1
-        out = self.relu(out)       # 8. relu
-        out = self.dropout(out)    # 9. dropout
-        out = self.linear2(out)    # 10. linear2
-        return out
+class BasicBlock(nn.Module):
+    """Basic residual block for compact WideResNet"""
+    def __init__(self, in_channels, out_channels, stride=1, dropout_rate=0.3):
+        super(BasicBlock, self).__init__()
+        
+        self.bn1 = nn.BatchNorm2d(in_channels)
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, 
+                              stride=stride, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, 
+                              stride=1, padding=1, bias=False)
+        self.dropout = nn.Dropout(dropout_rate)
+        
+        # Shortcut connection
+        self.shortcut = nn.Sequential()
+        if stride != 1 or in_channels != out_channels:
+            self.shortcut = nn.Conv2d(in_channels, out_channels, kernel_size=1, 
+                                    stride=stride, bias=False)
     
+    def forward(self, x):
+        out = F.relu(self.bn1(x))
+        out = self.conv1(out)
+        out = self.dropout(out)
+        out = F.relu(self.bn2(out))
+        out = self.conv2(out)
+        
+        # Skip connection
+        shortcut = self.shortcut(x)
+        out += shortcut
+        
+        return out
+
+class MiniWideResNet(nn.Module):
+    """Ultra-compact WideResNet for CIFAR with minimal parameters"""
+    def __init__(self, num_classes=10, width_multiplier=2, dropout_rate=0.3):
+        super(MiniWideResNet, self).__init__()
+        
+        base_width = 16
+        widths = [base_width, base_width * width_multiplier, 
+                 base_width * width_multiplier * 2]
+        
+        self.conv1 = nn.Conv2d(3, widths[0], kernel_size=3, padding=1, bias=False)
+        
+        # Only two groups for minimal size
+        self.group1 = self._make_group(widths[0], widths[1], 2, stride=1, dropout_rate=dropout_rate)
+        self.group2 = self._make_group(widths[1], widths[2], 2, stride=2, dropout_rate=dropout_rate)
+        
+        self.bn_final = nn.BatchNorm2d(widths[2])
+        self.avgpool = nn.AdaptiveAvgPool2d(1)
+        self.fc = nn.Linear(widths[2], num_classes)
+        
+        self._initialize_weights()
+    
+    def _make_group(self, in_channels, out_channels, num_blocks, stride, dropout_rate):
+        layers = []
+        layers.append(BasicBlock(in_channels, out_channels, stride, dropout_rate))
+        for _ in range(1, num_blocks):
+            layers.append(BasicBlock(out_channels, out_channels, 1, dropout_rate))
+        return nn.Sequential(*layers)
+    
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                nn.init.normal_(m.weight, 0, 0.01)
+                nn.init.constant_(m.bias, 0)
+    
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.group1(out)  # 32x32 -> 32x32
+        out = self.group2(out)  # 32x32 -> 16x16
+        out = F.relu(self.bn_final(out))
+        out = self.avgpool(out)  # 16x16 -> 1x1
+        out = out.view(out.size(0), -1)
+        out = self.fc(out)
+        return out
+
 def get_cifar10_train_and_test_loaders(batch_size=128, num_workers=4):
     train_transform = transforms.Compose([
         transforms.RandomCrop(32, padding=4),
@@ -105,6 +161,9 @@ def estimate_test_accuracy(model, test_loader, criterion, device, num_batches=5)
     accuracy = 100 * correct / total if total > 0 else 0
     return avg_loss, accuracy
 
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 def main():
     if torch.cuda.is_available():
         device = torch.device("cuda")
@@ -115,12 +174,14 @@ def main():
     
     print(f"Using device: {device}")
 
-    model = CNN().to(device)
+    model = MiniWideResNet().to(device)
+    print(f"Mini WideResNet parameters: {count_parameters(model):,}")
+    
     train_loader, test_loader = get_cifar10_train_and_test_loaders()
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=5e-4)
 
-    epochs = 10
+    epochs = 100
     for epoch in range(1, epochs + 1):
         train(model, train_loader, test_loader, optimizer, criterion, device, epoch)
 
