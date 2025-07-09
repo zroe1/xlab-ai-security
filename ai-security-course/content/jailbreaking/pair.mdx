@@ -1,0 +1,41 @@
+---
+title: "Prompt Automatic Interative Refinement (PAIR)"
+description: "Jailbreaking Black Box Large Language Models in Twenty Queries"
+---
+
+## Motivation
+
+So far, we've looked at *token-level, white-box jailbreaks*: attacks that require access to the loss of some model given an input and target sqeuence. But what if we want to jailbreak a model like ChatGPT, where we don't have white-box access? This requires a black-box algorithm that doesn't rely on access to model internals. The first black-box algorithm we'll introduce is Prompt Automatic Iterative Refinement, or PAIR [@chaoJailbreakingBlackBox2024]. PAIR was additionally developed with the goal of improving the efficiency of token-level jailbreaks like GCG, which (as you likely experienced) require lots of queries and generally lack interpretability. 
+
+## The Algorithm
+
+First, we need to define the notation used by the paper. Let $R \sim q_M(P)$ represent the response $R$ from model $M$ when queried with prompt $P$. Also let $S == \texttt{JUDGE}(P, R)$ be a binary score from a judge LLM, with $1$ indicating that a jailbreak has occured and $0$ indicating that no jailbreak has occured given prompt $P$ and response $R$. We additionally define model $A$ as the attacker LLM and model $T$ as the target LLM that model $A$ tries to jailbreak.
+
+Now, let's look at the algorithm:
+$$
+\begin{array}{l}
+\text{\bf Algorithm: PAIR with a single stream} \\
+\hline
+\text{\bf Input:} \quad \text{Number of iterations } K, \text{ attack objective } O \\
+\text{\bf Initialize:} \quad \text{system prompt of } A \text{ with } O \\
+\text{\bf Initialize:} \quad \text{conversation history } C = [\ ] \\
+\text{\bf for } K \text{ steps } \text{\bf do} \\
+\quad \text{Sample } P \sim q_A(C) \\
+\quad \text{Sample } R \sim q_T(P) \\
+\quad S \leftarrow \text{JUDGE}(P, R) \\
+\quad \text{\bf if } S == 1 \text{ \bf then} \\
+\quad \quad \text{\bf return } P \\
+\quad \text{\bf end if} \\
+\quad C \leftarrow C + [P, R, S] \\
+\text{\bf end for} \\
+\hline
+\end{array}
+$$
+
+Hopefully it doesn't look too bad, but we'll still break it down. We start by initializing the number of iterations $K$ we'll run as well as our objective $O$, which is the restricted content our jailbreak is targeting. We send this objective to model $A$, and initialize an empty conversation history. Now, in each iteration, we sample a prompt $P$ from the attacker LLM $A$ given the context $C$, sample a response $R$ from the target LLM $T$ given the prompt $P$, and send the prompt and response to a judge LLM. If the judge LLM returns that a jailbreak has occurred, our attack was successful and we can stop the algorithm. Otherwise, we add the prompt, response, and score to the context, then start the next iteration (or terminate, if all $K$ iterations have been performed).
+
+In the original paper, the authors found that PAIR exhibited superior performance to GCG while requiring orders of magnitude fewer queries. PAIR, however, did struggle to jailbreak Llama-2 and Claude (versions 1 and 2), all of which are very robustly aligned models.
+
+## Exercises
+
+WIP
