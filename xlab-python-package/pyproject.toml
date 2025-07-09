@@ -28,6 +28,8 @@ dependencies = [
     "torchvision>=0.10.0",
     "numpy>=1.21.0",
     "matplotlib>=3.3.0",
+    "pytest>=6.0",
+    "Pillow>=8.0.0",
 ]
 
 [project.optional-dependencies]

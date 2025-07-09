@@ -45,7 +45,12 @@ setup(
     ],
     python_requires=">=3.7",
     install_requires=[
-        # Add your dependencies here
+        "torch>=1.9.0",
+        "torchvision>=0.10.0", 
+        "numpy>=1.21.0",
+        "matplotlib>=3.3.0",
+        "pytest>=6.0",
+        "Pillow>=8.0.0",
     ],
     extras_require={
         "dev": [
