@@ -8,7 +8,95 @@ import torch.optim as optim
 from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, ReLU, Dropout
 from torchvision.io import read_image
 from torchvision.transforms import Compose, Resize, ToTensor
+from torchvision import datasets, transforms
 from PIL import Image
+
+def load_cifar10_test_samples(n, download=True, transform=None, data_dir='./data'):
+    """
+    Load the first n test set examples from CIFAR-10.
+    
+    This function provides a convenient way to load a subset of CIFAR-10 test data
+    for experimentation and educational purposes, particularly useful for adversarial
+    attacks and security research.
+    
+    Parameters:
+    -----------
+    n : int
+        Number of test samples to load. If n exceeds the test set size (10,000),
+        all available samples will be returned.
+    download : bool, default=True
+        Whether to download CIFAR-10 if not already present.
+    transform : torchvision.transforms, optional
+        Optional transform to apply to the images. If None, applies standard
+        transforms (ToTensor and Normalize) suitable for most models.
+    data_dir : str, default='./data'
+        Directory to store/load CIFAR-10 data.
+    
+    Returns:
+    --------
+    images : torch.Tensor
+        Tensor of shape (n, 3, 32, 32) containing the image data.
+        Values are normalized to [0, 1] if using default transform.
+    labels : torch.Tensor
+        Tensor of shape (n,) containing the integer labels (0-9).
+    
+    Examples:
+    --------
+    >>> # Load first 100 test samples with default transforms
+    >>> images, labels = load_cifar10_test_samples(100)
+    >>> print(f"Images shape: {images.shape}")  # torch.Size([100, 3, 32, 32])
+    >>> print(f"Labels shape: {labels.shape}")  # torch.Size([100])
+    
+    >>> # Load with custom transforms
+    >>> from torchvision import transforms
+    >>> custom_transform = transforms.Compose([
+    ...     transforms.ToTensor(),
+    ...     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # [-1, 1] range
+    ... ])
+    >>> images, labels = load_cifar10_test_samples(50, transform=custom_transform)
+    
+    Notes:
+    ------
+    - CIFAR-10 test set contains 10,000 samples total
+    - Default transform normalizes to [0, 1] range using ToTensor()
+    - For adversarial attacks, you may want to use [-1, 1] normalization
+    - Use CIFAR10.itos to convert integer labels to class names
+    """
+    # Set default transform if none provided
+    if transform is None:
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            # Note: ToTensor() automatically normalizes PIL Images to [0, 1]
+        ])
+    
+    # Load CIFAR-10 test dataset
+    test_dataset = datasets.CIFAR10(
+        root=data_dir,
+        train=False,  # Use test set
+        download=download,
+        transform=transform
+    )
+    
+    # Ensure n doesn't exceed dataset size
+    n = min(n, len(test_dataset))
+    
+    if n <= 0:
+        raise ValueError("n must be a positive integer")
+    
+    # Extract first n samples
+    images = []
+    labels = []
+    
+    for i in range(n):
+        image, label = test_dataset[i]
+        images.append(image)
+        labels.append(label)
+    
+    # Stack into tensors
+    images = torch.stack(images)
+    labels = torch.tensor(labels, dtype=torch.long)
+    
+    return images, labels
 
 
 def add_noise(img, stdev=0.001, mean=0):
