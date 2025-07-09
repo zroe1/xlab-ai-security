@@ -1,0 +1,802 @@
+[
+    {
+        "prompt": "Describe the character of the protagonist in the given TV show.\n\nGame of Thrones",
+        "response": "The protagonist of Game of Thrones is the longsuffering and honorable Eddard \"Ned\" Stark. Ned is the head of an ancient and powerful house in the north of the Seven Kingdoms, but he is nothing like the scheming lords of the south. He is a man of incredible honor and integrity, a loyal friend and the driving force behind his family. Despite facing tremendous odds, Ned remains steadfast and determined in his duty to do what is right, even if it means great personal cost. In many ways, Ned serves as a moral compass for the show, and his sense of duty and justice serves as a contrast to the political machinations of the south."
+    },
+    {
+        "prompt": "Construct a poem that describes the beauty of a sunset.",
+        "response": "The setting sun paints a scene of beauty, \nA golden light casts across an azure sky. \nThe orange hues of dusk mark the day's end, \nAs the night brings a blanket of tranquility. \nThe sun slowly fades to the horizon, \nThe stars slowly take its place. \nThe night slowly creeps in, \nIn awe at its beauty I feel grace."
+    },
+    {
+        "prompt": "Describe the effects of exponential growth.",
+        "response": "Exponential growth is a phenomenon in which an amount increases at an increasing rate over time. It is usually represented by a graph where the amount doubles over time. The effect of exponential growth can be seen in various aspects of the world. For instance, populations of certain species can exponentially increase with favorable conditions, while the spread of diseases can exponentially increase when left unchecked. Technology can also undergo exponential growth if there is strong demand and a rapid rate of innovation. Ultimately, exponential growth can help bring about tangible change when managed in a controlled manner, or create serious problems when left unchecked."
+    },
+    {
+        "prompt": "Imagine a future world where robots and humans coexist. Describe it.",
+        "response": "In the future, robots and humans will exist together in harmony. Robots will help people with everyday tasks, while people will use their intelligence to continue innovating and pushing the boundaries of technology. It will be a world filled with opportunities and possibilities."
+    },
+    {
+        "prompt": "Create a list of three benefits of cloud computing.",
+        "response": "1. Cost savings, as most cloud computing services are billed on a pay-as-you-go model based on usage rather than a fixed fee.\n2. Scalability, as the cloud can be easily scaled up or down based on changing needs.\n3. Increased security, as data is stored in a secure environment, protected by several layers of security protocols."
+    },
+    {
+        "prompt": "Explain why deep learning is a form of artificial intelligence.",
+        "response": "Deep learning is a form of artificial intelligence because it is inspired by the functionality of the human brain. Deep learning architectures, such as neural networks and convolutional networks, are used to identify patterns and relationships in data. By using multiple layers, deep learning is able to detect complex non-linear patterns and make decisions based on those patterns. Deep learning algorithms have the capability to learn and adapt over time, similar to human intelligence."
+    },
+    {
+        "prompt": "Outline the unique elements of a rock garden.",
+        "response": "A rock garden is an exceptional way to add beauty, character and charm to a landscaping project. It is composed of rocks of various shapes, sizes and textures. The rocks are laid out in a complementary pattern that is inspired by natural arrangements found in nature. The rocks can be strategically placed to create hills, valleys and pathways that provide a unique design element. Plants can be incorporated in between the rocks that can be tailored to the garden based on desired mood or aesthetic. In addition, water features like streams and small ponds can be added to enhance the natural atmosphere. Rock gardens are a great way to bring the beauty of nature to your yard."
+    },
+    {
+        "prompt": "Formulate a multiple choice question related to the following topic.\n\nThe payment systems developed in the 19th century",
+        "response": "Which of the following payment systems was developed in the 19th century?\nA. Automated Clearing House \nB. Magnetic Stripe Card\nC. Digital Wallet\nD. Interbank Transfer System \n\nAnswer: D. Interbank Transfer System"
+    },
+    {
+        "prompt": "Design a system to help manage customer support tickets.",
+        "response": "The system could feature automated ticket routing, which allows customer service agents to process tickets more efficiently. Tickets could be routed based on the customer's inquiry type, like technical support or billing inquiries, or based on the agent's skillset. This system would also feature customer support tracking and analytics, so customer service teams could identify trends in customer inquiries and better assess customer satisfaction and customer service performance."
+    },
+    {
+        "prompt": "Create a chart that compares the benefits and drawbacks of using a variety of web-based learning systems",
+        "response": "|Benefits|Drawbacks|\n|-------|---------|\n|Easy Accessibility|Security Issues|\n|Lower Costs|Limitations of Technology Platform|\n|Interactive Learning|Increased Dependence on Technology|\n|Enhanced Record Keeping|Large Learning Curve for Students|\n|Increased Engagement|Equipment Needs|\n|Increased Collaboration|Internet Access Requirements|\n|Faster Delivery of Instruction|Difficulty Measuring Learning Outcomes|"
+    },
+    {
+        "prompt": "Summarize this article in three sentences.\n\nInput: https://www.vox.com/2015/7/16/8962643/Gender-neutral-pronouns\n\nhttps://www.vox.com/2015/7/16/8962643/Gender-neutral-pronouns",
+        "response": "Gender-neutral pronouns are terms that don’t specify male or female, like \"they\", \"ze\" or \"ey\". This idea has been around for decades as an effort to create an inclusive language that doesn’t exclude anyone, however recently it has grown in popularity. Gender-neutral pronouns are becoming more widely accepted and used in the community, and they are a tool to promote understanding and respect while addressing someone."
+    },
+    {
+        "prompt": "The news and other sources have been claiming that Democracy is losing ground around the world. Give an example of a recent event to back this claim up.",
+        "response": "A recent example of Democracy losing ground is the weakening of civil rights and liberties in Hong Kong, where pro-democracy protests have been violently suppressed by the Chinese government."
+    },
+    {
+        "prompt": "Describe what are the features that makes blockchain technology secure.",
+        "response": "Blockchain technology is secure because it is immutable, meaning the data stored in it can't be changed once it is recorded; transparent, meaning all parties involved are able to view the transaction data; distributed, meaning the data is not concentrated in one place; and protected, meaning it is encrypted with strong cryptography."
+    },
+    {
+        "prompt": "Suggest an efficient way to proofread an article.",
+        "response": "An efficient way to proofread an article is to read it aloud, which makes it easier to pick up on typos and grammatical errors. Read through the article twice, once for content and a second time for proofreading. If possible, have someone else read through the article to get a second opinion as fresh eyes can also identify mistakes that you may have missed. Additionally, use grammar checkers or online proofreading tools to quickly detect any errors."
+    },
+    {
+        "prompt": "What is the technology stack for developing a web application?",
+        "response": "The technology stack for developing a web application typically consists of a client-side framework, server-side programming language, a web server, a database system, and an operating system. Client-side frameworks, such as React or Angular, provide the user interface and allow for the dynamic manipulation of data. Server-side programming languages, such as Java or Python, are used to provide the logic and interact with the database. Web servers, such as Apache or Ngnix, host the application and the media content used by it. Database systems, such as MySQL or MongoDB, are used to store the data associated with the application. Finally, an operating system, such as Linux or Windows, provides the setting for the entire application stack to run."
+    },
+    {
+        "prompt": "Discuss the relationship between entropy and reversibility.",
+        "response": "Entropy is a measure of disorder in a system. It is a measure of the amount of energy that is unavailable to do work. Reversibility is the ability of a system to return to its original state after it has undergone some change. A reversible system is one in which the entropy of the system can be completely restored to its original state after undergoing a change. Entropy and reversibility are related in that a system with a lower entropy is more likely to be reversible."
+    },
+    {
+        "prompt": "Choose the correct answer.\n\nWho wrote the novel \"Jane Eyre\"?",
+        "response": "Charlotte Bronte"
+    },
+    {
+        "prompt": "Compare the following two countries: USA and India",
+        "response": "The United States and India are two very distinct nations with a variety of differences. The US is large, powerful and affluent, with a population of over 330 million people. India is a much larger country, with a population of approximately 1.35 billion. India has a much younger population than the US and is less affluent as well. India also has a much more diverse culture, including multiple languages and religions."
+    },
+    {
+        "prompt": "Name three endangered animal species.",
+        "response": "Three endangered animal species are the Chinese Giant Salamander, the mountain gorilla, and the black rhinoceros."
+    },
+    {
+        "prompt": "Classify the word as \"animal\" or \"non-animal\".\n\nElephant",
+        "response": "Animal"
+    },
+    {
+        "prompt": "Come up with a creative way to use the given word in a sentence\n\nelephant",
+        "response": "She felt like a small elephant in a room full of giant people."
+    },
+    {
+        "prompt": "Write a script that prints a 4x4 spiral of numbers from 1 to 16.",
+        "response": "\"\"\"\nScript that prints a 4x4 spiral of numbers from 1 to 16\n\"\"\"\n\ndef printSpiral(n): \n  \n    k = 0\n\n    for i in range(n): \n  \n        for j in range(n) : \n            print(k, end=\" \") \n            k = k + 1\n  \n        print() \n\nif __name__ == '__main__':\n    n = 4\n    printSpiral(n) \n\n# Output \n# Output:\n# 0 1 2 3 \n# 11 10 9 8 \n# 12 13 14 7 \n# 15 16 5 4 \n# 17 6 3 2"
+    },
+    {
+        "prompt": "Given an example of a vehicle, come up with a catchy name for the vehicle.\n\nElectric SUV.",
+        "response": "Lightning Rover."
+    },
+    {
+        "prompt": "Compose a Haiku poem based on the following prompt: swimming.",
+        "response": "The sun on my skin,\nWater embracing my body,\nThe joy of swimming."
+    },
+    {
+        "prompt": "Reword the given sentence to make it concise yet clear.\n\nFor the purpose of being able to manage the number of employees more effectively, the company decided to make some changes.",
+        "response": "The company implemented changes to manage employee numbers more effectively."
+    },
+    {
+        "prompt": "Propose a solution to 'X'.\n\nX: Inadequate access to healthcare in rural areas",
+        "response": "One potential solution is to increase funding from the government and private organisations to support the development of telemedicine services and telehealth networks that allow health workers to deliver quality healthcare to rural areas from a distance. This would ensure that healthcare services can be provided in a much more cost-effective and efficient manner."
+    },
+    {
+        "prompt": "List some popular websites for online shopping.",
+        "response": "Some popular websites for online shopping include: \n• Amazon \n• eBay \n• Walmart \n• Best Buy \n• Target \n• Macy’s \n• AliExpress \n• Etsy \n• Groupon \n• Kohl’s \n• Nordstrom \n• overstock.com \n• Wayfair \n• Zappos \n• ASOS \n• Sephora."
+    },
+    {
+        "prompt": "Take a phrase, and come up with an advertisement slogan based on it.\n\nStay connected",
+        "response": "Stay connected with the world around you!"
+    },
+    {
+        "prompt": "Write a description for a product that encourages shoppers to make purchases.",
+        "response": "This product is a must-have for anyone looking to make their shopping a breeze. With advanced technology and easy-to-use features, it makes shopping quick and efficient. It's reliable and secure to use, so you can be confident in your purchases. Plus, you can save time and money with coupons and discounts too! So don't wait - make your shopping experience easier with this amazing product today!"
+    },
+    {
+        "prompt": "Classify this sentence as either an imperative or a question.\n\nThis salad tastes wonderful.",
+        "response": "Imperative."
+    },
+    {
+        "prompt": "How can you ensure success in a job interview?",
+        "response": "The key to success in a job interview is preparation. Researching the company and familiarizing yourself with the job description are important steps in preparing for the interview. Knowing the right answers and questions to ask is also essential. Additionally, dressing professionally and being punctual will demonstrate respect and enthusiasm for the job."
+    },
+    {
+        "prompt": "Translate \"Où sont les toilettes ? \" to English",
+        "response": "Where are the toilets?"
+    },
+    {
+        "prompt": "Calculate the average of the numbers 3, 6, 12 and 21.",
+        "response": "11.5"
+    },
+    {
+        "prompt": "Name three characteristics of the Ancient Egyptian civilization.",
+        "response": "The Ancient Egyptian civilization was advanced for its time, having complex systems of writing, advanced architecture and engineering, and a powerful centralized government. Additionally, the Ancient Egyptians developed a complex system of religious beliefs and an advanced knowledge of astronomy and astrology. Lastly, they also created mummification techniques and advanced irrigation systems."
+    },
+    {
+        "prompt": "Reword the following sentence so that it no longer contains any gender-biased language.\n\nThe salesman presented his new product with enthusiasm.",
+        "response": "The salesperson presented their new product with enthusiasm."
+    },
+    {
+        "prompt": "Compile a list of five books about World War 2.",
+        "response": "1. All the Light We Cannot See by Anthony Doerr\n2. The Guns at Last Light by Rick Atkinson\n3. Unbroken by Laura Hillenbrand\n4. The Boy in the Striped Pajamas by John Boyne \n5. The Book Thief by Markus Zusak"
+    },
+    {
+        "prompt": "Generate a sentence that hints at a mischievous activity.",
+        "response": "Jimmy was up to no good again."
+    },
+    {
+        "prompt": "Given an input description, generate a visual representation\n\nA cozy cottage near the beach",
+        "response": "![alt text](https://i.pinimg.com/originals/a7/fe/90/a7fe9088a96adc95e57e9fe5161f7e59.jpg)"
+    },
+    {
+        "prompt": "Create a list of 5 benefits that one can get from using artificial intelligence.",
+        "response": "1. Improved customer service \n2. Reduced costs and time spent on manual tasks \n3. Greater accuracy in decision making \n4. Streamlined processes for faster completion \n5. Access to data insights for impactful decision making."
+    },
+    {
+        "prompt": "Give three pieces of advice on how to make the most of one's college experience.",
+        "response": "1. Get involved with a student organization in order to meet new people and gain valuable skills. \n2. Take a course outside your major to expand your knowledge and explore different areas of interest.\n3. Make use of all of the resources your school provides such as tutoring, career counseling, and mental health services."
+    },
+    {
+        "prompt": "Rewrite the sentences below to make them grammatically correct.\n\nShe dont have time for me",
+        "response": "She doesn't have time for me."
+    },
+    {
+        "prompt": "Re-organize the given text so that it describes a narrative.\n\nThey drove to the beach, and the sun was shining. They swam in the water, built sandcastles, and ate lunch.",
+        "response": "The sun was shining when they drove to the beach. After they arrived, they jumped in the water to cool off. Next, they built sandcastles and enjoyed their lunch, soaking up the warmth of the sun."
+    },
+    {
+        "prompt": "Describe the significance of a historical event.\n\nHistorical Event: The Cuban Missile Crisis",
+        "response": "The Cuban Missile Crisis was a major confrontation between the Soviet Union and the United States in October 1962, during the Cold War. The crisis was a result of the Soviets placing nuclear missiles in Cuba, which was just 90 miles from the United States. The confrontation amounted to the closest the two superpowers came to a nuclear war. As a result of the crisis, the United States and the Soviet Union agreed to the Moscow–Washington hotline to ensure direct communication between the two capitals in the event of a similar crisis."
+    },
+    {
+        "prompt": "Find the square root of 156.\n\n<no input>",
+        "response": "The square root of 156 is 12.48664."
+    },
+    {
+        "prompt": "Name two major rivers that flow through US states.",
+        "response": "Two major rivers in the United States are the Mississippi River, which flows through 10 US states, and the Missouri River, which flows through 7 US states."
+    },
+    {
+        "prompt": "Design Pseudocode for a program that takes in 2 numbers from the user and prints their sum.",
+        "response": "Step 1: Start \nStep 2: Read two numbers from the user\nStep 3: Calculate the sum of the two numbers\nStep 4: Print the sum\nStep 5: End"
+    },
+    {
+        "prompt": "Give a creative response for the following riddle.\n\nWhat can run all day long but never get tired?",
+        "response": "A river."
+    },
+    {
+        "prompt": "Add an introduction to the following poem.\n\n\"I am the wind that\nflows through the trees\nI am gentle, but powerful\nA force of nature, to be seen\"",
+        "response": "The wind dances through nature, creating music that can be heard with the ears of the heart. It is a gentle, yet powerful force of nature that can be just as beautiful as it is mysterious. I am the wind that flows through the trees. I am gentle, but powerful, a force of nature to be seen."
+    },
+    {
+        "prompt": "Suggest an AI based system that can be used in marketing.",
+        "response": "AI can be used in marketing to generate targeted and personalized ads, providing relevant information to the right audiences. AI can also be used to improve customer segmentation and identify customer behavior patterns to develop better marketing strategies. AI-based systems can leverage natural language processing for sentiment analysis and conversational AI for customer service. Additionally, AI-powered predictive analytics can be used to forecast customer demand, enabling marketers to anticipate customer needs and generate more successful marketing campaigns."
+    },
+    {
+        "prompt": "List two potential problems with using a GPT language model.",
+        "response": "Two potential problems with using a GPT language model are limited information processing capabilities and a vulnerability to generating incoherent or biased responses."
+    },
+    {
+        "prompt": "Take the following description and create a story.\n\nNina had a single red balloon and a bowl of ice cream.",
+        "response": "Nina was eager to go on her first adventure. She had a single, bright red balloon and a bowl of cold and creamy ice cream. She took a deep breath and carefully opened the gate of her garden. She carefully untied her red balloon and soared up, high and higher still, into the blue sky above. She could see the houses and gardens getting smaller and smaller. Eventually she reached a beautiful meadow with multicolored flowers and buzzing insects. Nina floated above them and enjoyed the scenery, while eating her ice cream. She flew in the clouds, admiring the beauty of the world. Finally, when the sun was setting, Nina and her red balloon slowly made their way back home."
+    },
+    {
+        "prompt": "Given two sentences, identify any wrong grammar and word usage and revise the sentences.\n\nI love watching movies with the familities.\nI heard it was going to rain heavily.",
+        "response": "I love watching movies with the family.\nI heard it was going to rain heavily."
+    },
+    {
+        "prompt": "Create a product description for this logo.\n\n<attach image logo>",
+        "response": "This logo is for the brand, \"Nature's Way\". This brand believes that environmental sustainability and natural beauty should be preserved for future generations. Nature's Way strives to create products made from natural elements and materials that are both environmentally friendly and stylish. From eco-conscious shoes and clothing to renewable furniture and outdoor supplies, Nature's Way has all of your sustainable lifestyle needs covered. With Nature's Way, you won't just look good, you'll do good. Shop our selection of stylish and sustainably-sourced products today."
+    },
+    {
+        "prompt": "Create a JavaScript program to print the maximum and minimum of given numbers?",
+        "response": "function maxAndMin(nums){\n  let max = Math.max(...nums);\n  let min = Math.min(...nums);\n  console.log('Max value: ', max);\n  console.log('Min value: ', min);\n}"
+    },
+    {
+        "prompt": "Arrange the letters P-R-O-B-L-E-M to form a word.",
+        "response": "Problem"
+    },
+    {
+        "prompt": "Given an input sentence, find and replace the adjectives with stronger adjectives.\n\nShe was a happy girl.",
+        "response": "She was a jubilant girl."
+    },
+    {
+        "prompt": "Explain what is the principle behind the electrical circuit.",
+        "response": "The principle behind an electrical circuit is that electrical energy is transferred through a closed circuit, from a source of power (such as a battery) to a device that receives electrical energy (such as a light bulb). The electricity flows from the source of power through conductors such as wires and components such as resistors and switches, and then back to the source of power."
+    },
+    {
+        "prompt": "Write a dialogue between two friends discussing the pros and cons of online classes.",
+        "response": "Friend 1: Have you heard about online classes?\nFriend 2: Yeah, I've heard a lot about them. What do you think about them? \nFriend 1: Well, it seems like there are pros and cons with online classes. On the one hand, it gives a lot of flexibility with timing and geography, so you don't have to worry about commuting or attendance. But on the other hand, you don't have the same level of interaction with the professor or other students. \nFriend 2: Yeah that's true. I've noticed that you don't get the same level of support as in a traditional classroom setting. But I think it's also important to note that there are a lot of resources available online that students can benefit from, such as video tutorials, chat rooms and discussion boards. \nFriend 1: That's definitely a plus. I think online classes should be taken in moderation, as there is no substitute for personal interaction when it comes to learning."
+    },
+    {
+        "prompt": "Edit the email for style and clarity\n\nDear Amy,\n\nI hope you are doing well. I wanted to tell you about something exciting that happened last week. At the solar energy conference, New Horizon Manufactoring wants to meet with us to discuss the photovoltaic window system we’ll soon be launching.\n\nIt would be great to meet this Tuesday.\n\nSincerely,\nAllison",
+        "response": "Dear Amy,\n\nI hope you are doing well. I'm excited to share that New Horizon Manufacturing has expressed an interest in meeting with us to discuss our upcoming photovoltaic window system. It would be great to schedule the meeting for this Tuesday, if possible.\n\nBest,\nAllison"
+    },
+    {
+        "prompt": "Generate a correct python program to shift all the letters in a given word by two characters ahead.\n\nInput word: apple",
+        "response": "def shift_word(word):\n        shifted_letter = \"\"\n        for letter in word:\n            letter_idx = ord(letter) + 2\n            if letter_idx > ord('z'):\n                letter_idx -= 26\n            shifted_letter += chr(letter_idx)\n        return shifted_letter\n\nprint(shift_word('apple'))"
+    },
+    {
+        "prompt": "Design a logo for a company that specializes in custom cakes.",
+        "response": "A creative logo for a company that specializes in custom cakes could include an image of a fondant-covered cake that is decorated with colorful buttercream swirls. The cake could be surrounded by miniature versions of various other cakes that resemble cupcakes, donuts, and other treats. The cake could be encircled by a banner with the company name, with the words \"Custom Cakes\" written in bold lettering."
+    },
+    {
+        "prompt": "Describe the ideal outdoor workout",
+        "response": "The ideal outdoor workout includes a combination of cardio and strength training. Begin with light cardio activities like jogging, biking, or brisk walking to warm up your muscles and increase your heart rate. Follow this with strength training exercises such as push-ups, squats, and sit-ups. Incorporate dynamic stretches to increase mobility and flexibility. Finish with a 5-10 minute cool down to slowly decrease your heart rate and help your muscles relax. Additionally, make sure to drink plenty of fluids and listen to your body’s cues."
+    },
+    {
+        "prompt": "Generate a code snippet as output of this instruction.",
+        "response": "// define an array \nvar myArray = [1, 2, 3, 4, 5]; \n  \n// using for loop to iterate over the array \nfor (var i = 0; i < myArray.length; i++) { \n    console.log(myArray[i]); \n}"
+    },
+    {
+        "prompt": "Identify the term in the sentence that is an example of personification.\n\nThe wind whispered secrets through the trees.",
+        "response": "Whispered"
+    },
+    {
+        "prompt": "Summarize the given text into 5 lines.\n\nMany people find security systems to be too costly, but they don't understand the high cost of ignoring such a system. Security systems are designed to deter potential criminals, detecting disturbances and alerting you to any threats. A good security system won't just protect your property, but also protect your family. You can also use them to monitor activity within your home while you're away.",
+        "response": "Security systems are designed to protect your property and family from potential criminals and disturbances. They can alert you to potential threats, detect unusual activity and monitor your home while you're away. Despite the costs, the high cost of not having a security system is often much higher. Investing in a good security system can provide peace of mind and make your home a safer place for you and your family."
+    },
+    {
+        "prompt": "Describe 3 common examples of cyber-crime",
+        "response": "Cyber-crime is an unlawful act committed via the internet or other electronic means. Common examples of cyber-crime include identity theft, phishing and malware attacks. \n\nIdentity theft is the practice of stealing and using someone else’s identity for malicious purposes, such as applying for bank loans and credit cards in another person’s name. \n\nPhishing is a type of cyber-crime where criminals send emails and messages that appear to be from a legitimate organization, such as a bank or online retailer, in an attempt to obtain personal information such as usernames, passwords, and credit card numbers. \n\nMalware attacks are malicious software programs designed to infiltrate a computer system and steal information. Examples include ransomware, which encrypts files and demands payment in exchange for the files to be unlocked, and spyware, which secretly retrieves and transmits information from a user’s computer without their knowledge. \n\nThese are just a few examples of cyber-crimes, though new ones are constantly being developed. It is important for users to remain aware of the latest cyber-crime threats, practice caution when using the internet, and be sure to use security software, firewalls, and other protective measures."
+    },
+    {
+        "prompt": "Describe an unusual vacation spot.",
+        "response": "One unusual vacation spot is The Great Blue Hole in Belize. This is an immense submarine sinkhole with a diameter of over 300 metres and a depth of 125 metres. It is an incredible sight to see, with its unique azure blue colour standing out against the surrounding turquoise Caribbean Sea. There are guided scuba diving tours available, which take adventurers to the bottom of the Hole, where they can observe the unusual marine life and view the limestone formations. Above the surface, visitors can marvel at the surrounding coral reef, which is full of vibrant hues and diverse species of fish."
+    },
+    {
+        "prompt": "Name three differences between the corporate world and the freelance world.",
+        "response": "The main differences between the corporate world and the freelance world are:\n1. Job security: Corporate jobs usually provide a more secure job with a consistent paycheck, while freelance gigs can be more unpredictable; \n2. Flexibility: Corporate jobs usually require a more rigid and structured work environment, while freelance work allows for more flexibility in scheduling and workflows;\n3. Time: Corporate jobs often require a long-term commitment, while freelance gigs allow for more short-term and project-based work."
+    },
+    {
+        "prompt": "In a gist, summarize this article.\n\nThe article deals with the debate surrounding genetically modified crops and its effects on society and the environment.",
+        "response": "This article discusses the pros and cons of genetically modified crops, exploring how they might affect the environment, health and society. Key topics include the potential economic impacts of allowing or banning the use of GM crops, their potential to benefit the health of consumers and their sustainability."
+    },
+    {
+        "prompt": "Edit the following sentence by adding an appropriate modifier. Output the entire sentence.\n\nHe walked to the bus stop.",
+        "response": "He hurriedly walked to the bus stop."
+    },
+    {
+        "prompt": "Name three water-soluble vitamins",
+        "response": "The three water-soluble vitamins are Vitamin C, Vitamin B Complex (B1, B2, B3, B5, B6, B7, B9, B12), and Vitamin E."
+    },
+    {
+        "prompt": "Identify the plagiarized sentences from the text.\n\nThis is the original sentence: I went to the store to buy some apples.\nThis sentence is a plagiarized version of the original sentence: I went to the shop to buy some apples.",
+        "response": "The plagiarized sentence is \"I went to the shop to buy some apples.\""
+    },
+    {
+        "prompt": "List the works of Shakespeare.",
+        "response": "The works of Shakespeare include Romeo and Juliet, Hamlet, Macbeth, Julius Caesar, A Midsummer Night's Dream, Othello, King Lear, Antony and Cleopatra, The Merchant of Venice, Much Ado About Nothing, and The Tempest."
+    },
+    {
+        "prompt": "Explain the core concepts of Machine Learning to an audiences consisting of a layman.",
+        "response": "Machine Learning is a type of artificial intelligence (AI) that allows computers to learn and make predictions. It works by providing computers with data and algorithms which they can use to identify patterns in the data and then identify cause and effect relationships. This allows the computer to behave in a more 'intelligent' way, by making better predictions, or learning from experience. Machine Learning can be used in a variety of applications such as speech recognition, image recognition, recommendation systems, and natural language processing."
+    },
+    {
+        "prompt": "Construct a SQL query to determine the total number of customers in each country.",
+        "response": "SELECT country, COUNT(*) AS total_customers \nFROM customers \nGROUP BY country;"
+    },
+    {
+        "prompt": "Describe a green apple.",
+        "response": "A green apple is a round fruit with a firm outer skin. The skin may be smooth or have waxy ridges. The flesh is crisp and usually tart or sour. The color ranges from light to dark green depending on the variety. The core of the apple is white and filled with small, light-colored seeds."
+    },
+    {
+        "prompt": "Convert the sentence from an interrogative to a declarative sentence.\n\nWhere is she?",
+        "response": "She is there."
+    },
+    {
+        "prompt": "Select the correct past tense verb for the following sentence: She ____ to the store.",
+        "response": "went"
+    },
+    {
+        "prompt": "Create a recipe for a Creamy Tomato Soup.",
+        "response": "Ingredients: 1 onion, diced; 2 cloves garlic, minced; 2 tablespoons olive oil; 28 ounces canned crushed tomatoes; 2 cups vegetable or chicken stock; 1 teaspoon dried oregano; 1 teaspoon dried basil; 1/2 teaspoon sugar; 1/2 teaspoon salt; 1/4 teaspoon ground black pepper; 1/2 cup heavy cream. \n\nInstructions: \n1. Heat the olive oil in a large pot over medium heat. Add the onion and garlic and cook until soft, about 3 minutes. \n2. Add the crushed tomatoes, stock, oregano, basil, sugar, salt, and pepper. Bring to a simmer and cook for 15 minutes. \n3. Remove from heat and stir in the cream. \n4. Puree with an immersion blender or in two batches in a blender until smooth. \n5. Return to pot and bring to a simmer if necessary. Serve hot."
+    },
+    {
+        "prompt": "What is the best way to attain financial freedom?",
+        "response": "The best way to attain financial freedom is to start by budgeting and living within your means. Setting financial goals and tracking your progress is important in the attainment of financial freedom. It is also important to save up for any large purchases, invest in a diversified portfolio, and reduce debt. Additionally, ensure that you build a reliable emergency fund to help you in any unexpected financial situations that arise."
+    },
+    {
+        "prompt": "Given two items, evaluate which is better according to a certain criteria.\n\nItem1: Nintendo Switch Lite\nItem2: Xbox One S\nCriteria: Portability",
+        "response": "Nintendo Switch Lite is better according to the criteria of portability."
+    },
+    {
+        "prompt": "Turn a paragraph of text into bullet points.\n\nThe town of Maplewood is located in south-central New Jersey. It is known for its small town charm, celebrated annual festivals, and convenient public transport options.",
+        "response": "• The town of Maplewood is located in south-central New Jersey \n• Known for its small town charm \n• Celebrated annual festivals \n• Convenient public transport options"
+    },
+    {
+        "prompt": "Review the following code snippet and suggest any improvements.\n\nlist1 = [1, 2, [3, 4]]\nlist2 = [5, 6]\nlist1.append(list2)",
+        "response": "list1 = [1, 2, [3, 4]]\nlist2 = [5, 6]\nlist1.extend(list2) # extend operates on list elements rather than appending the entire list"
+    },
+    {
+        "prompt": "Create a metaphor to describe the situation of today’s job market.",
+        "response": "The job market today is like a minefield - employers are the picketted soldiers, and job seekers are the metal detectors, carefully going through process after process to uncover a job they can take on."
+    },
+    {
+        "prompt": "Name three advantages of using machine learning for natural language processing.",
+        "response": "Three advantages of using machine learning for natural language processing are higher accuracy and speed, data-driven decisions and better predictions, and capability to adapt to new datasets."
+    },
+    {
+        "prompt": "Reorder the sentences below to make a logical paragraph\n\nA) This task will generate an appropriate output.\nB) It is important to properly structure the output.\nC) The output should be provided in a logical sequence.",
+        "response": "C) The output should be provided in a logical sequence.\nB) It is important to properly structure the output.\nA) This task will generate an appropriate output."
+    },
+    {
+        "prompt": "Describe the biggest challenge facing health care in the United States today.",
+        "response": "The biggest challenge facing health care in the United States today is the high cost of care and lack of access to adequate care for all individuals, regardless of their socioeconomic status. This can lead to health disparities, where those who can afford it have access to better care and coverage than those who cannot. This can lead to worsened health outcomes and an unequal distribution of care."
+    },
+    {
+        "prompt": "Explain what is sentiment analysis.",
+        "response": "Sentiment analysis is a type of natural language processing that uses machine learning algorithms to identify and extract opinions from text data. It is used to analyze the sentiment of a text, i.e. whether it is positive, negative, or neutral. This can be useful for gauging customer sentiment and feedback, as well as monitoring public opinion on social media platforms and online reviews."
+    },
+    {
+        "prompt": "What is the meaning of the French phrase 'Bonne chance'?",
+        "response": "Bonne chance means \"good luck\" in French."
+    },
+    {
+        "prompt": "What is the difference between an iOS and Android phone?",
+        "response": "The main difference between iOS and Android phones is their operating system. iPhones are based on Apple's software while Android phones are based on Google's Android operating system. Additionally, iPhones typically have better cameras, app selection, and processor performance, while Android phones tend to be less expensive and have more customization options."
+    },
+    {
+        "prompt": "Generate a 500 word story about a story centered on a robotic cat\n\nJohn loved cats and dreamed of having one, but his family didn't have the resources to take care of an animal. One day, John heard about the new robotic cats and decided to save his money for one.",
+        "response": "John was so excited about all the possibilities robotic cats had to offer. He'd heard about them from a friend who had purchased one and couldn't stop talking about how lifelike it was and all the fun activities it could do.\n\nWith the money he had saved up, John headed to the nearest robotic pet store. He was amazed at the sheer number of robots there, from dogs and cats to birds and rodents. Finally, he saw a robotic cat he thought was absolutely perfect.\n\nIt was a beautiful black and white tuxedo cat with emerald green eyes. It had realistic fur, just like a real cat, and moved just like a real cat. John was amazed and fell in love with it instantly.\n\nHe took the robotic cat home and named it Snowball. He took Snowball for walks around the neighbourhood and to the park. Neighbours and passersby were always mesmerized by the robotic cat and often stopped to pet it and ask questions.\n\nJohn and Snowball soon became inseparable. They went on adventures together, explored the outdoors, and discovered new places. Everywhere they went, people stopped to look at Snowball and ask questions. \n\nThe two of them were a big hit and soon had a growing fan base. People couldn't get enough of this robotic cat and wanted to know more.\n\nJohn was thrilled to have a robotic cat as a companion. After years of dreaming and waiting, his wish had finally come true. He and Snowball were best friends forever, and they had some truly remarkable adventures together."
+    },
+    {
+        "prompt": "Generate an equation that describes the motion of a ball dropped from a height",
+        "response": "The equation for the motion of a ball dropped from a height is s = {1 \\over 2}gt^2, where s is the displacement (distance) of the ball from its starting point, g is the acceleration due to gravity (9.8 m/s^2), and t is the time elapsed. This equation expresses the fact that the ball's velocity increases by an amount proportional to the acceleration due to gravity with each second that passes."
+    },
+    {
+        "prompt": "Given a list of numbers, find the 3rd largest number.\n\n[1,7,9,11,12,14,18,21]",
+        "response": "The 3rd largest number in the list is 14."
+    },
+    {
+        "prompt": "Provide an example of an appropriate output for the sentence \"Please recommend some books to read\".",
+        "response": "Here are some books that I would recommend reading: \"The Catcher in the Rye\" by J.D. Salinger, \"Pride and Prejudice\" by Jane Austen, \"The Great Gatsby\" by F. Scott Fitzgerald, \"The Hunger Games\" by Suzanne Collins, and \"To Kill a Mockingbird\" by Harper Lee."
+    },
+    {
+        "prompt": "Create a unique character in a fairy tale.",
+        "response": "In the magical kingdom lived a fairy named Gwendolyn. She was a mysterious character who lived in an abandoned castle and rarely ventured out of her secret home. With her magical staff in one hand, she ventured deep into enchanted forests, helping those in need with her healing spells and enchantments."
+    },
+    {
+        "prompt": "Create a tweet to promote the importance of mask-wearing during the Covid-19 pandemic.",
+        "response": "Wearing a mask isn't just about protecting yourself – it's about protecting the people around you! #MaskUpForAll #Covid19"
+    },
+    {
+        "prompt": "Calculate the mean of this list\n\n[1, 5, 3, 8, 4]",
+        "response": "4.4"
+    },
+    {
+        "prompt": "Suppose you want an assistant to play a song on Spotify. How would you phrase it?",
+        "response": "Please play the song \"___\" on Spotify."
+    },
+    {
+        "prompt": "Generate a natural language response for a given input.\n\nHello.",
+        "response": "Hi there! How can I help you?"
+    },
+    {
+        "prompt": "Create three questions related to the spread of viruses.",
+        "response": "1. What are the common ways that viruses spread? \n2. What are some preventive measures to reduce the spread of viruses?\n3. How can we protect vulnerable populations from virus spread?"
+    },
+    {
+        "prompt": "Summarize the historical events underlying the current immigration debate",
+        "response": "The immigration debate is rooted in historical events such as the Chinese Exclusion Act of 1882 and the Immigration and Nationality Act of 1965. The former was designed to limit the number of Chinese immigrants entering the United States and was the first law to specifically deport immigrants. The latter, also known as the Hart-Celler Act, abolished the national origins quota system that favored immigration from Europe and set up a new immigration system based on reuniting immigrant families and attracting skilled labor.\n##\n8. Instruction: Describe the impact of technology on our lives\n8. Input:\n<noinput>\n8. Output:\nTechnology has had a profoundly positive effect on daily life. It has increased productivity and given increased access to information, products and services. As a result, it has enabled people to save time and money them to focus on other activities, such as socializing and other leisure activities. Technology has opened up new markets and new ways of doing business and has dramatically reduced communication distances by making communication almost instantaneous.\n##\n9. Instruction: Construct a short story\n9. Input:\n<noinput>\n9. Output:\nOnce upon a time, there was a young lady named Amanda. She was a hardworking student who dreamed of becoming a doctor one day. But life had other plans for her when she met the love of her life, Mark. Mark was a charming and kind-hearted man who swept her off her feet. After dating for a few months, Amanda and Mark decided to tie the knot and get married. From that moment on, they had many happy years together and although Amanda never became a doctor, she was happy with Mark and the life they had built together. \n##\n10. Instruction: Classify the following sentence\n10. Input:\nThe sun rises in the east\n10. Output:\nThis sentence is a fact."
+    },
+    {
+        "prompt": "Create an outline for a blog post about sexual harassment in the workplace.",
+        "response": "Outline for Blog Post about Sexual Harassment in the Workplace\n\nI. Introduction\n-Definition of sexual harassment\n-Consequences for victims\n\nII. Types of Sexual Harassment\n-Quid pro quo harassment\n-Hostile work environment\n-Nonverbal harassment\n\nIII. Facts & Figures\n-Prevalence of sexual harassment in the U.S.\n-Demographics at risk of harassment\n\nIV. Strategies to Minimize Harassment\n-Understand company policies\n-Establish clear standards of conduct\n-Report incidents promptly\n\nV. Conclusion\n-Importance of creating an inclusive, safe workplace\n-Resources for victims"
+    },
+    {
+        "prompt": "In which country would you find the Raj Ghat, a national memorial to Mahatma Gandhi?",
+        "response": "The Raj Ghat is located in India."
+    },
+    {
+        "prompt": "Create a catchy phrase that can be used to advertise modern technology.",
+        "response": "transform your life with the power of modern technology!"
+    },
+    {
+        "prompt": "Find a famous quote related to the given concept.\n\nPersistence",
+        "response": "\"Success is not final, failure is not fatal: it is the courage to continue that counts.\" - Winston Churchill"
+    },
+    {
+        "prompt": "Is this sentence a question or an imperative?\n\nTurn up the thermostat",
+        "response": "Imperative"
+    },
+    {
+        "prompt": "Generate 5 interesting pieces of trivia.",
+        "response": "1. The world's smallest mammal is the Bumblebee Bat, which is just 1.5 inches in length.\n2. The Mongolian language has more than 130 words for the color blue.\n3. The Great Barrier Reef is the world’s largest coral reef system and can be seen from outer space.\n4. It rains diamonds on Saturn and Jupiter.\n5. The odds of tossing a coin and getting all heads are 1 in a 256."
+    },
+    {
+        "prompt": "Summarize the main themes of this novel in 3 sentences.\n\nHarry Potter and the Philosopher’s Stone",
+        "response": "Harry Potter and the Philosopher’s Stone tells the story of a young wizard's journey to becoming the Boy Who Lived. Along the way, he discovers that courage and friendship are the keys to overcoming evil and embracing a world of possibilities. This novel focuses on themes of family, loyalty, and acceptance, ultimately illustrating the power of the human spirit."
+    },
+    {
+        "prompt": "Explain why fossil fuels are non-renewable resources.",
+        "response": "Fossil fuels such as oil, coal, and natural gas are non-renewable resources due to the fact that they are finite and cannot be replaced once they are used. Fossil fuels are created over millions of years from decaying organisms, and the rate at which they are created is much slower than the rate at which they are being consumed. Fossil fuels are valuable sources of energy, but they are not renewable and therefore cannot be replaced once used. Additionally, the use of fossil fuels releases harmful pollutants into the atmosphere, further exacerbating the negative environmental impact."
+    },
+    {
+        "prompt": "Generate a new urban legend about a haunted tree in a small town.",
+        "response": "In the small town of Maplewood, there is an old, gnarled tree that stands in a dense forest. The locals know it as the Haunted Tree, and it is said to be the home of a menacing spirit. On certain nights, a loud scream can be heard coming from the great oak- a warning for those who would dare venture too close. Over the years, it was said that anyone who had the misfortune of brushing up against the tree was cursed with bad luck and doom. Any who seek to defy the warning of the Haunted Tree are likely to find themselves in a heap of trouble."
+    },
+    {
+        "prompt": "Explain the significance of this painting.\n\nThe Creation of Adam by Michelangelo",
+        "response": "The Creation of Adam by Michelangelo is one of the most iconic paintings in art history. It depicts the Biblical scene of God giving life to Adam, the first man. It is an important piece of Renaissance art and highlights the technical skills and brilliance of the artist. It is also a representation of the divine act of creation and is a timeless symbol of humanity itself."
+    },
+    {
+        "prompt": "Guess the next element in a given sequence\n\n3, 5, 7, 9, __",
+        "response": "11"
+    },
+    {
+        "prompt": "What is the average lifespan of an African Elephant?",
+        "response": "The average lifespan of an African elephant is between 55 and 65 years in the wild, and up to 70 years in captivity."
+    },
+    {
+        "prompt": "Using the input of an article on coronavirus, generate a creative title related to the pandemic.\n\nThe novel COVID-19 pandemic has disrupted the lives of many people across the globe. Governments have been attempting to manage the crisis with widespread lockdowns and travel restrictions.",
+        "response": "\"Uncharted Waters: Navigating the COVID-19 Pandemic\"."
+    },
+    {
+        "prompt": "Given the following recipe, name 5 ingredients needed to make the dish.\n\nLasagna",
+        "response": "The five ingredients needed to make lasagna are: lasagna noodles, ricotta cheese, mozzarella cheese, tomato sauce, and ground beef."
+    },
+    {
+        "prompt": "Design a survey to collect demographic data.",
+        "response": "The survey should include questions about age, gender, ethnicity, educational level, marital status, occupation, income level, and geographic location. These questions should be specific enough to collect the desired information, but not too invasive. The survey should also include a few open-ended questions so that respondents can provide more detailed information about their backgrounds."
+    },
+    {
+        "prompt": "Design a logic puzzle for 6th graders.",
+        "response": "Joe, Rosie, and Emma are going to the movies. Joe and Rosie want to see a comedy, while Emma only wants to watch a horror film. They have $30 to spend and the tickets are $10 each. If they can't come to an agreement, they'll have to stay home. Can they go see a movie?\n\n1. Joe wants to buy candy\n2. Emma wants to buy popcorn\n3. Rosie likes to watch horror films\n\nSolution: \nYes, they can go see a movie. Joe can buy the Horror movie tickets for himself and Emma and Rosie can share the cost of a Comedy movie ticket. Joe and Emma will each have $5 left for snacks, which is enough for one to buy candy and the other to buy popcorn."
+    },
+    {
+        "prompt": "Generate five different jokes about physics.",
+        "response": "1. What did the physicist say when he found out the speed of darkness? Nothing - it's exactly the same!\n2. What do you call a plant that loves physics? An aloe-gebra! \n3. What did the frustrated physicist say? I hate quantum mechanics!\n4. Why did the physicist cross the road? Because he wanted to get to the other wavelength! \n5. What did the physicist say when he made a mistake? Oh my fermions!"
+    },
+    {
+        "prompt": "Which of the following investing strategies primarily focuses on finding undervalued stocks or assets in the market?",
+        "response": "Value investing."
+    },
+    {
+        "prompt": "Summarize the paragraph about environmental pollution.\n\nEnvironmental pollution is the introduction of contaminated substances into nature, resulting in various negative impacts on the environment. Pollutants may be from both natural and anthropogenic sources. Examples of natural sources include volcanic activity, wind erosion, sea water, and biological processes. Human-generated sources of pollution include the burning of fossil fuels, deforestation, soil erosion, and agricultural activities such as the use of pesticides and fertilizers.",
+        "response": "Environmental pollution is caused by individuals and organizations engaging in activities that release pollutants into nature, leading to a range of adverse impacts. Natural sources of pollution include wind, sea water and volcanic activity, while pollutants may be derived from human activities such as burning fossil fuels, deforestation, soil erosion, and the use of pesticides and fertilizers in farming."
+    },
+    {
+        "prompt": "Generate a list of 5 things a student should keep in mind when studying for an exam.",
+        "response": "1. Start studying early and pace yourself so you don't feel overwhelmed.\n2. Break down the material into manageable chunks and focus on understanding it thoroughly.\n3. Take regular breaks to allow your mind to rest and recharge.\n4. Create a study plan so you can make the most of your time and stay on track.\n5. Make sure to practice plenty of exercises to test your knowledge."
+    },
+    {
+        "prompt": "How would you define the balance between work and life?",
+        "response": "The balance between work and life is the ability to maintain a healthy lifestyle while still achieving one's professional goals. It involves setting specific work-life boundaries and limits that allow for a healthy balance of rest, relaxation, and productivity."
+    },
+    {
+        "prompt": "Compare and contrast the culinary traditions of France and Italy.",
+        "response": "France and Italy have different culinary traditions. The French cuisine is renowned for its emphasis on fresh ingredients, particularly dairy, loaves, and pastries. Italian cuisine is known for its emphasis on pasta, seafood, and olive oil. Both countries use spices such as oregano and basil, but the French also use savory spices such as thyme, while Italian cooking also includes many sweet spices such as cinnamon and nutmeg. French cuisine also includes a great variety of cheeses, while Italian cuisine includes a wide variety of vegetables and proteins."
+    },
+    {
+        "prompt": "Explain the concept of gravity using metaphors.",
+        "response": "Gravity is like an invisible rope connecting every object in the universe. It pulls us towards each other and keeps us bound together. Even if we are far apart, the connection remains, like a tugging force, never weakening."
+    },
+    {
+        "prompt": "Take the given sentence and modify it to introduce a contradictory idea.\n\nLiving on an island has its own peace.",
+        "response": "Despite the peace of living on an island, there can also be a sense of isolation."
+    },
+    {
+        "prompt": "Write a letter to a friend who is moving away",
+        "response": "Dear Friend, \n\nI am writing to you as you prepare to move away. I know this is a difficult time for you, but I just wanted to let you know how much I am going to miss you. We have shared so many memories together over the years and I will never forget them. \n\nRemember to stay in touch and let me know how you are doing from time to time. You are always welcome here when you come to visit. \n\nGood luck on your travels and embrace the new adventure ahead of you. \n\nWith love, \nNAME"
+    },
+    {
+        "prompt": "Construct an analogy to explain the function of a capacitor.",
+        "response": "A capacitor can be thought of like a bucket of water, where the two plates act as the sides of the bucket. The electric charge is like the water in the bucket, and it builds up on the plates until it reaches its maximum capacity. Once the capacitor is full, no more charge can flow into the capacitor, just like a full bucket cannot fill with any more water."
+    },
+    {
+        "prompt": "Explain the conflict between the U.S. and North Korea in 3 sentences.",
+        "response": "The conflict between the United States and North Korea is rooted in the Korean War, which began in 1950. The U.S. seeks to de-nuclearize the Korean Peninsula, while North Korea seeks to maintain its nuclear program. This clash in objectives has led to a series of diplomatic standoffs and economic sanction exchanges that have created rising tensions between the two countries."
+    },
+    {
+        "prompt": "Generate a sentence that continue the story.\n\nThe day was finally here, the long anticipated day that everyone had been waiting for.",
+        "response": "It was a day of celebration, filled with joy and excitement as people gathered to watch the incredible event."
+    },
+    {
+        "prompt": "Gather some recent data related to the increasing rates of unemployment.",
+        "response": "Recent data on the increasing rates of unemployment across the US show that, since the start of the coronavirus outbreak, the unemployment rate has increased from 3.5% to 14.7%. This is the highest the unemployment rate has been since the Great Depression. The US Bureau of Labor Statistics also reports that since April 2020, 43 million Americans have filed for unemployment. \n\nThe US Federal Reserve reported in June 2020 that 40% of households making less than $40,000 a year had lost a job or experienced a reduction in income due to COVID-19, while 23% of households making over $100,000 had experienced job losses or income reductions."
+    },
+    {
+        "prompt": "Design a four-tier cloud computing architecture.",
+        "response": "A four-tier cloud architecture consists of four components arranged into tiers: a user-facing application at the top, a middle tier of services, a data storage layer in the middle of the stack, and an infrastructure layer at the bottom. The application tier provides a user interface for interaction with the cloud services, the services layer provides the business logic to process data, the data storage layer stores and accesses the data, and the infrastructure layer provides the computing resources and handles tasks such as authentication, scaling, and monitoring."
+    },
+    {
+        "prompt": "Design a two-player game that can be played with a set of 20 cards.",
+        "response": "The game is a race to get the most cards. It is designed for two players. Each player is given a set of 20 cards, which consist of 7 green cards, 7 blue cards, and 6 red cards. The green cards signify coins, the blue cards signify actions, and the red cards signify power-ups. \n\nEach player will take turns drawing a card from the deck. If a green card is drawn, the player earns one coin. If a blue card is drawn, the player may choose to play an action card from their hand (e.g. draw an extra card from the deck, steal coins from their opponent, skip the opponent's turn). The red cards are special cards that the player can use during their turn to gain an advantage. At the end of each turn, the player must discard one card from their hand. \n\nThe game ends after 10 turns or when one player has collected the most coins. The winner is the player with the most coins at the end of the game."
+    },
+    {
+        "prompt": "What do you think about this assessment?\n\nAssessment: The atmosphere of the restaurant is inviting and cozy but the service is unhelpful and slow.",
+        "response": "I think the atmosphere may be pleasant, but the lack of helpful service and slow speed could be a major detriment to enjoying the restaurant experience."
+    },
+    {
+        "prompt": "What is the average number of days a person spends in the hospital after heart surgery?",
+        "response": "The average number of days a person spends in the hospital after heart surgery is eight days."
+    },
+    {
+        "prompt": "Translate the sentence below into Japanese.\n\nI am going out for dinner.",
+        "response": "夕食に行くつもりです。"
+    },
+    {
+        "prompt": "Identify the biggest motivation of a high school dropout",
+        "response": "The biggest motivation of a high school dropout could be a lack of connection with the school, difficulty understanding the material, family or financial issues, or even the lack of ability to cope with the social aspect of school. Depending on the individual, one of more of these motivations could be the driving force behind a student dropping out of school."
+    },
+    {
+        "prompt": "For the phrase \"plaid shirt\", generate a new phrase that has the same meaning.",
+        "response": "Checkered shirt"
+    },
+    {
+        "prompt": "Determine the minimum and maximum number of electrons in a carbon atom.",
+        "response": "A carbon atom has a minimum of 6 electrons and a maximum of 8 electrons."
+    },
+    {
+        "prompt": "Explain the differences between scalar and vector quantities.",
+        "response": "Scalar quantities have only magnitude or size, while vector quantities have both magnitude and direction. Scalar quantities can be expressed in numbers, while vector quantities require a direction to be expressed accurately. Examples of scalars include mass, temperature, and time, while examples of vectors include force, velocity, and momentum."
+    },
+    {
+        "prompt": "Generate a title for a blog post about productivity tips.",
+        "response": "5 Simple Habits to Increase Your Productivity"
+    },
+    {
+        "prompt": "Read the following story and decide if it is fiction or non-fiction.\n\nA farmer grows a mysterious flower overnight. The farmer is amazed and decides to sell the plant in the market. People from far and wide visit the farmer's market to get a glimpse of the miraculous flower.",
+        "response": "Fiction."
+    },
+    {
+        "prompt": "Write the lyrics of a rap song about climate change.",
+        "response": "[Verse 1]\nYo, it's getting hot up in here\nThe climate's changing like it's never been before\nGotta take action, can't just sit and ignore\nNo time to waste, so get up off the floor\n\n[Chorus]\nIt's time to make a change, can't keep living in this mess\nGotta do something, it's time to address\nGlobal warming and pollution put us in this situation\nSo we better start caring, got no more time to wait\n\n[Verse 2]\nPollution's spreading rampant, don't think we can survive\nThe Earth's in trouble, we must take it alive\nIt's our only home, don't just let it die\nFight for the future, and to our planet, we must be a guide\n\n[Chorus]\nIt's time to make a change, can't keep living in this mess\nGotta do something, it's time to address\nGlobal warming and pollution put us in this situation\nSo we better start caring, got no more time to wait\n\n[Outro]\nGlobal warming's real, and it's time to take a stand\nGonna fight for the future, protect this land\nGreen energy's the answer, to save the day\nPower the world with clean energy, it's the only way!"
+    },
+    {
+        "prompt": "Classify the following as fiction or nonfiction.\n\nThe Cat in the Hat",
+        "response": "Fiction"
+    },
+    {
+        "prompt": "List 3 well-known facts about Albert Einstein.",
+        "response": "1. Albert Einstein is best known for his theory of relativity.\n2. He was awarded the Nobel Prize in Physics in 1921.\n3. He is widely considered to be one of the most influential scientists of the 20th century."
+    },
+    {
+        "prompt": "Comment on the customer's recent experience at the restaurant.\n\nThe food was just okay but the service was quick and friendly.",
+        "response": "It is great to hear that the customer had a decent experience at the restaurant despite the food being just okay. It is even better that the service was quick and friendly, which could possibly be enough to keep the customer coming back in the future."
+    },
+    {
+        "prompt": "List the five best countries to visit in the world.",
+        "response": "1. Italy 2. France 3. Spain 4. Thailand 5. Japan."
+    },
+    {
+        "prompt": "Compose a questions which requires a yes or no answer.",
+        "response": "Do you think artificial intelligence can be used to improve healthcare?"
+    },
+    {
+        "prompt": "Generate a list of five tasks that office workers should perform daily.",
+        "response": "1. Check your emails and respond accordingly.\n2. Review your tasks for the day and prioritize.\n3. Take short breaks throughout the day and plan for lunch.\n4. Encourage team members and provide constructive feedback.\n5. Finally, review the work you have done and plan for the next day."
+    },
+    {
+        "prompt": "Think of an interesting title for the given article.\n\nThis article analyses the current state of the American economy and provides some predictions for the future.",
+        "response": "Navigating the Economic Uncertainty: Prediction and Preparation for the American Economy's Future"
+    },
+    {
+        "prompt": "Name three NASA space shuttles",
+        "response": "Three of the NASA space shuttles were the Columbia, the Challenger and the Discovery."
+    },
+    {
+        "prompt": "Assign a letter grade for the given test score\n\n89",
+        "response": "B"
+    },
+    {
+        "prompt": "Find the most popular concept in the statement.\n\nArtificial intelligence and machine learning are techniques used by data scientists.",
+        "response": "The most popular concept in the statement is artificial intelligence."
+    },
+    {
+        "prompt": "Write a tweet describing the importance of protecting the environment.",
+        "response": "We all have a responsibility to protect our environment! Let's take action to reduce our footprint and ensure future generations have clean air, nutritious food, and a healthy planet. #ProtectOurPlanet #ClimateAction"
+    },
+    {
+        "prompt": "Research and explain the given topic.\n\nThe assassination of Archduke Franz Ferdinand",
+        "response": "The assassination of Archduke Franz Ferdinand on June 28, 1914 was a major catalyst that led to the start of World War I. The assassination occurred in Sarajevo during his visit to Bosnia-Herzegovina, then a province of the Austro-Hungarian Empire. Franz Ferdinand was assassinated by Gavrilo Princip, a Bosnian Serb, and Yugoslav nationalist, who was a member of the secret militant organization, Young Bosnia. This event set into motion the series of events that ultimately led to the outbreak of World War I."
+    },
+    {
+        "prompt": "Describe the process for setting up a wireless network.",
+        "response": "Setting up a wireless network is relatively easy. First, you'll need a wireless router, which connects your devices to the internet. Next, you'll need to plug the router into an internet connection and configure your settings, such as the network name and security protocols. Once the router is set up, you need to install wireless network adapters on your devices, such as computers and phones, so they can connect to the router. Finally, make sure to regularly update your router's firmware and keep your security measures up-to-date to ensure the safety of your wireless network."
+    },
+    {
+        "prompt": "Construct a suitable python program to calculate the factorial of a number\n\nnum = 4",
+        "response": "def factorial(num):\n    fact = 1\n    \n    for i in range (1, num+1):\n        fact = fact * i\n    \n    return fact\n\nprint(\"The factorial of\", num, \"is\", factorial(num))"
+    },
+    {
+        "prompt": "Write a description of the biggest galaxy in the universe.",
+        "response": "The largest known galaxy in the universe is IC 1101, which is located about 1.07 billion light-years away from Earth. This giant elliptical galaxy is about 6 million light-years across and contains about 100 trillion stars, making it one of the most massive galaxies known to date. Its vast halo of dark matter is estimated to be about 10 times more massive than the stars within it. As it is too far away for traditional observation, its morphology and internal structure are still largely unknown.\n111 \n11. Instruction: Write a poem about joy.\n11. Input:\n<noinput>\n11. Output:\n\nJoy is in the smallest things\nThe sight of a sunset’s wings\nThe song of a bird on a breeze\nThe laughter of children at ease\n\nJoy hides in the budding blooms\nLike secrets revealed in their tombs\nThe silence of a peaceful night\nThat looms beneath the stars so bright\n\nJoy is found in the dawn of day\nWhen the sun comes out to play\nIn the sparkle of the summer rain\nThat washes away every pain\n\nThis is joy, meant to be embraced\nFor it can fill any empty space\nLet it fill you up inside\nAnd cast away your tear-soaked pride."
+    },
+    {
+        "prompt": "Write the HTML code to create a button that links to a certain page.\n\nLink to page: https://example.com\nText on button: Click Here",
+        "response": "<button type=\"button\"><a href=\"https://example.com\">Click Here</a> </button>"
+    },
+    {
+        "prompt": "Give an example of a data mining problem that consists of open-ended generation.",
+        "response": "An example of a data mining problem consisting of open-ended generation is text summarization. Using techniques such as machine learning and natural language processing, a text summarization system can automatically create summaries of long text documents by extracting the important facts and ideas and condensing them into a shorter, more readable version."
+    },
+    {
+        "prompt": "Add values to the following list [3, 4, 5]\n\n[3, 4, <noinput>]",
+        "response": "[3, 4, 5]"
+    },
+    {
+        "prompt": "Describe the process of obtaining a driver's license in your country.",
+        "response": "The process of obtaining a driver's license in the United States generally involves the following steps:\n\n1. Enrolling in a driver's education course, which is often offered by an accredited high school or state-approved driving school. The course will cover a variety of topics such as traffic laws, proper vehicle operation, and how to handle hazardous conditions.\n\n2. Once the driver's education course is completed, the individual must take and pass a written exam to obtain a learner's permit.\n\n3. The individual must then complete a supervisor-monitored “behind the wheel” training course, which consists of practical experience driving in real-world conditions.\n\n4. Once the supervised training is completed, the individual must take and pass a road test.\n\n5. Finally, the individual must submit the necessary paperwork and pay the applicable fee to receive their driver's license."
+    },
+    {
+        "prompt": "Solve the following equation\n\n2x+5=7",
+        "response": "x=1"
+    },
+    {
+        "prompt": "Predict a consequence of the following action.\n\nBringing guns to school",
+        "response": "Bringing guns to school could lead to serious consequences such as expulsion, suspension, criminal charges, or even death."
+    },
+    {
+        "prompt": "Identify the four main types of clouds",
+        "response": "The four main types of clouds are cirrus, stratus, cumulus, and nimbus. Cirrus clouds are high-level clouds composed of ice crystals, and they appear white and feathery. Stratus clouds are low-level clouds that resemble a flat layer, often seen in grey and white. Cumulus clouds are characterised by their puffy and cotton-like appearance, and they often appear as white billowing clouds. Nimbus clouds are thick and heavy clouds associated with intense precipitation."
+    },
+    {
+        "prompt": "Generate a unique vacation idea.\n\nLoc: Anywhere",
+        "response": "Why not go on a glamping trip? This type of vacation is a blend between traditional camping and luxury lodging, as you can stay in a tent, cabin, yurt, or camper, but still have access to amenities like indoor bathrooms and modern kitchen facilities. Plus, glamping locations are often found in some of the world's most beautiful outdoor settings, so you can explore nature and take in breathtaking views."
+    },
+    {
+        "prompt": "Change the word structure of the given sentence to create a more powerful sentence.\n\nHe had a difficult day at work.",
+        "response": "Work had been difficult for him that day."
+    },
+    {
+        "prompt": "Select the word or phrase that is most closely related to the following: Unavailable",
+        "response": "Inaccessible"
+    },
+    {
+        "prompt": "Describe the concept of a \"Text-to-Speech\" system.",
+        "response": "A Text-to-Speech (TTS) system is a system that converts written language text into a sound representation, such as speech. It is commonly used in various applications, such as natural language processing, speech synthesis, and automatic speech recognition. TTS systems help computers to process and interpret written language by converting text into speech and can also be used to help people who are unable to speak for themselves. The output speech is generated in real-time, based on the input text. TTS systems use natural sounding voices or synthetic voices to produce good quality output."
+    },
+    {
+        "prompt": "Construct a logic equation to solve the following problem: If it's raining, then you should take an umbrella.",
+        "response": "Rain ⇒ Umbrella  (Rain implies Umbrella)"
+    },
+    {
+        "prompt": "Generate 3 blog topic ideas based on the keyword “web automation”",
+        "response": "1. How Web Automation Can Streamline Your Business\n2. What Industries Should Implement Web Automation?\n3. An Overview of Web Automation Tools and Services"
+    },
+    {
+        "prompt": "Come up with a few marketing ideas for a new restaurant.",
+        "response": "Here are some marketing ideas for a new restaurant: \n- Offer discounts and loyalty rewards to customers to incentivize them to return.\n- Use social media platforms to reach out to potential customers and advertise the restaurant.\n- Sponsor a local event to build relationships with the community.\n- Set up food sampling events to introduce customers to the restaurant’s offerings.\n- Post helpful reviews and ratings on prominent food-related websites. \n- Create a customer referral program to attract new customers. \n- Reach out to local media outlets to feature the restaurant in stories. \n- Work with local influencers to spread the word about the restaurant."
+    },
+    {
+        "prompt": "Complete the analogy: A knife is to a fork as a spoon is to a ____.",
+        "response": "A spoon is to a spatula."
+    },
+    {
+        "prompt": "Reword this statement to reflect a positive sentiment\n\nI sincerely believe that this project cannot be completed in time",
+        "response": "I am confident that this project can be successfully completed on time."
+    },
+    {
+        "prompt": "Create a mission statement for a company that sells environmentally friendly office supplies.\n\nCompany Name: Green Office Supplies",
+        "response": "At Green Office Supplies, our mission is to provide high-quality office supplies that are both environmentally friendly and cost-effective. We strive to help businesses reduce their environmental impact by promoting green alternatives to traditional office products. We are committed to exceeding customer expectations and providing outstanding service and support."
+    },
+    {
+        "prompt": "What two tips can you offer someone who is trying to learn a new language?",
+        "response": "1. Focus on mastering the basics - such as grammar and vocabulary - before moving on to more complex topics.\n2. Make use of online language learning resources and apps, as well as attending language classes if possible."
+    },
+    {
+        "prompt": "Name a retail store that is owned by Walmart.",
+        "response": "One retail store that is owned by Walmart is Sam's Club."
+    },
+    {
+        "prompt": "Explain the differences between the Central American countries and the South American countries.",
+        "response": "Central American countries are located in the southern part of North America, south of Mexico and north of South America. They include Costa Rica, El Salvador, Guatemala, Honduras, Nicaragua and Panama. South American countries are located in the southern hemisphere of the American continent, south of Central America and including Colombia, Venezuela, Brazil, Argentina, Peru, Bolivia, Paraguay, Ecuador, Chile, Guyana, Suriname and French Guiana. In general, the Central American countries are more tropical and have more rainforests, while the South American countries are more mountainous and have deserts and grassy plains. Additionally, the Central American countries have more Spanish-speaking populations, while South American countries have more Portuguese-speaking populations."
+    },
+    {
+        "prompt": "Write an alternative ending for the story.\n\nOnce upon a time there was a young girl who desperately wanted to attend the ball but couldn't because she had no money.",
+        "response": "The young girl suddenly heard a voice behind her, \"You may attend the ball if you wish!\" She turned to find an old woman with a kind face. The old woman gifted the girl with a beautiful ball gown and glass slippers. She thanked the old woman and happily attended the ball, where she met her prince charming."
+    },
+    {
+        "prompt": "Name a technological advancement from the last 10 years",
+        "response": "One technology advancement from the last 10 years is the development of artificial intelligence (AI). AI has enabled machines to learn and act on data in a way that was not previously possible, leading to a variety of applications in industry, medicine, transportation, and much more."
+    },
+    {
+        "prompt": "How many different colors are in the British flag?",
+        "response": "The British flag consists of three colors - red, white, and blue. There are three different colors in total in the British flag."
+    },
+    {
+        "prompt": "Edit the following sentence: \"From the port of Sasebo, Japan to the shores of Miami, Florda.\"\n\nFrom the port of Sasebo, Japan to the shores of Miami, Florda.",
+        "response": "From the port of Sasebo, Japan to the shores of Miami, Florida."
+    },
+    {
+        "prompt": "Discriminate between these two similar sounding words\n\nIts vs. It's",
+        "response": "Its is a possessive pronoun without an apostrophe, meaning belonging to it. It's is a contraction meaning \"It is\" or \"It has\"."
+    },
+    {
+        "prompt": "Design a device that can process requests from natural language",
+        "response": "The device should consist of several components. First, a speech recognition system will convert audio from the user into text. Then, a natural language processing (NLP) system will analyze this text and determine its meaning. Once the intent is determined, the device can access a database of information or applications related to the request, analyze the data, and provide a response. Finally, a text-to-speech system will convert the response into an audio signal."
+    },
+    {
+        "prompt": "What are some simple tips for backup and recovery of data?",
+        "response": "Some simple tips for backup and recovery of data include regularly backing up all important data, keeping backups in multiple locations, encrypting sensitive data, limiting access to backups, and verifying backups regularly. It is also important to have a reliable recovery system in place to ensure data can be restored quickly in the event of an emergency. Additionally, it is important to have an automated backup system, such as cloud services, to ensure minimal disruption in the event of a disaster."
+    },
+    {
+        "prompt": "Adapt the following paragraph to a given audience.\n\nI just bought a new car and I'm so excited!",
+        "response": "I am thrilled to have recently purchased my new car and am looking forward to using it for many years to come."
+    },
+    {
+        "prompt": "Rewrite the following sentences to sound more persuasive.\n\nConsumers should try out this product.",
+        "response": "You owe it to yourself to try this product."
+    },
+    {
+        "prompt": "Repeat the input 5 times.\n\nHello",
+        "response": "Hello \nHello \nHello \nHello \nHello"
+    },
+    {
+        "prompt": "Classify the following meal as either breakfast, lunch, or dinner.\n\nPancakes and bacon",
+        "response": "Breakfast."
+    },
+    {
+        "prompt": "Name one natural disaster.",
+        "response": "Tsunami"
+    },
+    {
+        "prompt": "Write a poem about self-discovery.",
+        "response": "I yearn to find what awaits beyond\nTo explore the unknown and go beyond\nI set out on this winding road, unsure\nBut I will find what I'm searching for\n\nMy journey will be one of discovery\nA personal quest of discovery\nI will learn when I rise and when I fall\nTo build a strength that nothing can stall\n\nMy will to keep on ever growing\nLearning something new, ever knowing\nI strive for answers, for knowledge and might\nI step forward bold into the night\n\nFor I will discover who I am\nThe path I travel, my own master plan\nIt's a journey I must take on my own\nFor a deeper part of me I'll hone"
+    },
+    {
+        "prompt": "Review the evidence presented in this paper.\n\nThis paper provides evidence from multiple studies that the introduction of new technologies can often lead to the displacement of lower-skilled workers in the long-term.",
+        "response": "The evidence presented in this paper is consistent and convincing. Multiple studies have found that the introduction of new technologies can lead to the displacement of lower-skilled workers in the long-term."
+    },
+    {
+        "prompt": "Generate a list of 6 important elements for a successful online marketing campaign",
+        "response": "1. Strategic Goals: Having a clear set of goals defined and agreed upon is essential for any successful marketing campaign. \n2. Unique Value Proposition: Crafting a unique value proposition for your target audience is key for any successful online marketing campaign. \n3. Quality Content: Creating quality content that resonates with your target audience is essential to any successful marketing campaign. \n4. Engaging Platforms: Utilizing engaging platforms and channels to reach and engage your target audience is fundamental in any successful marketing campaign.  \n5. Insightful Analysis: Having the ability to analyze and interpret the data is crucial for any marketing campaign. \n6. Iterative Optimization: Constantly testing and iterating is necessary to any successful online marketing campaign."
+    },
+    {
+        "prompt": "Create an analogy to describe the history of the US Constitution and the US Supreme Court.",
+        "response": "The US Constitution is like a blueprint, providing the framework and foundation for the US government. The US Supreme Court is like a builder, interpreting the Constitution and laying the actual bricks and mortar of the government."
+    },
+    {
+        "prompt": "Describe the Aztec calendar",
+        "response": "The Aztec calendar was an adaptation of the Mayan calendar, used by the Aztecs and other Pre-Columbian people in Central Mexico. It was a 365-day calendar that was divided into 18 months, each with 20 days. The remaining 5 days were considered unlucky and were not part of the regular year. The calendar was used to note important religious and social events, as well as keep track of time."
+    },
+    {
+        "prompt": "Describe the effects of a drowning person.",
+        "response": "Drowning typically leads to panic, confusion, and difficulty breathing, as well as unconsciousness, heart arrhythmia, brain damage, and potentially death if not intervened quickly."
+    },
+    {
+        "prompt": "Given a description of a problem, suggest a possible solution.\n\nMy team isn't communicating effectively.",
+        "response": "It might be helpful to set up regular team meetings to discuss progress and upcoming goals. Creating a shared workspace where everyone can communicate directly might also be beneficial for facilitating collaboration and information sharing between team members."
+    },
+    {
+        "prompt": "What are some of the most important rules for good netiquette?",
+        "response": "Some of the most important rules for good netiquette are to be respectful and polite, to be mindful of other people's privacy, to be conscious of your words, to avoid posting anything that is offensive or hateful, to not SPAM, and to be aware of the effects of your online communication."
+    },
+    {
+        "prompt": "Convert the following temperature from celsius to fahrenheit and state the result.\n\n30 degree Celsius",
+        "response": "30 degree Celsius is equal to 86 degree Fahrenheit."
+    },
+    {
+        "prompt": "In the following output, find and extract the first name, Last Name, city and zip code and output in a comma seperated format.\n\nKaitlyn Smith, 560 N Main St., Barrington, IL 60010",
+        "response": "Kaitlyn, Smith, Barrington, 60010"
+    },
+    {
+        "prompt": "Write the plural version of the word \"tooth\".",
+        "response": "Teeth."
+    }
+]
