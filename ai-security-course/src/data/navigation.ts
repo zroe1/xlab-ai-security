@@ -56,7 +56,7 @@ export const navigationItems: NavigationItem[] = [
       },
       {
         id: "2.3",
-        title: "Adversarial Example Basics",
+        title: "White Box Attacks",
         type: "folder",
         items: [
           {
@@ -75,33 +75,33 @@ export const navigationItems: NavigationItem[] = [
       },
       {
         id: "2.4",
-        title: "White Box Defenses",
+        title: "Black Box Attacks",
         type: "folder",
         items: [
-          {
-            id: "2.4.1",
-            title: "Logit Smoothing",
-            href: "/adversarial/logit-smoothing",
-            type: "link",
-          },
+          { id: "2.4.1", title: "Square Attack", href: "/adversarial/square-attack", type: "link" },
           {
             id: "2.4.2",
-            title: "Input Transformations",
-            href: "/adversarial/transformations",
+            title: "Surrogate Models",
+            href: "/adversarial/surrogate-models",
             type: "link",
           },
         ],
       },
       {
         id: "2.5",
-        title: "Black Box Attacks",
+        title: "Defenses",
         type: "folder",
         items: [
-          { id: "2.5.1", title: "Square Attack", href: "/adversarial/square-attack", type: "link" },
+          {
+            id: "2.5.1",
+            title: "Defensive Distillation",
+            href: "/adversarial/defensive-distillation",
+            type: "link",
+          },
           {
             id: "2.5.2",
-            title: "Surrogate Models",
-            href: "/adversarial/surrogate-models",
+            title: "Adversarial Training",
+            href: "/adversarial/adversarial-training",
             type: "link",
           },
         ],
