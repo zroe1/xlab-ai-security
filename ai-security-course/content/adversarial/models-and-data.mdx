@@ -1,0 +1,50 @@
+---
+title: "Models and Data"
+description: "Overview of the models and data sources for this section."
+---
+
+## Datasets
+
+## CIFAR 10 Model
+
+For sections using the CIFAR 10 dataset, we provide you access to our pretrained
+CIFAR 10 classifier via our hugging face. The architecture of the model is inspired
+by the [@zagoruyko2017wideresidualnetworks] but is much more compact compared to
+a state-of-the-art model. We designed this model to be as small and efficient as
+possible to make it as easy as possible for you to run regardless of your hardware.
+
+### Technical Details of the CIFAR 10 Model
+
+The model has 165,722 parameters was trained for 75 epochs on the CIFAR 10 training dataset.
+Training took at a total of about 4 minutes and 20 seconds on a single H100 GPU.
+The final train accuracy was 86.66% and the final test accuracy was 83.86%. The
+figure below shows the loss and accuracy curves for both the train and test set
+for each epoch.
+
+<img
+  src="/images/tiny-wideresnet-training.png"
+  alt="Training and test loss and accuracy"
+  style={{ width: "90%", display: "block", margin: "0 auto" }}
+/>
+
+To replicate these results, you may reference our code [here](https://github.com/zroe1/xlab-ai-security/tree/main/models/adversarial_basics_cnn).
+
+### Running the CIFAR 10 Model
+
+The nice part about using HuggingFace, is you don't have to manually download
+anything. We will provide the below code for you in the notebooks, but you
+just so you can see, it is quite simple.
+
+```python
+from huggingface_hub import hf_hub_download
+from xlab.models import MiniWideResNet, BasicBlock
+import torch
+
+model_path = hf_hub_download(
+    repo_id="uchicago-xlab-ai-security/tiny-wideresnet-cifar10",
+    filename="adversarial_basics_cnn.pth"
+)
+model = torch.load(model_path, map_location='cpu')
+```
+
+## Citations
