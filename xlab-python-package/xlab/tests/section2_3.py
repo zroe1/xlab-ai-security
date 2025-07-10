@@ -9,6 +9,7 @@ import torch
 import numpy as np
 import random
 from typing import Any, Callable
+from xlab.utils import
 
 # ==============================================================================
 # Global Configuration and Mocks
@@ -19,53 +20,46 @@ _test_config = {
     'student_function': None,
 }
 
-# --- Mocks for testing l_inf_square_attack ---
 
-# These mock functions and classes are necessary because the attack function
-# depends on external components (a model, a loss function, and other helpers)
-# that need to be controlled during testing.
+from xlab.utils import prediction, process_image, show_image, SimpleCNN, CIFAR10
+import torch
+import numpy as np
+import random
 
-def prediction(model: Callable, x_hat: torch.Tensor) -> tuple[int, float]:
+classes = CIFAR10().classes
+
+IMG_PATH = 'data/car.jpg'
+from huggingface_hub import hf_hub_download
+from xlab.models import MiniWideResNet, BasicBlock
+import torch
+
+model = MiniWideResNet()
+
+model_path = hf_hub_download(
+    repo_id="uchicago-xlab-ai-security/tiny-wideresnet-cifar10",
+    filename="adversarial_basics_cnn.pth"
+)
+model = torch.load(model_path, map_location='cpu', weights_only = False)
+
+
+
+def demo_l_inf_dist(epsilon, h, w, c):
+    """Calculates the delta update for l_inf distribution.
+    
+    Args:
+        epsilon: Small number used for perturbation
+        h: Dimension of square
+        w: Image dimension (assumes image tensor is square)
+        c: Number of colour channels (RGB is 3)
+    Returns:
+        delta: Tensor of the same size as input, containing updates for each channel.
     """
-    A mock `prediction` function. Its behavior is controlled by the mock model.
-    This function is intended to be monkeypatched into the test environment.
-    """
-    return model.predict(x_hat)
-
-def l_inf_dist(h: int, epsilon: float, w: int, c: int) -> torch.Tensor:
-    """
-    A mock `l_inf_dist` function. Its behavior is controlled by the mock model.
-    This function is intended to be an attribute of the mock model to log calls.
-    """
-    return _test_config.get('model').l_inf_dist_mock(h, epsilon, w, c)
-
-class ControllableMockModel:
-    """A mock model to control the behavior of the attack loop for testing."""
-    def __init__(self, correct_label: int, misclassify_at_iteration: int, h_log: list):
-        self.correct_label = correct_label
-        self.misclassify_at_iteration = misclassify_at_iteration
-        self.iteration = 0
-        self.h_log = h_log
-
-    def __call__(self, x: torch.Tensor) -> torch.Tensor:
-        self.iteration += 1
-        return x  # Pass through, loss will be calculated on this
-
-    def predict(self, x_hat: torch.Tensor) -> tuple[int, float]:
-        """Mock prediction logic."""
-        if self.iteration > self.misclassify_at_iteration:
-            return (self.correct_label + 1, 0.9)  # Misclassify
-        return (self.correct_label, 0.9)  # Classify correctly
-
-    def l_inf_dist_mock(self, h: int, epsilon: float, w: int, c: int) -> torch.Tensor:
-        """Mock distribution to log `h` and provide a consistent update."""
-        self.h_log.append(h)
-        # Return a small, non-zero tensor to ensure the loss can increase
-        return torch.ones(c, w, w) * 0.001
-
-def controllable_loss_fn(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-    """A simple loss function that increases if the tensor sum increases."""
-    return torch.sum(x)
+    delta = torch.zeros(c, w, w)
+    r,s = np.random.randint(w-h, size = (2))
+    for channel in range(c):
+        unif = np.random.uniform(-2*epsilon, 2*epsilon)
+        delta[channel][r:r+h, s:s+h] = unif
+    return delta
 
 # ==============================================================================
 # Pytest Test Classes
