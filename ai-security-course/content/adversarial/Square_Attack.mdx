@@ -16,13 +16,6 @@ The Square Attack is a query-efficient black-box method used to generate adversa
 
 ### The Square Attack Loop
 
-
-<hr>
-<strong>Input:</strong> classifier $` f `$, point $` x \in \mathbb{R}^d `$, image size $` w `$, number of color channels $` c `$,<br>
-$`l_p`$-radius $`\epsilon`$, label $`y \in \{1, \dots, K\}`$, number of iterations $`N`$<br>
-<strong>Output:</strong> approximate minimizer $`\hat{x} \in \mathbb{R}^d`$ of the problem stated in Eq. (1)
-<hr>
-
 <table align='center'>
   <tr>
     <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">1</td>
@@ -69,13 +62,6 @@ The square attack works through a random sampling algorithm. Firstly, the advers
 
 ### $`L_\infty`$ Square Attack
 
-
-<strong>Algorithm 2:</strong> Sampling distribution $`P`$ for $`l_\infty`$-norm
-<hr>
-<strong>Input:</strong> maximal norm $`\epsilon`$, window size $`h`$, image size $`w`$, color channels $`c`$<br>
-<strong>Output:</strong> New update $`\delta`$
-<hr>
-
 <table align='center'>
   <tr>
     <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">1</td>
@@ -109,11 +95,6 @@ The $`L_\infty`$ Square Attack uses the loop described above. Its distribution a
 
 
 ### $`L_2`$ Square Attack
-
-<hr>
-<strong>Input:</strong> maximal norm $`\epsilon`$, window size $`h`$, image size $`w`$, number of color channels $`c`$, current image $`\hat{x}`$, original image $`x`$<br>
-<strong>Output:</strong> New update $`\delta`$
-<hr>
 
 <table align='center'>
   <tr>
