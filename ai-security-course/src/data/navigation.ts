@@ -44,17 +44,23 @@ export const navigationItems: NavigationItem[] = [
     items: [
       {
         id: "2.1",
+        title: "Introduction to Adversarial ML",
+        href: "/adversarial/introduction",
+        type: "link",
+      },
+      {
+        id: "2.2",
         title: "Adversarial Example Basics",
         type: "folder",
         items: [
           {
-            id: "2.1.1",
+            id: "2.2.1",
             title: "FGSM and PGD",
             href: "/adversarial/adversarialimages",
             type: "link",
           },
           {
-            id: "2.1.2",
+            id: "2.2.2",
             title: "Carlini & Wagner (C&W)",
             href: "/adversarial/cw",
             type: "link",
@@ -62,18 +68,18 @@ export const navigationItems: NavigationItem[] = [
         ],
       },
       {
-        id: "2.2",
+        id: "2.3",
         title: "White Box Defenses",
         type: "folder",
         items: [
           {
-            id: "2.2.1",
+            id: "2.3.1",
             title: "Logit Smoothing",
             href: "/adversarial/logit-smoothing",
             type: "link",
           },
           {
-            id: "2.2.2",
+            id: "2.3.2",
             title: "Input Transformations",
             href: "/adversarial/transformations",
             type: "link",
@@ -81,13 +87,13 @@ export const navigationItems: NavigationItem[] = [
         ],
       },
       {
-        id: "2.3",
+        id: "2.4",
         title: "Black Box Attacks",
         type: "folder",
         items: [
-          { id: "2.3.1", title: "Square Attack", href: "/adversarial/square-attack", type: "link" },
+          { id: "2.4.1", title: "Square Attack", href: "/adversarial/square-attack", type: "link" },
           {
-            id: "2.3.2",
+            id: "2.4.2",
             title: "Surrogate Models",
             href: "/adversarial/surrogate-models",
             type: "link",
@@ -95,24 +101,24 @@ export const navigationItems: NavigationItem[] = [
         ],
       },
       {
-        id: "2.4",
+        id: "2.5",
         title: "Benchmarks & State of the Art",
         type: "folder",
         items: [
           {
-            id: "2.4.1",
+            id: "2.5.1",
             title: "RobustBench",
             href: "/adversarial/robustbench",
             type: "link",
           },
           {
-            id: "2.4.2",
+            id: "2.5.2",
             title: "State of the Art",
             href: "/adversarial/state-of-the-art",
             type: "link",
           },
           {
-            id: "2.4.4",
+            id: "2.5.3",
             title: "Natural Limitations",
             href: "/adversarial/scaling-challenges",
             type: "link",
@@ -120,7 +126,7 @@ export const navigationItems: NavigationItem[] = [
         ],
       },
     ],
-  }, 
+  },
   {
     id: "3",
     title: "LLM Jailbreaking",
