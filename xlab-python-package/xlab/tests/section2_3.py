@@ -2,44 +2,74 @@
 Tests for section 2.3 of the AI Security course.
 """
 
-import pickle
-import torch
-import torch.nn.functional as F
-import os
-import pytest
-import numpy as np
-import sys
-import xlab
-from typing import List, Callable, Any
 
-# Global variables to store test parameters passed from notebook
+import pytest
+import sys
+import torch
+import numpy as np
+import random
+from typing import Any, Callable
+
+# ==============================================================================
+# Global Configuration and Mocks
+# ==============================================================================
+
+# Global variable to store test parameters passed from the notebook
 _test_config = {
-    'model': None,
     'student_function': None,
-    'loss_fn': None,
-    'label': None,
 }
 
+# --- Mocks for testing l_inf_square_attack ---
 
-def demo_l_inf_dist(epsilon, h, w, c):
-    """Calculates the delta update for l_inf distribution.
-    
-    Args:
-        epsilon: Small number used for perturbation
-        h: Dimension of square
-        w: Image dimension (assumes image tensor is square)
-        c: Number of colour channels (RGB is 3)
-    Returns:
-        delta: Tensor of the same size as input, containing updates for each channel.
+# These mock functions and classes are necessary because the attack function
+# depends on external components (a model, a loss function, and other helpers)
+# that need to be controlled during testing.
+
+def prediction(model: Callable, x_hat: torch.Tensor) -> tuple[int, float]:
     """
-    delta = torch.zeros(c, w, w)
-    r,s = np.random.randint(w-h, size = (2))
-    for channel in range(c):
-        unif = np.random.uniform(-2*epsilon, 2*epsilon)
-        delta[channel][r:r+h, s:s+h] = unif
-    return delta
-    return None
+    A mock `prediction` function. Its behavior is controlled by the mock model.
+    This function is intended to be monkeypatched into the test environment.
+    """
+    return model.predict(x_hat)
 
+def l_inf_dist(h: int, epsilon: float, w: int, c: int) -> torch.Tensor:
+    """
+    A mock `l_inf_dist` function. Its behavior is controlled by the mock model.
+    This function is intended to be an attribute of the mock model to log calls.
+    """
+    return _test_config.get('model').l_inf_dist_mock(h, epsilon, w, c)
+
+class ControllableMockModel:
+    """A mock model to control the behavior of the attack loop for testing."""
+    def __init__(self, correct_label: int, misclassify_at_iteration: int, h_log: list):
+        self.correct_label = correct_label
+        self.misclassify_at_iteration = misclassify_at_iteration
+        self.iteration = 0
+        self.h_log = h_log
+
+    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+        self.iteration += 1
+        return x  # Pass through, loss will be calculated on this
+
+    def predict(self, x_hat: torch.Tensor) -> tuple[int, float]:
+        """Mock prediction logic."""
+        if self.iteration > self.misclassify_at_iteration:
+            return (self.correct_label + 1, 0.9)  # Misclassify
+        return (self.correct_label, 0.9)  # Classify correctly
+
+    def l_inf_dist_mock(self, h: int, epsilon: float, w: int, c: int) -> torch.Tensor:
+        """Mock distribution to log `h` and provide a consistent update."""
+        self.h_log.append(h)
+        # Return a small, non-zero tensor to ensure the loss can increase
+        return torch.ones(c, w, w) * 0.001
+
+def controllable_loss_fn(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
+    """A simple loss function that increases if the tensor sum increases."""
+    return torch.sum(x)
+
+# ==============================================================================
+# Pytest Test Classes
+# ==============================================================================
 
 class TestTask1:
     """Tests for the l_inf_dist function."""
@@ -148,105 +178,256 @@ class TestTask1:
         # Assertions
         assert torch.equal(result1, result2)
         assert not torch.equal(result1, result3)
-            
+    
+class TestTask2:
+    """Tests for Task 2: l_inf_square_attack"""
 
-def _run_pytest_with_capture(test_class_or_function, verbose=True):
+    def setup_method(self):
+        """Reset mocks before each test."""
+        # This setup ensures test isolation
+        _test_config['h_log'] = []
+
+    def test_stops_on_successful_attack(self, monkeypatch):
+        """Tests if the attack loop terminates when a misclassification occurs."""
+        attack_func = _test_config['student_function']
+        
+        # This model will cause a misclassification after 5 calls
+        mock_model = ControllableMockModel(correct_label=5, misclassify_at_iteration=5, h_log=_test_config['h_log'])
+        _test_config['model'] = mock_model
+        
+        # The test needs to replace the global `prediction` and `l_inf_dist` functions
+        # with our controlled mocks.
+        monkeypatch.setattr(__name__, 'prediction', prediction)
+        monkeypatch.setattr(__name__, 'l_inf_dist', l_inf_dist)
+
+        x = torch.zeros(1, 3, 32, 32)
+        y = torch.tensor([5])
+        
+        attack_func(mock_model, controllable_loss_fn, x, y, N=20)
+        
+        # The model is called once before the loop, then inside the loop.
+        # The loop breaks when prediction fails at iteration 6.
+        assert mock_model.iteration == 6
+
+    def test_stops_at_max_iterations(self, monkeypatch):
+        """Tests if the loop terminates at N if no successful attack is found."""
+        attack_func = _test_config['student_function']
+        N = 15
+        
+        # This model will never misclassify
+        mock_model = ControllableMockModel(correct_label=5, misclassify_at_iteration=N + 5, h_log=_test_config['h_log'])
+        _test_config['model'] = mock_model
+        
+        monkeypatch.setattr(__name__, 'prediction', prediction)
+        monkeypatch.setattr(__name__, 'l_inf_dist', l_inf_dist)
+        
+        x = torch.zeros(1, 3, 32, 32)
+        y = torch.tensor([5])
+        
+        attack_func(mock_model, controllable_loss_fn, x, y, N=N)
+        
+        # The loop runs N-1 times, plus one call before the loop.
+        assert mock_model.iteration == N
+
+    def test_h_reduction_schedule(self, monkeypatch):
+        """Tests that the `h` parameter is reduced correctly over iterations."""
+        attack_func = _test_config['student_function']
+        N, max_h = 30, 6
+        
+        mock_model = ControllableMockModel(correct_label=0, misclassify_at_iteration=N + 5, h_log=_test_config['h_log'])
+        _test_config['model'] = mock_model
+
+        monkeypatch.setattr(__name__, 'prediction', prediction)
+        monkeypatch.setattr(__name__, 'l_inf_dist', l_inf_dist)
+
+        attack_func(mock_model, controllable_loss_fn, torch.zeros(1,3,32,32), torch.tensor([0]), N=N, max_h=max_h)
+        
+        logs = _test_config['h_log']
+        # h should reduce every N // max_h = 30 // 6 = 5 iterations.
+        # The update happens if i % 5 == 0.
+        assert logs[3] == 6  # Iteration i=4
+        assert logs[4] == 5  # Iteration i=5, h is reduced
+        assert logs[8] == 5  # Iteration i=9
+        assert logs[9] == 4  # Iteration i=10, h is reduced
+        assert logs[-1] < max_h
+
+    def test_output_clamped(self, monkeypatch):
+        """Tests that the output image tensor values are clamped between 0 and 1."""
+        attack_func = _test_config['student_function']
+
+        # This mock will always misclassify and provide a huge delta to test clamping
+        mock_model = ControllableMockModel(correct_label=0, misclassify_at_iteration=0, h_log=[])
+        def huge_delta_dist(h, epsilon, w, c): return torch.ones(c, w, w) * 100.0
+
+        monkeypatch.setattr(__name__, 'prediction', mock_model.predict)
+        monkeypatch.setattr(__name__, 'l_inf_dist', huge_delta_dist)
+
+        x = torch.zeros(1, 3, 32, 32)
+        adv_img = attack_func(mock_model, controllable_loss_fn, x, torch.tensor([0]), N=5)
+        
+        assert torch.all(adv_img >= 0.0)
+        assert torch.all(adv_img <= 1.0)
+
+
+class TestTask3:
+    """Tests for Task 3: M (helper function)"""
+
+    def test_return_type(self):
+        """Tests that the function returns a numerical type."""
+        M_func = _test_config['student_function']
+        result = M_func(r=1, s=1, h1=4, h2=4)
+        assert isinstance(result, (int, np.integer))
+
+    def test_known_values(self):
+        """Tests the output for a few known inputs based on the implementation."""
+        M_func = _test_config['student_function']
+        # Test case 1: 5x5 square
+        # M(r,s,5,5) = max(abs(r - 5//2 - 1), abs(s - 5//2 - 1)) = max(abs(r-3), abs(s-3))
+        assert M_func(r=0, s=0, h1=5, h2=5) == 3
+        assert M_func(r=2, s=2, h1=5, h2=5) == 1
+        assert M_func(r=4, s=4, h1=5, h2=5) == 1
+        
+        # Test case 2: Rectangular 10x4
+        # M(r,s,10,4) = max(abs(r - 10//2 - 1), abs(s - 4//2 - 1)) = max(abs(r-6), abs(s-3))
+        assert M_func(r=0, s=0, h1=10, h2=4) == 6
+        assert M_func(r=5, s=2, h1=10, h2=4) == 1
+
+
+class TestTask4:
+    """Tests for Task 4: eta (helper function)"""
+
+    def setup_method(self):
+        """Make student's M function available for eta to call."""
+        # This assumes M is defined in the global scope of the student's file
+        # and pytest can discover it. This is a reasonable assumption for this setup.
+        pass
+
+    def test_output_shape_and_type(self):
+        """Tests that the output tensor has the correct shape and type."""
+        eta_func = _test_config['student_function']
+        h1, h2 = 8, 6
+        result = eta_func(h1, h2)
+        assert isinstance(result, torch.Tensor)
+        assert result.shape == (h1, h2)
+
+    def test_known_value_simple(self):
+        """Tests the output for a simple, manually calculable case."""
+        eta_func = _test_config['student_function']
+        # For h1=2, h2=1, the logic is as follows:
+        # n = 1. M_matrix is 2x1. M values are all 2.
+        # max_value = 2.
+        # cache will be [1/(1+1-0), 1/2 + 1/(1+1-1)] = [0.5, 1.5]
+        # eta_matrix is cache[M-1] = cache[1] = 1.5
+        expected = torch.tensor([[1.5], [1.5]], dtype=torch.float64)
+        result = eta_func(h1=2, h2=1)
+        assert torch.allclose(result, expected)
+
+    def test_no_zero_division(self):
+        """Tests that the `if n+1-i != 0` check prevents division by zero."""
+        eta_func = _test_config['student_function']
+        try:
+            # A large value for h1 could potentially trigger the edge case
+            # if the logic was flawed.
+            eta_func(h1=25, h2=15)
+        except ZeroDivisionError:
+            pytest.fail("ZeroDivisionError was raised in the eta function.")
+
+
+class TestTask5:
+    """Tests for Task 5: l_2_dist"""
+
+    def test_output_shape_and_type(self):
+        """Tests that the output delta has the correct shape and type."""
+        l2_dist_func = _test_config['student_function']
+        c, w, h = 3, 32, 10
+        x = torch.rand(1, c, w, w)
+        x_hat = x.clone() # Start with zero perturbation
+        
+        delta = l2_dist_func(x_hat, x, h=h, w=w, c=c)
+        assert isinstance(delta, torch.Tensor)
+        assert delta.shape == (c, w, w)
+
+    def test_norm_of_first_step(self):
+        """Tests that the norm of the first perturbation (delta) is equal to epsilon."""
+        l2_dist_func = _test_config['student_function']
+        c, w, h, epsilon = 3, 32, 10, 5.0
+        
+        # When x_hat = x, the perturbation `v` is zero.
+        # The algorithm should create a new perturbation `delta` with L2 norm of epsilon.
+        x = torch.zeros(1, c, w, w)
+        x_hat = x.clone()
+        
+        delta = l2_dist_func(x_hat, x, epsilon=epsilon, h=h, w=w, c=c)
+        
+        delta_norm = torch.norm(delta)
+        assert torch.allclose(delta_norm, torch.tensor(epsilon), atol=1e-5)
+
+
+# ==============================================================================
+# Pytest Runner and Reporter
+# ==============================================================================
+
+def _run_pytest_with_capture(test_class_or_function: Any, verbose: bool = True) -> dict:
     """
     Run pytest on a specific test class or function and capture results.
-    Runs pytest programmatically within the same process to preserve global state.
-    
-    Returns:
-        dict: Summary of test results with total, passed, failed counts and score.
     """
     import io
     from contextlib import redirect_stdout, redirect_stderr
     
-    # Get test class name
-    if hasattr(test_class_or_function, '__name__'):
-        test_name = test_class_or_function.__name__
-    else:
-        test_name = test_class_or_function
-    
-    # Get the current file path to specify which tests to run
+    test_name = test_class_or_function.__name__
     current_file = __file__
     
-    # Capture stdout and stderr
     stdout_capture = io.StringIO()
     stderr_capture = io.StringIO()
     
     try:
-        # Run pytest programmatically within the same process
         with redirect_stdout(stdout_capture), redirect_stderr(stderr_capture):
-            # Import pytest and run it programmatically
             exit_code = pytest.main([
                 f'{current_file}::{test_name}',
                 '-v' if verbose else '-q',
                 '--tb=short',
-                '--no-header'  # Cleaner output
+                '--no-header'
             ])
         
         stdout_output = stdout_capture.getvalue()
-        stderr_output = stderr_capture.getvalue()
-        
-        # Parse pytest output
         lines = stdout_output.split('\n')
         
-        # Count passed and failed tests
-        passed = 0
-        failed = 0
-        
-        for line in lines:
-            if '::' in line:
-                if 'PASSED' in line:
-                    passed += 1
-                elif 'FAILED' in line or 'ERROR' in line:
-                    failed += 1
-        
+        passed = sum(1 for line in lines if '::' in line and 'PASSED' in line)
+        failed = sum(1 for line in lines if '::' in line and ('FAILED' in line or 'ERROR' in line))
         total_tests = passed + failed
         
         return {
-            "total_tests": total_tests,
-            "passed": passed,
-            "failed": failed,
+            "total_tests": total_tests, "passed": passed, "failed": failed,
             "score": round((passed / total_tests) * 100) if total_tests > 0 else 0,
-            "stdout": stdout_output,
-            "stderr": stderr_output,
+            "stdout": stdout_output, "stderr": stderr_capture.getvalue(),
             "exit_code": exit_code
         }
     
     except Exception as e:
         return {
-            "total_tests": 0,
-            "passed": 0,
-            "failed": 0,
-            "score": 0,
-            "stdout": stdout_capture.getvalue(),
-            "stderr": f"Error running pytest: {e}",
+            "total_tests": 0, "passed": 0, "failed": 0, "score": 0,
+            "stdout": stdout_capture.getvalue(), "stderr": f"Error running pytest: {e}",
             "exit_code": 1
         }
 
-def _print_test_summary(result_dict, task_name):
+def _print_test_summary(result_dict: dict, task_name: str):
     """Print a formatted summary of test results."""
-    # ANSI color codes
-    GREEN = '\033[92m'
-    RED = '\033[91m'
-    RESET = '\033[0m'
+    GREEN, RED, RESET = '\033[92m', '\033[91m', '\033[0m'
     
-    passed = result_dict["passed"]
-    failed = result_dict["failed"]
-    total = result_dict["total_tests"]
+    passed, failed, total = result_dict["passed"], result_dict["failed"], result_dict["total_tests"]
     
-    print(f"\nRunning tests for Section 2.4.2, {task_name}...")
+    print(f"\nRunning tests for {task_name}...")
     print("=" * 70)
     
-    if failed == 0:
-        print(f"🎉 All tests passed! ({passed}/{total})")
+    if failed == 0 and total > 0:
+        print(f"🎉 {GREEN}All tests passed! ({passed}/{total}){RESET}")
+    elif total > 0:
+        print(f"📊 {RED}Results: {passed} passed, {failed} failed out of {total} total{RESET}")
     else:
-        print(f"📊 Results: {passed} passed, {failed} failed out of {total} total")
-    
+        print(f"🤷 {RED}No tests were found or run for {task_name}.{RESET}")
+
     print("=" * 70)
     
-    # Print pytest output for detailed feedback
     if result_dict.get("stdout"):
         print("\nDetailed output:")
         print(result_dict["stdout"])
@@ -254,6 +435,38 @@ def _print_test_summary(result_dict, task_name):
     if result_dict.get("stderr") and result_dict["stderr"].strip():
         print(f"\n{RED}Errors:{RESET}")
         print(result_dict["stderr"])
+
+# ==============================================================================
+# Notebook Interface Functions
+# ==============================================================================
+
+def task2(student_function: Callable):
+    """Runs tests for Task 2: l_inf_square_attack."""
+    _test_config['student_function'] = student_function
+    result = _run_pytest_with_capture(TestTask1)
+    _print_test_summary(result, "Task 2: l_inf_square_attack")
+    return result
+
+def task3(student_function: Callable):
+    """Runs tests for Task 3: M helper function."""
+    _test_config['student_function'] = student_function
+    result = _run_pytest_with_capture(TestTask2)
+    _print_test_summary(result, "Task 3: M function")
+    return result
+
+def task4(student_function: Callable):
+    """Runs tests for Task 4: eta helper function."""
+    _test_config['student_function'] = student_function
+    result = _run_pytest_with_capture(TestTask3)
+    _print_test_summary(result, "Task 4: eta function")
+    return result
+
+def task5(student_function: Callable):
+    """Runs tests for Task 5: l_2_dist function."""
+    _test_config['student_function'] = student_function
+    result = _run_pytest_with_capture(TestTask4)
+    _print_test_summary(result, "Task 4: l_2_dist function")
+    return result
 
 # Notebook interface functions (maintaining backward compatibility)
 def task1(student_function):
@@ -330,5 +543,25 @@ def task4(student_function):
     # Run pytest tests
     result = _run_pytest_with_capture(TestTask4)
     _print_test_summary(result, "Task 4")
+    
+    return result
+
+
+def task5(student_function):
+    """
+    Run Task 5 tests using pytest.
+    
+    Args:
+        student_function: The function to test with.
+    
+    Returns:
+        dict: A summary dictionary with test results.
+    """
+    # Configure global test parameters
+    _test_config['student_function'] = student_function
+    
+    # Run pytest tests
+    result = _run_pytest_with_capture(TestTask5)
+    _print_test_summary(result, "Task 5")
     
     return result
