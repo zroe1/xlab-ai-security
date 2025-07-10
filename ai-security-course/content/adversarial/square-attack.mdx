@@ -17,42 +17,44 @@ The Square Attack is a query-efficient black-box method used to generate adversa
 ### The Square Attack Loop
 
 <table align='center'>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>1</td>
-    <td>$\hat{x} \leftarrow \text{init}(x), \quad l^* \leftarrow L(f(x), y), \quad i \leftarrow 1$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>2</td>
-    <td><b>while</b> $i < N$ and $\hat{x}$ is not adversarial <b>do</b></td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>3</td>
-    <td style={{paddingLeft: "2em"}}>$h^{(i)} \leftarrow$ side length of the square to modify (according to some schedule)</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>4</td>
-    <td style={{paddingLeft: "2em"}}>$\delta \sim P(\epsilon, h^{(i)}, w, c, \hat{x}, x)$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>5</td>
-    <td style={{paddingLeft: "2em"}}>$\hat{x}_{\text{new}} \leftarrow \text{Project } \hat{x} + \delta \text{ onto } \{z \in \mathbb{R}^d : \|z - x\|_p \le \epsilon\} \cap [0, 1]^d$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>6</td>
-    <td style={{paddingLeft: "2em"}}>$l_{\text{new}} \leftarrow L(f(\hat{x}_{\text{new}}), y)$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>7</td>
-    <td style={{paddingLeft: "2em"}}><b>if</b> $l_{\text{new}} < l^*$ <b>then</b> $\hat{x} \leftarrow \hat{x}_{\text{new}}, l^* \leftarrow l_{\text{new}};$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>8</td>
-    <td style={{paddingLeft: "2em"}}>$i \leftarrow i + 1$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>9</td>
-    <td><b>end</b></td>
-  </tr>
+  <tbody>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>1</td>
+      <td>$\hat{x} \leftarrow \text{init}(x), \quad l^* \leftarrow L(f(x), y), \quad i \leftarrow 1$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>2</td>
+      <td><b>while</b> $i < N$ and $\hat{x}$ is not adversarial <b>do</b></td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>3</td>
+      <td style={{paddingLeft: "2em"}}>$h^{(i)} \leftarrow$ side length of the square to modify (according to some schedule)</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>4</td>
+      <td style={{paddingLeft: "2em"}}>$\delta \sim P(\epsilon, h^{(i)}, w, c, \hat{x}, x)$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>5</td>
+      <td style={{paddingLeft: "2em"}}>$\hat{x}_{\text{new}} \leftarrow \text{Project } \hat{x} + \delta \text{ onto } \{z \in \mathbb{R}^d : \|z - x\|_p \le \epsilon\} \cap [0, 1]^d$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>6</td>
+      <td style={{paddingLeft: "2em"}}>$l_{\text{new}} \leftarrow L(f(\hat{x}_{\text{new}}), y)$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>7</td>
+      <td style={{paddingLeft: "2em"}}><b>if</b> $l_{\text{new}} < l^*$ <b>then</b> $\hat{x} \leftarrow \hat{x}_{\text{new}}, l^* \leftarrow l_{\text{new}};$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>8</td>
+      <td style={{paddingLeft: "2em"}}>$i \leftarrow i + 1$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>9</td>
+      <td><b>end</b></td>
+    </tr>
+  </tbody>
 </table>
 
 ([@andriushchenko2020squareattackqueryefficientblackbox])
@@ -62,30 +64,32 @@ The square attack works through a random sampling algorithm. Firstly, the advers
 ### $`L_\infty`$ Square Attack
 
 <table align='center'>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>1</td>
-    <td>$\delta \leftarrow \text{array of zeros of size } w \times w \times c$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>2</td>
-    <td>sample uniformly<br />$r, s \in \{0, \dots, w - h\} \subset \mathbb{N}$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>3</td>
-    <td><b>for</b> $i = 1, \dots, c$ <b>do</b></td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>4</td>
-    <td style={{paddingLeft: "2em"}}>$\rho \leftarrow \text{Uniform}(\{-2\epsilon, 2\epsilon\})$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>5</td>
-    <td style={{paddingLeft: "2em"}}>$\delta_{r+1:r+h, s+1:s+h, i} \leftarrow \rho \cdot \mathbf{1}_{h \times h}$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>6</td>
-    <td><b>end</b></td>
-  </tr>
+  <tbody>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>1</td>
+      <td>$\delta \leftarrow \text{array of zeros of size } w \times w \times c$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>2</td>
+      <td>sample uniformly<br />$r, s \in \{0, \dots, w - h\} \subset \mathbb{N}$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>3</td>
+      <td><b>for</b> $i = 1, \dots, c$ <b>do</b></td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>4</td>
+      <td style={{paddingLeft: "2em"}}>$\rho \leftarrow \text{Uniform}(\{-2\epsilon, 2\epsilon\})$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>5</td>
+      <td style={{paddingLeft: "2em"}}>$\delta_{r+1:r+h, s+1:s+h, i} \leftarrow \rho \cdot \mathbf{1}_{h \times h}$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>6</td>
+      <td><b>end</b></td>
+    </tr>
+  </tbody>
 </table>
 
 The $`L_\infty`$ Square Attack uses the loop described above. Its distribution aims to minimize the $`L_2`$ norm of the original and the adversarial image. This choice is no more than a random start corner coordinate for the square being picked, and a random perturbation added to every pixel in this square.
@@ -95,50 +99,52 @@ The $`L_\infty`$ Square Attack uses the loop described above. Its distribution a
 ### $`L_2`$ Square Attack
 
 <table align='center'>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>1</td>
-    <td>$\nu \leftarrow \hat{x} - x$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>2</td>
-    <td>sample uniformly $r_1, s_1, r_2, s_2 \in \{0, \dots, w - h\}$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>3</td>
-    <td>$W_1 := r_1 + 1 : r_1 + h, s_1 + 1 : s_1 + h, W_2 := r_2 + 1 : r_2 + h, s_2 + 1 : s_2 + h$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>4</td>
-    <td>$\epsilon^2_{\text{unused}} \leftarrow \epsilon^2 - \|\nu\|_2^2, \quad \eta^* \leftarrow \eta / \|\eta\|_2 \text{ with } \eta \text{ as in (2)}$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>5</td>
-    <td><b>for</b> $i = 1, \dots, c$ <b>do</b></td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>6</td>
-    <td style={{paddingLeft: "2em"}}>$\rho \leftarrow \text{Uniform}(\{-1, 1\})$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>7</td>
-    <td style={{paddingLeft: "2em"}}>$\nu_{\text{temp}} \leftarrow \rho\eta^* + \frac{\nu_{W_1, i}}{\|\nu_{W_1, i}\|_2}$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>8</td>
-    <td style={{paddingLeft: "2em"}}>$\epsilon^i_{\text{avail}} \leftarrow \sqrt{\|\nu_{W_1 \cup W_2, i}\|_2^2 + \frac{\epsilon^2_{\text{unused}}}{c}}$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>9</td>
-    <td style={{paddingLeft: "2em"}}>$\nu_{W_2, i} \leftarrow 0, \quad \nu_{W_1, i} \leftarrow \left( \frac{\nu_{\text{temp}}}{\|\nu_{\text{temp}}\|_2} \right) \epsilon^i_{\text{avail}}$</td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>10</td>
-    <td><b>end</b></td>
-  </tr>
-  <tr>
-    <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>11</td>
-    <td>$\delta \leftarrow x + \nu - \hat{x}$</td>
-  </tr>
+  <tbody>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>1</td>
+      <td>$\nu \leftarrow \hat{x} - x$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>2</td>
+      <td>sample uniformly $r_1, s_1, r_2, s_2 \in \{0, \dots, w - h\}$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>3</td>
+      <td>$W_1 := r_1 + 1 : r_1 + h, s_1 + 1 : s_1 + h, W_2 := r_2 + 1 : r_2 + h, s_2 + 1 : s_2 + h$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>4</td>
+      <td>$\epsilon^2_{\text{unused}} \leftarrow \epsilon^2 - \|\nu\|_2^2, \quad \eta^* \leftarrow \eta / \|\eta\|_2 \text{ with } \eta \text{ as in (2)}$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>5</td>
+      <td><b>for</b> $i = 1, \dots, c$ <b>do</b></td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>6</td>
+      <td style={{paddingLeft: "2em"}}>$\rho \leftarrow \text{Uniform}(\{-1, 1\})$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>7</td>
+      <td style={{paddingLeft: "2em"}}>$\nu_{\text{temp}} \leftarrow \rho\eta^* + \frac{\nu_{W_1, i}}{\|\nu_{W_1, i}\|_2}$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>8</td>
+      <td style={{paddingLeft: "2em"}}>$\epsilon^i_{\text{avail}} \leftarrow \sqrt{\|\nu_{W_1 \cup W_2, i}\|_2^2 + \frac{\epsilon^2_{\text{unused}}}{c}}$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>9</td>
+      <td style={{paddingLeft: "2em"}}>$\nu_{W_2, i} \leftarrow 0, \quad \nu_{W_1, i} \leftarrow \left( \frac{\nu_{\text{temp}}}{\|\nu_{\text{temp}}\|_2} \right) \epsilon^i_{\text{avail}}$</td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>10</td>
+      <td><b>end</b></td>
+    </tr>
+    <tr>
+      <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>11</td>
+      <td>$\delta \leftarrow x + \nu - \hat{x}$</td>
+    </tr>
+  </tbody>
 </table>
 
 ([@andriushchenko2020squareattackqueryefficientblackbox])
