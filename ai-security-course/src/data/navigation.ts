@@ -162,7 +162,7 @@ export const navigationItems: NavigationItem[] = [
           { id: "3.3.3", title: "TAP", href: "/jailbreaking/tap", type: "link" },
           { id: "3.3.4", title: "AutoDAN", href: "/jailbreaking/autodan", type: "link" },
           {
-            id: "3.3.4",
+            id: "3.3.5",
             title: "Prompt Injections",
             href: "/jailbreaking/prompt-injections",
             type: "link",

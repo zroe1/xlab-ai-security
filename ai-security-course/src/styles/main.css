@@ -591,6 +591,27 @@ ol {
   font-size: 0.85rem;
 }
 
+/* Blockquote styles for GitHub-like appearance */
+blockquote {
+  margin: 16px 0;
+  padding: 0 16px;
+  border-left: 4px solid var(--border-color);
+  color: var(--secondary-text);
+  font-style: italic;
+  background-color: transparent;
+}
+
+blockquote p {
+  margin: 8px 0;
+  font-size: 0.85rem;
+}
+
+/* Dark theme blockquote styling */
+body[data-theme='dark'] blockquote {
+  border-left-color: #444;
+  color: #b0b0b0;
+}
+
 .content-block {
   margin-bottom: 16px;
 }
