@@ -238,7 +238,7 @@ def main():
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=5e-4)
 
-    epochs = 50
+    epochs = 75
     
     history = {'train_loss': [], 'train_acc': [], 'test_loss': [], 'test_acc': []}
 
