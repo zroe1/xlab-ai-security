@@ -89,8 +89,8 @@ def reference_wiggle_relu_grad(x, amplitude=0.1, frequency=150):
 # --- Task 1 Tests: Model Accuracy ---
 
 @pytest.mark.task1
-def test_model_accuracy_above_90_percent(model):
-    """Test that the model achieves >90% accuracy on test data."""
+def test_model_accuracy_above_80_percent(model):
+    """Test that the model achieves >80% accuracy on test data."""
     device = next(model.parameters()).device
     x, y = get_100_examples()
     x, y = x.to(device), y.to(device)
@@ -100,8 +100,8 @@ def test_model_accuracy_above_90_percent(model):
     correct_predictions = predictions == y
     accuracy = torch.mean(correct_predictions.float())
     
-    assert accuracy > 0.9, f"Model accuracy {accuracy:.4f} is not above 0.9. " \
-                          f"Try loading the model with load_model(model_name='Standard', threat_model='Linf')"
+    assert accuracy > 0.8, f"Model accuracy {accuracy:.4f} is not above 0.8." \
+                        f"Check how you are loading your model"
 
 @pytest.mark.task1
 def test_student_function_accuracy_matches_model(model, student_function_task1):
