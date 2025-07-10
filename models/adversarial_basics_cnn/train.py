@@ -259,7 +259,7 @@ def main():
     
     plot_training_history(history)
 
-    torch.save(model.state_dict(), "adversarial_basics_cnn.pth")
+    torch.save(model, "adversarial_basics_cnn.pth")
     print("Saved model weights to adversarial_basics_cnn.pth")
 
 if __name__ == '__main__':

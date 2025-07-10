@@ -7,5 +7,6 @@ __version__ = "0.1.7"
 from .core import hello_world
 from . import tests
 from . import utils
+from . import models
 
-__all__ = ["hello_world", "__version__", "tests"] 
+__all__ = ["hello_world", "__version__", "tests", "models"]
