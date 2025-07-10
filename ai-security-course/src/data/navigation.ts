@@ -157,9 +157,10 @@ export const navigationItems: NavigationItem[] = [
         title: "Prompt-Level Attacks",
         type: "folder",
         items: [
-          { id: "3.3.1", title: "GPTFuzzer", href: "/jailbreaking/gptfuzzer", type: "link" },
-          { id: "3.3.2", title: "TAP", href: "/jailbreaking/tap", type: "link" },
-          { id: "3.3.3", title: "AutoDAN", href: "/jailbreaking/autodan", type: "link" },
+          { id: "3.3.1", title: "PAIR & TAP", href: "/jailbreaking/pair-tap.mdx", type: "link" },
+          { id: "3.3.2", title: "GPTFuzzer", href: "/jailbreaking/gptfuzzer", type: "link" },
+          { id: "3.3.3", title: "TAP", href: "/jailbreaking/tap", type: "link" },
+          { id: "3.3.4", title: "AutoDAN", href: "/jailbreaking/autodan", type: "link" },
           {
             id: "3.3.4",
             title: "Prompt Injections",
