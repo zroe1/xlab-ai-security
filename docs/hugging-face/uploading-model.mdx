@@ -1,0 +1,20 @@
+Assuming you are running on RunPod:
+
+Install the huggingface cli:
+
+```
+pip3 install huggingface_hub
+```
+
+Run the following command and enter your login token:
+
+```
+huggingface-cli login
+```
+
+Specify the project you would like to upload the file to followed by the file on
+your current machine that you would like upload:
+
+```
+huggingface-cli upload uchicago-xlab-ai-security/name-of-repo local-file.pth
+```
