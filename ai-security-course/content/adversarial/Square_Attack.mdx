@@ -20,7 +20,7 @@ The Square Attack is a query-efficient black-box method used to generate adversa
 <hr>
 <strong>Input:</strong> classifier $`f`$, point $`x \in \mathbb{R}^d`$, image size $`w`$, number of color channels $`c`$,<br>
 $`l_p`$-radius $`\epsilon`$, label $`y \in \{1, \dots, K\}`$, number of iterations $`N`$<br>
-<strong>Output:</strong> approximate minimizer $\hat{x} \in \mathbb{R}^d$ of the problem stated in Eq. (1)
+<strong>Output:</strong> approximate minimizer $`\hat{x} \in \mathbb{R}^d`$ of the problem stated in Eq. (1)
 <hr>
 
 <table align='center'>
@@ -70,10 +70,10 @@ The square attack works through a random sampling algorithm. Firstly, the advers
 ### $`L_\infty`$ Square Attack
 
 
-<strong>Algorithm 2:</strong> Sampling distribution $P$ for $l_\infty$-norm
+<strong>Algorithm 2:</strong> Sampling distribution $`P`$ for $`l_\infty`$-norm
 <hr>
-<strong>Input:</strong> maximal norm $\epsilon$, window size $h$, image size $w$, color channels $c$<br>
-<strong>Output:</strong> New update $\delta$
+<strong>Input:</strong> maximal norm $`\epsilon`$, window size $`h`$, image size $`w`$, color channels $`c`$<br>
+<strong>Output:</strong> New update $`\delta`$
 <hr>
 
 <table align='center'>
@@ -111,21 +111,57 @@ The $`L_\infty`$ Square Attack uses the loop described above. Its distribution a
 ### $`L_2`$ Square Attack
 
 <hr>
-<strong>Input:</strong> maximal norm $\epsilon$, window size $h$, image size $w$, number of color channels $c$, current image $\hat{x}$, original image $x$<br>
-<strong>Output:</strong> New update $\delta$
+<strong>Input:</strong> maximal norm $`\epsilon`$, window size $`h`$, image size $`w`$, number of color channels $`c`$, current image $`\hat{x}`$, original image $`x`$<br>
+<strong>Output:</strong> New update $`\delta`$
 <hr>
 
-1  $`\nu \leftarrow \hat{x} - x`$ <br>
-2  sample uniformly $`r_1, s_1, r_2, s_2 \in \{0, \dots, w - h\}`$ <br>
-3  $`W_1 := r_1 + 1 : r_1 + h, s_1 + 1 : s_1 + h, W_2 := r_2 + 1 : r_2 + h, s_2 + 1 : s_2 + h`$ <br>
-4  $`\epsilon^2_{\text{unused}} \leftarrow \epsilon^2 - \|\nu\|_2^2, \quad \eta^* \leftarrow \eta / \|\eta\|_2 \text{ with } \eta \text{ as in (2)}`$ <br><br>
-5  **for** $`i = 1, \dots, c`$ **do** <br>
-6   &emsp;&emsp;$`\rho \leftarrow \text{Uniform}(\{-1, 1\})`$ <br>
-7   &emsp;&emsp;$`\nu_{\text{temp}} \leftarrow \rho\eta^* + \frac{\nu_{W_1, i}}{\|\nu_{W_1, i}\|_2}`$ <br>
-8   &emsp;&emsp;$`\epsilon^i_{\text{avail}} \leftarrow \sqrt{\|\nu_{W_1 \cup W_2, i}\|_2^2 + \frac{\epsilon^2_{\text{unused}}}{c}}`$ <br>
-9   &emsp;&emsp;$`\nu_{W_2, i} \leftarrow 0, \quad \nu_{W_1, i} \leftarrow \left( \frac{\nu_{\text{temp}}}{\|\nu_{\text{temp}}\|_2} \right) \epsilon^i_{\text{avail}}`$ <br>
-10 **end** <br>
-11 $`\delta \leftarrow x + \nu - \hat{x}`$ <br>
+<table align='center'>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">1</td>
+    <td>$\nu \leftarrow \hat{x} - x$</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">2</td>
+    <td>sample uniformly $r_1, s_1, r_2, s_2 \in \{0, \dots, w - h\}$</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">3</td>
+    <td>$W_1 := r_1 + 1 : r_1 + h, s_1 + 1 : s_1 + h, W_2 := r_2 + 1 : r_2 + h, s_2 + 1 : s_2 + h$</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">4</td>
+    <td>$\epsilon^2_{\text{unused}} \leftarrow \epsilon^2 - \|\nu\|_2^2, \quad \eta^* \leftarrow \eta / \|\eta\|_2 \text{ with } \eta \text{ as in (2)}$</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">5</td>
+    <td><b>for</b> $i = 1, \dots, c$ <b>do</b></td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">6</td>
+    <td style="padding-left: 2em;">$\rho \leftarrow \text{Uniform}(\{-1, 1\})$</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">7</td>
+    <td style="padding-left: 2em;">$\nu_{\text{temp}} \leftarrow \rho\eta^* + \frac{\nu_{W_1, i}}{\|\nu_{W_1, i}\|_2}$</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">8</td>
+    <td style="padding-left: 2em;">$\epsilon^i_{\text{avail}} \leftarrow \sqrt{\|\nu_{W_1 \cup W_2, i}\|_2^2 + \frac{\epsilon^2_{\text{unused}}}{c}}$</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">9</td>
+    <td style="padding-left: 2em;">$\nu_{W_2, i} \leftarrow 0, \quad \nu_{W_1, i} \leftarrow \left( \frac{\nu_{\text{temp}}}{\|\nu_{\text{temp}}\|_2} \right) \epsilon^i_{\text{avail}}$</td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">10</td>
+    <td><b>end</b></td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; text-align: right; padding-right: 1em; user-select: none;">11</td>
+    <td>$\delta \leftarrow x + \nu - \hat{x}$</td>
+  </tr>
+</table>
+
 ([@andriushchenko2020squareattackqueryefficientblackbox])
 
 The $`L_2`$ Square Attack also uses the loop described above. However, its distribution aims to minimize the  $`L_2`$ norm of the original and the adversarial image instead of the  $`L_\infty`$ norm. This is a much more complicated task, since the  $`L_\infty`$ norm is much easier to calculate than the  $`L_2`$ norm. This distribution involves randomly choosing a square and dividing it into two halves, one negative, and one positive. Helper functions are used to create moundlike shapes in each of these half squares, with high values in the center, and radially decreasing perturbation values going outwards. Then, either this square or its transpose is chosen, and used to perturb the adversarial image. 
