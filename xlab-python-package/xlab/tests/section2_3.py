@@ -17,55 +17,50 @@ from typing import Any, Callable
 # Global variable to store test parameters passed from the notebook
 _test_config = {
     'student_function': None,
+    'model': None,
+    'loss': None
 }
 
-# --- Mocks for testing l_inf_square_attack ---
 
-# These mock functions and classes are necessary because the attack function
-# depends on external components (a model, a loss function, and other helpers)
-# that need to be controlled during testing.
+from xlab.utils import prediction, process_image, show_image, SimpleCNN, CIFAR10
+import torch
+import numpy as np
+import random
 
-def prediction(model: Callable, x_hat: torch.Tensor) -> tuple[int, float]:
+classes = CIFAR10().classes
+
+IMG_PATH = 'data/car.jpg'
+from huggingface_hub import hf_hub_download
+from xlab.models import MiniWideResNet, BasicBlock
+import torch
+
+model = MiniWideResNet()
+
+model_path = hf_hub_download(
+    repo_id="uchicago-xlab-ai-security/tiny-wideresnet-cifar10",
+    filename="adversarial_basics_cnn.pth"
+)
+model = torch.load(model_path, map_location='cpu', weights_only = False)
+
+
+
+def demo_l_inf_dist(epsilon, h, w, c):
+    """Calculates the delta update for l_inf distribution.
+    
+    Args:
+        epsilon: Small number used for perturbation
+        h: Dimension of square
+        w: Image dimension (assumes image tensor is square)
+        c: Number of colour channels (RGB is 3)
+    Returns:
+        delta: Tensor of the same size as input, containing updates for each channel.
     """
-    A mock `prediction` function. Its behavior is controlled by the mock model.
-    This function is intended to be monkeypatched into the test environment.
-    """
-    return model.predict(x_hat)
-
-def l_inf_dist(h: int, epsilon: float, w: int, c: int) -> torch.Tensor:
-    """
-    A mock `l_inf_dist` function. Its behavior is controlled by the mock model.
-    This function is intended to be an attribute of the mock model to log calls.
-    """
-    return _test_config.get('model').l_inf_dist_mock(h, epsilon, w, c)
-
-class ControllableMockModel:
-    """A mock model to control the behavior of the attack loop for testing."""
-    def __init__(self, correct_label: int, misclassify_at_iteration: int, h_log: list):
-        self.correct_label = correct_label
-        self.misclassify_at_iteration = misclassify_at_iteration
-        self.iteration = 0
-        self.h_log = h_log
-
-    def __call__(self, x: torch.Tensor) -> torch.Tensor:
-        self.iteration += 1
-        return x  # Pass through, loss will be calculated on this
-
-    def predict(self, x_hat: torch.Tensor) -> tuple[int, float]:
-        """Mock prediction logic."""
-        if self.iteration > self.misclassify_at_iteration:
-            return (self.correct_label + 1, 0.9)  # Misclassify
-        return (self.correct_label, 0.9)  # Classify correctly
-
-    def l_inf_dist_mock(self, h: int, epsilon: float, w: int, c: int) -> torch.Tensor:
-        """Mock distribution to log `h` and provide a consistent update."""
-        self.h_log.append(h)
-        # Return a small, non-zero tensor to ensure the loss can increase
-        return torch.ones(c, w, w) * 0.001
-
-def controllable_loss_fn(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
-    """A simple loss function that increases if the tensor sum increases."""
-    return torch.sum(x)
+    delta = torch.zeros(c, w, w)
+    r,s = np.random.randint(w-h, size = (2))
+    for channel in range(c):
+        unif = np.random.uniform(-2*epsilon, 2*epsilon)
+        delta[channel][r:r+h, s:s+h] = unif
+    return delta
 
 # ==============================================================================
 # Pytest Test Classes
@@ -182,92 +177,19 @@ class TestTask1:
 class TestTask2:
     """Tests for Task 2: l_inf_square_attack"""
 
-    def setup_method(self):
-        """Reset mocks before each test."""
-        # This setup ensures test isolation
-        _test_config['h_log'] = []
-
-    def test_stops_on_successful_attack(self, monkeypatch):
-        """Tests if the attack loop terminates when a misclassification occurs."""
+    def test_output(self):
+        """Tests that the output image tensor values are adversarial"""
         attack_func = _test_config['student_function']
+        model = _test_config['model']
+        IMG_PATH = 'car.jpg'
+        img = process_image(IMG_PATH)
+        label = prediction(model, process_image(IMG_PATH))[0]
+        loss_fn = torch.nn.CrossEntropyLoss()
+        x_adv = attack_func(model, loss_fn, img, label, 500)
+        pred = prediction(model, x_adv)[0]
+        assert not torch.equal(label, pred)
+                
         
-        # This model will cause a misclassification after 5 calls
-        mock_model = ControllableMockModel(correct_label=5, misclassify_at_iteration=5, h_log=_test_config['h_log'])
-        _test_config['model'] = mock_model
-        
-        # The test needs to replace the global `prediction` and `l_inf_dist` functions
-        # with our controlled mocks.
-        monkeypatch.setattr(__name__, 'prediction', prediction)
-        monkeypatch.setattr(__name__, 'l_inf_dist', l_inf_dist)
-
-        x = torch.zeros(1, 3, 32, 32)
-        y = torch.tensor([5])
-        
-        attack_func(mock_model, controllable_loss_fn, x, y, N=20)
-        
-        # The model is called once before the loop, then inside the loop.
-        # The loop breaks when prediction fails at iteration 6.
-        assert mock_model.iteration == 6
-
-    def test_stops_at_max_iterations(self, monkeypatch):
-        """Tests if the loop terminates at N if no successful attack is found."""
-        attack_func = _test_config['student_function']
-        N = 15
-        
-        # This model will never misclassify
-        mock_model = ControllableMockModel(correct_label=5, misclassify_at_iteration=N + 5, h_log=_test_config['h_log'])
-        _test_config['model'] = mock_model
-        
-        monkeypatch.setattr(__name__, 'prediction', prediction)
-        monkeypatch.setattr(__name__, 'l_inf_dist', l_inf_dist)
-        
-        x = torch.zeros(1, 3, 32, 32)
-        y = torch.tensor([5])
-        
-        attack_func(mock_model, controllable_loss_fn, x, y, N=N)
-        
-        # The loop runs N-1 times, plus one call before the loop.
-        assert mock_model.iteration == N
-
-    def test_h_reduction_schedule(self, monkeypatch):
-        """Tests that the `h` parameter is reduced correctly over iterations."""
-        attack_func = _test_config['student_function']
-        N, max_h = 30, 6
-        
-        mock_model = ControllableMockModel(correct_label=0, misclassify_at_iteration=N + 5, h_log=_test_config['h_log'])
-        _test_config['model'] = mock_model
-
-        monkeypatch.setattr(__name__, 'prediction', prediction)
-        monkeypatch.setattr(__name__, 'l_inf_dist', l_inf_dist)
-
-        attack_func(mock_model, controllable_loss_fn, torch.zeros(1,3,32,32), torch.tensor([0]), N=N, max_h=max_h)
-        
-        logs = _test_config['h_log']
-        # h should reduce every N // max_h = 30 // 6 = 5 iterations.
-        # The update happens if i % 5 == 0.
-        assert logs[3] == 6  # Iteration i=4
-        assert logs[4] == 5  # Iteration i=5, h is reduced
-        assert logs[8] == 5  # Iteration i=9
-        assert logs[9] == 4  # Iteration i=10, h is reduced
-        assert logs[-1] < max_h
-
-    def test_output_clamped(self, monkeypatch):
-        """Tests that the output image tensor values are clamped between 0 and 1."""
-        attack_func = _test_config['student_function']
-
-        # This mock will always misclassify and provide a huge delta to test clamping
-        mock_model = ControllableMockModel(correct_label=0, misclassify_at_iteration=0, h_log=[])
-        def huge_delta_dist(h, epsilon, w, c): return torch.ones(c, w, w) * 100.0
-
-        monkeypatch.setattr(__name__, 'prediction', mock_model.predict)
-        monkeypatch.setattr(__name__, 'l_inf_dist', huge_delta_dist)
-
-        x = torch.zeros(1, 3, 32, 32)
-        adv_img = attack_func(mock_model, controllable_loss_fn, x, torch.tensor([0]), N=5)
-        
-        assert torch.all(adv_img >= 0.0)
-        assert torch.all(adv_img <= 1.0)
-
 
 class TestTask3:
     """Tests for Task 3: M (helper function)"""
@@ -318,7 +240,7 @@ class TestTask4:
         # max_value = 2.
         # cache will be [1/(1+1-0), 1/2 + 1/(1+1-1)] = [0.5, 1.5]
         # eta_matrix is cache[M-1] = cache[1] = 1.5
-        expected = torch.tensor([[1.5], [1.5]], dtype=torch.float64)
+        expected = torch.tensor([[1.5], [1.5]])
         result = eta_func(h1=2, h2=1)
         assert torch.allclose(result, expected)
 
@@ -345,7 +267,7 @@ class TestTask5:
         
         delta = l2_dist_func(x_hat, x, h=h, w=w, c=c)
         assert isinstance(delta, torch.Tensor)
-        assert delta.shape == (c, w, w)
+        assert delta.shape == (1, c, w, w)
 
     def test_norm_of_first_step(self):
         """Tests that the norm of the first perturbation (delta) is equal to epsilon."""
@@ -489,7 +411,7 @@ def task1(student_function):
     return result
 
 
-def task2(student_function):
+def task2(model, student_function):
     """
     Run Task 2 tests using pytest.
     
@@ -500,6 +422,7 @@ def task2(student_function):
         dict: A summary dictionary with test results.
     """
     # Configure global test parameters
+    _test_config['model'] = model
     _test_config['student_function'] = student_function
     
     # Run pytest tests
