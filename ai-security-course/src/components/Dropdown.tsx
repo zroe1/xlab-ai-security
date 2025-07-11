@@ -22,17 +22,15 @@ const Dropdown: React.FC<DropdownProps> = ({ title, children, defaultOpen = fals
         className={styles.dropdownHeader}
         onClick={toggleDropdown}
         aria-expanded={isOpen}
-        type="button"
-      >
+        type="button">
         <span className={styles.dropdownTitle}>{title}</span>
-        <span className={`${styles.dropdownChevron} ${isOpen ? styles.expanded : ''}`}>
+        <span className={`${styles.dropdownChevron} ${isOpen ? styles.expanded : ""}`}>
           <svg
             width="16"
             height="16"
             viewBox="0 0 16 16"
             fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+            xmlns="http://www.w3.org/2000/svg">
             <path
               d="M4 6L8 10L12 6"
               stroke="currentColor"
@@ -43,13 +41,9 @@ const Dropdown: React.FC<DropdownProps> = ({ title, children, defaultOpen = fals
           </svg>
         </span>
       </button>
-      {isOpen && (
-        <div className={styles.dropdownContent}>
-          {children}
-        </div>
-      )}
+      {isOpen && <div className={styles.dropdownContent}>{children}</div>}
     </div>
   );
 };
 
-export default Dropdown; 
+export default Dropdown;
