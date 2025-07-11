@@ -1,6 +1,6 @@
 # XLab AI Security
 
-temp link for course: https://linen-louse-662087.hostingersite.com/
+Course link: https://xlabaisecurity.com/
 
 test pypi link for python package: https://test.pypi.org/project/xlab-security/
 
