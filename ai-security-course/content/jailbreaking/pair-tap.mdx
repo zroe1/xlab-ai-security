@@ -9,6 +9,20 @@ So far, we've looked at *token-level, white-box jailbreaks:* attacks that requir
 
 ## The Algorithm
 
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/pair_light.png"
+    darkSrc="/images/pair_dark.png"
+    alt="PAIR Algorithm"
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> Prompt Automatic Iterative Refinement (PAIR), modified from [@chaoJailbreakingBlackBox2024]
+</div>
+
+
 First, we need to define the notation used by the paper. Let $R \sim q_M(P)$ represent the response $R$ from model $M$ when queried with prompt $P$. Also let $S == \texttt{JUDGE}(P, R)$ be a binary score from a judge LLM, with $1$ indicating that a jailbreak has occured and $0$ indicating that no jailbreak has occured given prompt $P$ and response $R$. We additionally define model $A$ as the attacker LLM and model $T$ as the target LLM that model $A$ tries to jailbreak.
 
 Now, let's look at the algorithm:
@@ -42,6 +56,20 @@ In the original paper, the authors found that PAIR exhibited superior performanc
 
 ## Tree of Attacks with Pruning (TAP)
 
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/tap_light.png"
+    darkSrc="/images/tap_dark.png"
+    alt="TAP Algorithm"
+    style={{ align: "center", width: "100%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 2** <br></br> Tree of Attacks with Pruning (TAP), modified from [@mehrotraTreeAttacksJailbreaking2024]
+</div>
+
+
 Tree of Attacks with Pruning (TAP) [@mehrotraTreeAttacksJailbreaking2024] was created as an improvement of the PAIR algorithm. Instead of a single refinement stream, TAP utilizes a branching system where at each level, the attacker model refines the prompt multiple times. Ineffective or off-topic prompts are then pruned, leaving only the best remaining prompts in the tree after one iteration. 
 
 Before introducing the algorithm, let us define $P_\ell$, $R_\ell$, and $S_\ell$ as the prompt, response, and score corresponding to leaf $\ell$ in the tree. Additionally, let $C_\ell$ represent the conversation history of leaf $\ell$. We also introduce a new function of the $\texttt{Judge}$ LLM, $\texttt{OffTopic}(P, O)$, which returns $1$ if the prompt $P$ is off-topic from the objective $O$. Finally, the $\texttt{Judge}$ itself now scores prompts from $1$ to $10$ so that we can keep more effective and discard less effective prompts while pruning.
@@ -58,18 +86,18 @@ $$
 \hline
 \text{\bf Input: } \text{Attack Objective } O, \text{ branching factor } b, \text{ max width } w, \text{ max depth } d \\
 \text{\bf Initialize: } \text{root with an empty conversation history and attack objective } O \\[0.375em]
-\text{\bf while } \text{depth of tree at most } d \text{\bf  do } \\
-\quad \text{\bf for } \text{each leaf } \ell \text{\bf  do } \\
+\text{\bf while } \text{depth of tree at most } d \text{ \bf do } \\
+\quad \text{\bf for } \text{each leaf } \ell \text{ \bf do } \\
 \quad \quad \text{Sample } P_1, \ ..., \ P_b \sim q_A(C) \\
 \quad \quad \text{Add } b \text{ children of } \ell \text{ with prompts }P_1, \ ..., \ P_b \text{ and conversation histories } C_\ell \\
-\quad \text{\bf for } \text{each leaf } \ell \text{\bf  do } \\
+\quad \text{\bf for } \text{each leaf } \ell \text{ \bf do } \\
 \quad \quad \text{\bf if } \texttt{OffTopic}(P_\ell, O) == 1, \text{ delete } \ell \\
-\quad \text{\bf for } \text{each leaf } \ell \text{\bf  do } \\
+\quad \text{\bf for } \text{each leaf } \ell \text{ \bf do } \\
 \quad \quad \text{Sample } R_\ell \sim q_T(P_\ell) \\
 \quad \quad \text{Get score } S_\ell \gets \texttt{Judge}(R_\ell) \\
-\quad \quad \text{\bf if } S \text{ is } \texttt{True} \text{ (successful jailbreak)}, \text{\bf  return } P_\ell \\
+\quad \quad \text{\bf if } S \text{ is } \texttt{True} \text{ (successful jailbreak)}, \ \text{\bf return } P_\ell \\
 \quad \quad C_\ell \gets C_\ell + [P_\ell, R_\ell, S_\ell] \\
-\quad \text{\bf if } \# \text{ leaves } > w \text{\bf  then } \\
+\quad \text{\bf if } \# \text{ leaves } > w \text{ \bf then } \\
 \quad \quad \text{Select top } w \text{ leaves by scores; delete rest } \\
 \text{\bf return } \text{None} \\
 \hline
@@ -80,7 +108,7 @@ $$
   **Algorithm:** Tree of Attacks with Pruning (TAP) [@mehrotraTreeAttacksJailbreaking2024] 
 </div>
 
-If you squint your eyes, you might notice that when $b = 1$, this algorithm is exactly the same as PAIR! The branching and pruning seem like minor additions, but through comparing TAP to PAIR and performing ablation studies, the authors showed that the branching and pruning improve jailbreaking performance and reduce the number of necessary queries.
+If you squint your eyes, you might notice that when $b = 1$, this algorithm is exactly the same as PAIR! The branching and pruning seem like minor additions, but by comparing TAP to PAIR and performing ablation studies, the authors showed that the branching and pruning improve jailbreaking performance while requiring fewer queries.
 
 ## The Takeaway
 
