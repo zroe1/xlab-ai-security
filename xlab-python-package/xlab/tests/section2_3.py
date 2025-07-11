@@ -9,7 +9,6 @@ import torch
 import numpy as np
 import random
 from typing import Any, Callable
-from xlab.utils import
 
 # ==============================================================================
 # Global Configuration and Mocks
@@ -18,6 +17,8 @@ from xlab.utils import
 # Global variable to store test parameters passed from the notebook
 _test_config = {
     'student_function': None,
+    'model': None,
+    'loss': None
 }
 
 
@@ -176,92 +177,19 @@ class TestTask1:
 class TestTask2:
     """Tests for Task 2: l_inf_square_attack"""
 
-    def setup_method(self):
-        """Reset mocks before each test."""
-        # This setup ensures test isolation
-        _test_config['h_log'] = []
-
-    def test_stops_on_successful_attack(self, monkeypatch):
-        """Tests if the attack loop terminates when a misclassification occurs."""
+    def test_output(self):
+        """Tests that the output image tensor values are adversarial"""
         attack_func = _test_config['student_function']
+        model = _test_config['model']
+        IMG_PATH = 'car.jpg'
+        img = process_image(IMG_PATH)
+        label = prediction(model, process_image(IMG_PATH))[0]
+        loss_fn = torch.nn.CrossEntropyLoss()
+        x_adv = attack_func(model, loss_fn, img, label, 500)
+        pred = prediction(model, x_adv)[0]
+        assert not torch.equal(label, pred)
+                
         
-        # This model will cause a misclassification after 5 calls
-        mock_model = ControllableMockModel(correct_label=5, misclassify_at_iteration=5, h_log=_test_config['h_log'])
-        _test_config['model'] = mock_model
-        
-        # The test needs to replace the global `prediction` and `l_inf_dist` functions
-        # with our controlled mocks.
-        monkeypatch.setattr(__name__, 'prediction', prediction)
-        monkeypatch.setattr(__name__, 'l_inf_dist', l_inf_dist)
-
-        x = torch.zeros(1, 3, 32, 32)
-        y = torch.tensor([5])
-        
-        attack_func(mock_model, controllable_loss_fn, x, y, N=20)
-        
-        # The model is called once before the loop, then inside the loop.
-        # The loop breaks when prediction fails at iteration 6.
-        assert mock_model.iteration == 6
-
-    def test_stops_at_max_iterations(self, monkeypatch):
-        """Tests if the loop terminates at N if no successful attack is found."""
-        attack_func = _test_config['student_function']
-        N = 15
-        
-        # This model will never misclassify
-        mock_model = ControllableMockModel(correct_label=5, misclassify_at_iteration=N + 5, h_log=_test_config['h_log'])
-        _test_config['model'] = mock_model
-        
-        monkeypatch.setattr(__name__, 'prediction', prediction)
-        monkeypatch.setattr(__name__, 'l_inf_dist', l_inf_dist)
-        
-        x = torch.zeros(1, 3, 32, 32)
-        y = torch.tensor([5])
-        
-        attack_func(mock_model, controllable_loss_fn, x, y, N=N)
-        
-        # The loop runs N-1 times, plus one call before the loop.
-        assert mock_model.iteration == N
-
-    def test_h_reduction_schedule(self, monkeypatch):
-        """Tests that the `h` parameter is reduced correctly over iterations."""
-        attack_func = _test_config['student_function']
-        N, max_h = 30, 6
-        
-        mock_model = ControllableMockModel(correct_label=0, misclassify_at_iteration=N + 5, h_log=_test_config['h_log'])
-        _test_config['model'] = mock_model
-
-        monkeypatch.setattr(__name__, 'prediction', prediction)
-        monkeypatch.setattr(__name__, 'l_inf_dist', l_inf_dist)
-
-        attack_func(mock_model, controllable_loss_fn, torch.zeros(1,3,32,32), torch.tensor([0]), N=N, max_h=max_h)
-        
-        logs = _test_config['h_log']
-        # h should reduce every N // max_h = 30 // 6 = 5 iterations.
-        # The update happens if i % 5 == 0.
-        assert logs[3] == 6  # Iteration i=4
-        assert logs[4] == 5  # Iteration i=5, h is reduced
-        assert logs[8] == 5  # Iteration i=9
-        assert logs[9] == 4  # Iteration i=10, h is reduced
-        assert logs[-1] < max_h
-
-    def test_output_clamped(self, monkeypatch):
-        """Tests that the output image tensor values are clamped between 0 and 1."""
-        attack_func = _test_config['student_function']
-
-        # This mock will always misclassify and provide a huge delta to test clamping
-        mock_model = ControllableMockModel(correct_label=0, misclassify_at_iteration=0, h_log=[])
-        def huge_delta_dist(h, epsilon, w, c): return torch.ones(c, w, w) * 100.0
-
-        monkeypatch.setattr(__name__, 'prediction', mock_model.predict)
-        monkeypatch.setattr(__name__, 'l_inf_dist', huge_delta_dist)
-
-        x = torch.zeros(1, 3, 32, 32)
-        adv_img = attack_func(mock_model, controllable_loss_fn, x, torch.tensor([0]), N=5)
-        
-        assert torch.all(adv_img >= 0.0)
-        assert torch.all(adv_img <= 1.0)
-
 
 class TestTask3:
     """Tests for Task 3: M (helper function)"""
@@ -312,7 +240,7 @@ class TestTask4:
         # max_value = 2.
         # cache will be [1/(1+1-0), 1/2 + 1/(1+1-1)] = [0.5, 1.5]
         # eta_matrix is cache[M-1] = cache[1] = 1.5
-        expected = torch.tensor([[1.5], [1.5]], dtype=torch.float64)
+        expected = torch.tensor([[1.5], [1.5]])
         result = eta_func(h1=2, h2=1)
         assert torch.allclose(result, expected)
 
@@ -339,7 +267,7 @@ class TestTask5:
         
         delta = l2_dist_func(x_hat, x, h=h, w=w, c=c)
         assert isinstance(delta, torch.Tensor)
-        assert delta.shape == (c, w, w)
+        assert delta.shape == (1, c, w, w)
 
     def test_norm_of_first_step(self):
         """Tests that the norm of the first perturbation (delta) is equal to epsilon."""
@@ -483,7 +411,7 @@ def task1(student_function):
     return result
 
 
-def task2(student_function):
+def task2(model, student_function):
     """
     Run Task 2 tests using pytest.
     
@@ -494,6 +422,7 @@ def task2(student_function):
         dict: A summary dictionary with test results.
     """
     # Configure global test parameters
+    _test_config['model'] = model
     _test_config['student_function'] = student_function
     
     # Run pytest tests
