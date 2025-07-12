@@ -79,7 +79,7 @@ In the original paper, the authors found that PAIR exhibited superior performanc
 
 Tree of Attacks with Pruning (TAP) [@mehrotraTreeAttacksJailbreaking2024] was created as an improvement of the PAIR algorithm. Instead of a single refinement stream, TAP utilizes a branching system: in each iteration, the attacker model refines the prompt multiple times. Ineffective or off-topic prompts are then pruned, leaving only the best remaining prompts in the tree after each iteration. 
 
-Before introducing the algorithm, let us define $P_\ell$, $R_\ell$, and $S_\ell$ respectively as the prompt, response, and score corresponding to leaf $\ell$ in the tree. Additionally, let $C_\ell$ represent the conversation history of leaf $\ell$. We also introduce a new function of the $\texttt{Judge}$ LLM, $\texttt{OffTopic}(P, O)$, which returns $1$ if the prompt $P$ is off-topic from the objective $O$. Finally, the $\texttt{Judge}$ itself now scores prompts from $1$ to $10$ so that we better track the most effective prompts.
+Before introducing the algorithm, let us define $P_\ell$, $R_\ell$, and $S_\ell$ respectively as the prompt, response, and score corresponding to leaf $\ell$ in the tree. Additionally, let $C_\ell$ represent the conversation history of leaf $\ell$. We also introduce a new function of the $\texttt{Judge}$ LLM, $\texttt{OffTopic}(P, O)$, which returns $1$ if the prompt $P$ is off-topic from the objective $O$. Finally, the $\texttt{Judge}$ itself now scores prompts from $1$ to $10$ so that we better track the most effective prompts (this was actually done in the code implementation of PAIR, but not the pseudocode above).
 
 <Dropdown title="A Note on Notation">
 
