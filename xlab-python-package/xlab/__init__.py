@@ -9,4 +9,4 @@ from . import tests
 from . import utils
 from . import models
 
-__all__ = ["hello_world", "__version__", "tests", "models"]
+__all__ = ["hello_world", "__version__", "tests", "models", "utils"]

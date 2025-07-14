@@ -346,17 +346,26 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     id: "7",
-    title: "Advanced Topics",
+    title: "Resource and Future Directions",
     items: [
-      { id: "7.1", title: "Wide ResNet Architecture", href: "/advanced/wide-resnet", type: "link" },
       {
-        id: "7.2",
-        title: "Representation Engineering",
-        href: "/advanced/representation-engineering",
+        id: "7.1",
+        title: "Jobs and Internships in AI Security",
+        href: "/advanced/jobs",
         type: "link",
       },
-      { id: "7.3", title: "Tree of Attacks", href: "/advanced/tree-attacks", type: "link" },
-      { id: "7.4", title: "Historical Context", href: "/advanced/history", type: "link" },
+      {
+        id: "7.2",
+        title: "XLab Research",
+        href: "/advanced/xlab-research",
+        type: "link",
+      },
+      {
+        id: "7.3",
+        title: "Related Research Directions",
+        href: "/advanced/related-research",
+        type: "link",
+      },
     ],
   },
 ];

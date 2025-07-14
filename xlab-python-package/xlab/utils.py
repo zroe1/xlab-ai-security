@@ -10,6 +10,8 @@ from torchvision.io import read_image
 from torchvision.transforms import Compose, Resize, ToTensor
 from torchvision import datasets, transforms
 from PIL import Image
+import os
+import pkg_resources
 
 def load_cifar10_test_samples(n, download=True, transform=None, data_dir='./data'):
     """
@@ -204,11 +206,74 @@ def process_image(path):
     processedImg: Scaled and transformed image tensor
 
     """
-    img = Image.open(path)
+    img = load_sample_image(path)
     transform = Compose([Resize((32, 32)), ToTensor()])
     processedImg = transform(img)
     processedImg = processedImg.unsqueeze(0)
     return processedImg
+
+
+def load_sample_image(image_name, return_path=False):
+    """
+    Load a sample image included with the xlab package.
+    
+    This function provides access to sample images bundled with the package,
+    useful for testing adversarial attacks and other image processing tasks.
+    
+    Parameters:
+    -----------
+    image_name : str
+        Name of the image file to load. Available images:
+        - 'cat.jpg': Sample cat image for testing
+        - 'car.jpg': Sample car image for testing  
+        - 'frog.jpg': Sample frog image for testing
+    return_path : bool, default=False
+        If True, returns the file path instead of loading the image.
+        Useful if you need the path for other functions.
+    
+    Returns:
+    --------
+    image : PIL.Image or str
+        If return_path=False: PIL Image object
+        If return_path=True: String path to the image file
+    
+    Examples:
+    --------
+    >>> # Load cat image as PIL Image
+    >>> cat_img = load_sample_image('cat.jpg')
+    >>> print(type(cat_img))  # <class 'PIL.Image.Image'>
+    
+    >>> # Get path to image file
+    >>> cat_path = load_sample_image('cat.jpg', return_path=True)
+    >>> print(cat_path)  # /path/to/package/data/cat.jpg
+    
+    >>> # Use with other functions
+    >>> cat_tensor = process_image(load_sample_image('cat.jpg', return_path=True))
+    
+    Raises:
+    -------
+    FileNotFoundError
+        If the specified image file doesn't exist in the package.
+    """
+    try:
+        # Get the path to the data directory in the package
+        data_path = pkg_resources.resource_filename('xlab', f'data/{image_name}')
+        
+        if not os.path.exists(data_path):
+            available_images = ['cat.jpg']
+            raise FileNotFoundError(
+                f"Image '{image_name}' not found. Available images: {available_images}"
+            )
+        
+        if return_path:
+            return data_path
+        else:
+            return Image.open(data_path)
+            
+    except Exception as e:
+        raise FileNotFoundError(
+            f"Could not load image '{image_name}': {str(e)}"
+        )
 
 
 # Basic CNN for adversarial image generation

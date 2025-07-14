@@ -34,13 +34,19 @@ from huggingface_hub import hf_hub_download
 from xlab.models import MiniWideResNet, BasicBlock
 import torch
 
-model = MiniWideResNet()
-
-model_path = hf_hub_download(
-    repo_id="uchicago-xlab-ai-security/tiny-wideresnet-cifar10",
-    filename="adversarial_basics_cnn.pth"
-)
-model = torch.load(model_path, map_location='cpu', weights_only = False)
+def _get_default_model():
+    """Lazy load the default model to avoid heavy operations during import."""
+    try:
+        model = MiniWideResNet()
+        model_path = hf_hub_download(
+            repo_id="uchicago-xlab-ai-security/tiny-wideresnet-cifar10",
+            filename="adversarial_basics_cnn.pth"
+        )
+        model = torch.load(model_path, map_location='cpu', weights_only=False)
+        return model
+    except Exception as e:
+        print(f"Warning: Could not load default model: {e}")
+        return None
 
 
 
@@ -180,7 +186,7 @@ class TestTask2:
     def test_output(self):
         """Tests that the output image tensor values are adversarial"""
         attack_func = _test_config['student_function']
-        model = _test_config['model']
+        model = _test_config['model'] or _get_default_model()
         IMG_PATH = 'car.jpg'
         img = process_image(IMG_PATH)
         label = prediction(model, process_image(IMG_PATH))[0]

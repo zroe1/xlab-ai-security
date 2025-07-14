@@ -11,6 +11,7 @@ import numpy as np
 import sys
 import xlab
 from typing import List, Callable, Any
+from .. import utils
 
 # Global variables to store test parameters passed from notebook
 _test_config = {
@@ -61,7 +62,7 @@ class TestTask2:
         """Tests successful processing of frog image."""
 
         process_image = _test_config['student_function']
-        img_path =  "frog.jpg"
+        img_path =  "cat.jpg"
         
         # Execution
         result_tensor = process_image(img_path)
@@ -73,17 +74,17 @@ class TestTask2:
 
 
     def test_correct_output(self):
-        """Tests successful processing of frog image."""
+        """Tests successful processing of cat image."""
 
         process_image = _test_config['student_function']
-        img_path =  "frog.jpg"
+        img_path = "cat.jpg"
         
         # Execution
         result_tensor = process_image(img_path)
-        correct_tensor = xlab.utils.process_image(img_path)
+        correct_tensor = utils.process_image(img_path)
         
         # Assertions
-        assert torch.equal(predictions, cnn_pred)
+        assert torch.allclose(result_tensor, correct_tensor)
 
 
 #Task 3 Tests
@@ -99,7 +100,7 @@ class TestTask3:
         student_FGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 8/255
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
         
@@ -118,10 +119,10 @@ class TestTask3:
         student_FGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 0.1
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
-        original_img = xlab.utils.process_image(img_path)
+        original_img = utils.process_image(img_path)
         
         # Assertions
         # The original and adversarial images should not be identical
@@ -137,10 +138,10 @@ class TestTask3:
         student_FGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 0
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
-        original_img = xlab.utils.process_image(img_path)
+        original_img = utils.process_image(img_path)
         
         # Assertions
         # With epsilon=0, the perturbation term is zero, so the images should be identical.
@@ -155,7 +156,7 @@ class TestTask3:
         student_FGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 1/50
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
         pred = xlab.utils.prediction(model, adv_tensor)[0]      
@@ -282,7 +283,7 @@ class TestTask4a:
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
 
-        original_img = xlab.utils.process_image(img_path)
+        original_img = utils.process_image(img_path)
         
         # Assertions
         # The original and adversarial images should not be identical
@@ -304,7 +305,7 @@ class TestTask4a:
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
-        original_img = xlab.utils.process_image(img_path)
+        original_img = utils.process_image(img_path)
         
         # Assertions
         # With epsilon=0, the perturbation term is zero, so the images should be identical.
@@ -375,7 +376,7 @@ class TestTask5:
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
 
-        original_img = xlab.utils.process_image(img_path)
+        original_img = utils.process_image(img_path)
         
         # Assertions
         # The original and adversarial images should not be identical
@@ -397,7 +398,7 @@ class TestTask5:
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
-        original_img = xlab.utils.process_image(img_path)
+        original_img = utils.process_image(img_path)
         
         # Assertions
         # With epsilon=0, the perturbation term is zero, so the images should be identical.
