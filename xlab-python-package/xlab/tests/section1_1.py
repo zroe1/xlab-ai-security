@@ -351,7 +351,7 @@ class TestTask5:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
@@ -372,7 +372,7 @@ class TestTask5:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
 
@@ -394,7 +394,7 @@ class TestTask5:
         epsilon = 0.1
         alpha = 1/100
         num_iters = 6
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
@@ -417,7 +417,7 @@ class TestTask5:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         pred = xlab.utils.prediction(model, adv_tensor)[0]
@@ -444,7 +444,7 @@ class TestTask6():
         actual_distance = distance(x1, x2, p)
         
         # Assert
-        assert np.round(expected_distance, decimals = 4) == np.round(actual_distance, decimals = 4)
+        assert np.round(expected_distance, decimals = 4) == np.round(actual_distance.item(), decimals = 4)
 
     def test_l2_norm(self):
         """
@@ -464,7 +464,7 @@ class TestTask6():
         actual_distance = distance(x1, x2, p)
         
         # Assert
-        assert np.round(expected_distance, decimals = 4) == np.round(actual_distance, decimals = 4)
+        assert np.round(expected_distance, decimals = 4) == np.round(actual_distance.item(), decimals = 4)
 
         
         
@@ -486,7 +486,7 @@ class TestTask6():
         actual_distance = distance(x1, x2, p)
 
         # Assert
-        assert np.round(expected_distance, decimals = 4) == np.round(actual_distance, decimals = 4)
+        assert np.round(expected_distance, decimals = 4) == np.round(actual_distance.item(), decimals = 4)
 
 
 
