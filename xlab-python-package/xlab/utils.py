@@ -676,3 +676,15 @@ def plot_dual_2d(
 
     plt.tight_layout()
     return fig, ax1, ax2
+
+def show_image(img):
+    """
+    Display image tensor using plt
+    
+    Parameters:
+    -----------
+    img : Tensor
+        image Tensor to be displayed
+    """
+    img = img.squeeze(0)
+    plt.imshow(img.permute(1, 2, 0).detach().numpy()) #Reorder columns as PIL and Torch order image data differently
