@@ -258,7 +258,7 @@ class TestTask4a:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
@@ -279,7 +279,7 @@ class TestTask4a:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
 
@@ -301,7 +301,7 @@ class TestTask4a:
         epsilon = 0
         alpha = 1/100
         num_iters = 6
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
@@ -324,7 +324,7 @@ class TestTask4a:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'frog.jpg'
+        img_path = 'cat.jpg'
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         pred = xlab.utils.prediction(model, adv_tensor)[0]
