@@ -1,3 +1,6 @@
+# API keys
+.env
+
 .ipynb_checkpoints/
 
 # Jupyter Notebook files
