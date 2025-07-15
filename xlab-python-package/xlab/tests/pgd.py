@@ -147,6 +147,29 @@ class TestTask3:
         # With epsilon=0, the perturbation term is zero, so the images should be identical.
         assert torch.equal(original_img, adv_tensor), "Image should not change when epsilon is 0"
 
+    # Test 4: Verify that perturbation magnitude stays within epsilon bound
+    def test_perturbation_within_epsilon_bound(self):
+        """
+        Tests that the L∞ distance between original and adversarial images is at most epsilon.
+        """
+        # Setup
+        model = _test_config['model']
+        student_FGSM = _test_config['student_function']
+        loss_fn = torch.nn.CrossEntropyLoss()
+        epsilon = 8/255
+        img_path = 'cat.jpg'
+        y_target = torch.tensor([6]) 
+        adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
+        original_img = utils.process_image(img_path)
+        
+        # Calculate L∞ distance (maximum absolute difference)
+        perturbation = torch.abs(adv_tensor - original_img)
+        max_perturbation = torch.max(perturbation)
+        
+        # Assertions
+        # The maximum perturbation should not exceed epsilon
+        assert max_perturbation <= epsilon + 1e-6, f"Perturbation magnitude {max_perturbation} exceeds epsilon {epsilon}"
+
     def test_output_adversarial(self):
         """
         Tests whether function produces adversarial output
