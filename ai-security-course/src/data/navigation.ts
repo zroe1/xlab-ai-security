@@ -81,8 +81,8 @@ export const navigationItems: NavigationItem[] = [
           { id: "2.4.1", title: "Square Attack", href: "/adversarial/square-attack", type: "link" },
           {
             id: "2.4.2",
-            title: "Surrogate Models",
-            href: "/adversarial/surrogate-models",
+            title: "Ensemble Attacks",
+            href: "/adversarial/ensemble-attacks",
             type: "link",
           },
         ],
