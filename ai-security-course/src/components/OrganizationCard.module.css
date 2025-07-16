@@ -9,7 +9,7 @@
   display: flex;
   align-items: center;
   padding: 20px;
-  gap: 20px;
+  gap: 15px;
 }
 
 .organizationCard:hover {
@@ -22,10 +22,13 @@
 }
 
 .logo {
-  width: 120px;
+  width: 100px;
   height: auto;
-  max-height: 80px;
+  max-height: 65px;
   object-fit: contain;
+  margin: 0;
+  padding: 0;
+  display: block;
 }
 
 .content {
@@ -43,9 +46,9 @@
 
 .description {
   margin: 0 0 12px 0;
-  line-height: 1.6;
+  line-height: 1.5;
   color: var(--secondary-text);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .websiteLink {
@@ -92,13 +95,13 @@
     flex-direction: column;
     text-align: center;
     padding: 16px;
-    gap: 16px;
+    gap: 12px;
     margin: 16px 0;
   }
   
   .logo {
-    width: 100px;
-    max-height: 70px;
+    width: 85px;
+    max-height: 55px;
   }
   
   .organizationName {
@@ -106,19 +109,19 @@
   }
   
   .description {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
   .organizationCard {
     padding: 14px;
-    gap: 14px;
+    gap: 10px;
   }
   
   .logo {
-    width: 80px;
-    max-height: 60px;
+    width: 70px;
+    max-height: 50px;
   }
   
   .organizationName {
@@ -126,7 +129,7 @@
   }
   
   .description {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
   
   .websiteLink {
