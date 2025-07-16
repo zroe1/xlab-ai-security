@@ -3,6 +3,7 @@ from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, ReLU, Dropout, Tanh #Al
 from torch import nn
 from torch.nn import functional as F
 import numpy as np
+import time
 from train_mnist_utils import get_mnist_train_and_test_loaders, train, evaluate_model, plot_training_history, plot_batch_training_history, log_final_model_stats, count_parameters
 
 class BlackBoxMLP(nn.Module):
@@ -62,6 +63,10 @@ def main():
     history = {'train_loss': [], 'train_acc': [], 'test_loss': [], 'test_acc': []}
     batch_history = {'train_loss': [], 'train_acc': [], 'test_loss': [], 'test_acc': []}
 
+    # Start timing
+    start_time = time.time()
+    print("Starting training...")
+
     for epoch in range(1, epochs + 1):
         train_loss, train_acc, batch_metrics = train(model, train_loader, test_loader, optimizer, criterion, device, epoch)
         test_loss, test_acc = evaluate_model(model, test_loader, criterion, device)
@@ -81,8 +86,15 @@ def main():
 
         print(f"Epoch {epoch}/{epochs} Summary -> Train Loss: {train_loss:.3f}, Train Acc: {train_acc:.3f}% | Test Loss: {test_loss:.3f}, Test Acc: {test_acc:.3f}%")
 
+    # End timing and calculate total time
+    end_time = time.time()
+    total_time = end_time - start_time
+    hours = int(total_time // 3600)
+    minutes = int((total_time % 3600) // 60)
+    seconds = int(total_time % 60)
 
     print("Finished Training")
+    print(f"Total training time: {hours:02d}:{minutes:02d}:{seconds:02d} (hours:minutes:seconds)")
     log_final_model_stats(model, train_loader, test_loader, criterion, device)
     
     plot_batch_training_history(batch_history, save_path="black_box_mlp_training_performance.png")
