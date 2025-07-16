@@ -351,7 +351,7 @@ export const navigationItems: NavigationItem[] = [
       {
         id: "7.1",
         title: "Jobs and Internships in AI Security",
-        href: "/advanced/jobs",
+        href: "/resources/jobs",
         type: "link",
       },
       {

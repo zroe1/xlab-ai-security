@@ -3,6 +3,7 @@ import MainLayout from "@/components/MainLayout";
 import ExerciseButtons from "@/components/ExerciseButtons";
 import ThemeImage from "@/components/ThemeImage";
 import Dropdown from "@/components/Dropdown";
+import OrganizationCard from "@/components/OrganizationCard";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -111,6 +112,7 @@ const components = {
   ExerciseButtons,
   ThemeImage,
   Dropdown,
+  OrganizationCard,
 };
 
 interface PageProps {
