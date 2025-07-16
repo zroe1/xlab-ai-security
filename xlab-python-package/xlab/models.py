@@ -270,10 +270,10 @@ class WhiteBox3(nn.Module):
         return x
 
 
-class BlackBox(nn.Module):
+class BlackBoxMLP(nn.Module):
     """Black box MLP for MNIST classification with specified architecture"""
     def __init__(self, num_classes=10):
-        super(BlackBox, self).__init__()
+        super(BlackBoxMLP, self).__init__()
         
         # Input size for MNIST: 28 * 28 = 784
         input_size = 28 * 28
