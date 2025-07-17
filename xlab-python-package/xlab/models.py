@@ -120,3 +120,67 @@ class BlackBox(nn.Module):
         x = self.fc3(x)             # Final layer (no activation, will use CrossEntropyLoss)
         
         return x
+    
+class ConvolutionalMNIST(nn.Module):
+    """Simple CNN for MNIST classification"""
+    def __init__(self, num_classes=10, dropout_rate=0.3):
+        super(ConvolutionalMNIST, self).__init__()
+        
+        # Convolutional layers
+        self.conv1 = Conv2d(1, 16, kernel_size=3, padding=1)
+        self.conv2 = Conv2d(16, 32, kernel_size=3, padding=1)
+        self.conv3 = Conv2d(32, 64, kernel_size=3, padding=1)
+        
+        # Pooling layer
+        self.pool = MaxPool2d(2, 2)
+        
+        # Dropout layers
+        self.dropout1 = Dropout(dropout_rate)
+        self.dropout2 = Dropout(dropout_rate)
+        
+        # Fully connected layers
+        # After 3 conv+pool layers: 28x28 -> 14x14 -> 7x7 -> 3x3 (with padding)
+        # Actually: 28x28 -> 14x14 -> 7x7 -> 3x3, so 64 * 3 * 3 = 576
+        self.fc1 = Linear(64 * 3 * 3, 128)
+        self.fc2 = Linear(128, 64)
+        self.fc3 = Linear(64, num_classes)
+        
+        # Flatten layer
+        self.flatten = Flatten()
+        
+        # Activation functions
+        self.relu = ReLU()
+        
+        self._initialize_weights()
+    
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                nn.init.normal_(m.weight, 0, 0.01)
+                nn.init.constant_(m.bias, 0)
+    
+    def forward(self, x):
+        # First conv block: 28x28 -> 14x14
+        x = self.pool(self.relu(self.conv1(x)))
+        
+        # Second conv block: 14x14 -> 7x7
+        x = self.pool(self.relu(self.conv2(x)))
+        
+        # Third conv block: 7x7 -> 3x3
+        x = self.pool(self.relu(self.conv3(x)))
+        
+        # Flatten and apply dropout
+        x = self.flatten(x)
+        x = self.dropout1(x)
+        
+        # Fully connected layers
+        x = self.relu(self.fc1(x))
+        x = self.dropout2(x)
+        x = self.relu(self.fc2(x))
+        x = self.fc3(x)
+        
+        return x
