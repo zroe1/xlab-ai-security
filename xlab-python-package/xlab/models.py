@@ -1,5 +1,5 @@
 import torch
-from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, ReLU, Dropout #All of the necessary layers for this model
+from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, ReLU, Dropout, Tanh #All of the necessary layers for this model
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from torch import nn
