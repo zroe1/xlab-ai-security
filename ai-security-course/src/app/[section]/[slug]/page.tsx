@@ -93,29 +93,6 @@ const createHeading = (level: number) => {
   return Component;
 };
 
-// Custom MDX components
-const components = {
-  pre: (props: React.HTMLAttributes<HTMLPreElement>) => <pre {...props} className="code-block" />,
-  code: (props: React.HTMLAttributes<HTMLElement>) => {
-    const { children, className, ...rest } = props;
-    return (
-      <code className={className} {...rest}>
-        {children}
-      </code>
-    );
-  },
-  h1: createHeading(1),
-  h2: createHeading(2),
-  h3: createHeading(3),
-  h4: createHeading(4),
-  h5: createHeading(5),
-  h6: createHeading(6),
-  ExerciseButtons,
-  ThemeImage,
-  Dropdown,
-  OrganizationCard,
-};
-
 interface PageProps {
   params: Promise<{
     section: string;
@@ -175,6 +152,30 @@ export default async function Page({ params }: PageProps) {
   // Parse table of contents
   const tocItems = parseTableOfContents(contentData.content);
 
+  // Custom MDX components with section and slug context
+  const components = {
+    pre: (props: React.HTMLAttributes<HTMLPreElement>) => <pre {...props} className="code-block" />,
+    code: (props: React.HTMLAttributes<HTMLElement>) => {
+      const { children, className, ...rest } = props;
+      return (
+        <code className={className} {...rest}>
+          {children}
+        </code>
+      );
+    },
+    h1: createHeading(1),
+    h2: createHeading(2),
+    h3: createHeading(3),
+    h4: createHeading(4),
+    h5: createHeading(5),
+    h6: createHeading(6),
+    ExerciseButtons,
+    ThemeImage,
+    Dropdown,
+    OrganizationCard,
+    NextPageButton,
+  };
+
   return (
     <MainLayout tocItems={tocItems}>
       <h1 className="page-title">{contentData.frontMatter.title as string}</h1>
@@ -196,7 +197,6 @@ export default async function Page({ params }: PageProps) {
             },
           }}
         />
-        <NextPageButton currentSection={section} currentSlug={slug} />
       </div>
     </MainLayout>
   );
