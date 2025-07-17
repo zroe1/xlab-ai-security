@@ -265,3 +265,38 @@ class ResNetMNIST(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.fc(out)
         return out
+
+class FeedforwardMNIST(nn.Module):
+    """Simple 4-layer MLP for MNIST classification"""
+    def __init__(self, num_classes=10, hidden_size=48):
+        super(FeedforwardMNIST, self).__init__()
+        
+        # Input size for MNIST: 28 * 28 = 784
+        input_size = 28 * 28
+        
+        # Fully connected layers
+        self.fc1 = Linear(input_size, hidden_size)
+        self.fc2 = Linear(hidden_size, hidden_size)
+        self.fc3 = Linear(hidden_size, num_classes)
+        
+        # Flatten layer
+        self.flatten = Flatten()
+        
+        # Activation functions
+        self.relu = ReLU()
+        
+        self._initialize_weights()
+    
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.normal_(m.weight, 0, 0.01)
+                nn.init.constant_(m.bias, 0)
+    
+    def forward(self, x):
+        x = self.flatten(x)
+        x = self.relu(self.fc1(x))
+        x = self.relu(self.fc2(x))
+        x = self.fc3(x)
+        
+        return x
