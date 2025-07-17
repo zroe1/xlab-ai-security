@@ -6,10 +6,10 @@ import numpy as np
 import time
 from train_mnist_utils import get_mnist_train_and_test_loaders, train, evaluate_model, plot_training_history, plot_batch_training_history, log_final_model_stats, count_parameters
 
-class BasicBlock(nn.Module):
+class BasicBlockMNIST(nn.Module):
     """Basic residual block for compact WideResNet"""
     def __init__(self, in_channels, out_channels, stride=1, dropout_rate=0.3):
-        super(BasicBlock, self).__init__()
+        super(BasicBlockMNIST, self).__init__()
         
         self.bn1 = nn.BatchNorm2d(in_channels)
         self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, 
@@ -38,10 +38,10 @@ class BasicBlock(nn.Module):
         
         return out
 
-class MiniWideResNet(nn.Module):
+class ResNetMNIST(nn.Module):
     """Ultra-compact WideResNet for MNIST with minimal parameters"""
     def __init__(self, num_classes=10, width_multiplier=2, dropout_rate=0.3):
-        super(MiniWideResNet, self).__init__()
+        super(ResNetMNIST, self).__init__()
         
         base_width = 16
         widths = [base_width, base_width * width_multiplier, 
@@ -61,9 +61,9 @@ class MiniWideResNet(nn.Module):
     
     def _make_group(self, in_channels, out_channels, num_blocks, stride, dropout_rate):
         layers = []
-        layers.append(BasicBlock(in_channels, out_channels, stride, dropout_rate))
+        layers.append(BasicBlockMNIST(in_channels, out_channels, stride, dropout_rate))
         for _ in range(1, num_blocks):
-            layers.append(BasicBlock(out_channels, out_channels, 1, dropout_rate))
+            layers.append(BasicBlockMNIST(out_channels, out_channels, 1, dropout_rate))
         return nn.Sequential(*layers)
     
     def _initialize_weights(self):
@@ -97,8 +97,8 @@ def main():
     
     print(f"Using device: {device}")
 
-    model = MiniWideResNet().to(device)
-    print(f"Mini WideResNet parameters: {count_parameters(model):,}")
+    model = ResNetMNIST().to(device)
+    print(f"ResNetMNIST parameters: {count_parameters(model):,}")
     
     train_loader, test_loader = get_mnist_train_and_test_loaders()
     criterion = torch.nn.CrossEntropyLoss()
@@ -143,7 +143,7 @@ def main():
     print(f"Total training time: {hours:02d}:{minutes:02d}:{seconds:02d} (hours:minutes:seconds)")
     log_final_model_stats(model, train_loader, test_loader, criterion, device)
     
-    plot_batch_training_history(batch_history)
+    plot_batch_training_history(batch_history, "training_performance_wideresnet.png")
 
     torch.save(model, "mnist_wideresnet.pth")
     print("Saved model weights to mnist_wideresnet.pth")
