@@ -1,0 +1,91 @@
+/* Next Page Button Component */
+.nextPageContainer {
+  margin: 40px 0 20px 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nextPageButton {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text-color);
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  min-width: 160px;
+}
+
+.nextPageButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: var(--text-color);
+  border-color: var(--primary-color);
+}
+
+.nextPageButton:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.nextPageContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.nextPageLabel {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.nextPageTitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
+  line-height: 1.3;
+}
+
+.nextPageIcon {
+  display: flex;
+  align-items: center;
+  color: var(--primary-color);
+  transition: transform 0.2s ease;
+}
+
+.nextPageButton:hover .nextPageIcon {
+  transform: translateX(2px);
+}
+
+/* Dark mode styles */
+:global(body[data-theme='dark']) .nextPageButton {
+  background: var(--white);
+  border-color: var(--border-color);
+}
+
+:global(body[data-theme='dark']) .nextPageButton:hover {
+  border-color: var(--primary-color);
+  background: var(--light-bg);
+}
+
+:global(body[data-theme='dark']) .nextPageLabel {
+  color: var(--primary-color);
+}
+
+:global(body[data-theme='dark']) .nextPageTitle {
+  color: var(--text-color);
+}
+
+:global(body[data-theme='dark']) .nextPageIcon {
+  color: var(--primary-color);
+} 

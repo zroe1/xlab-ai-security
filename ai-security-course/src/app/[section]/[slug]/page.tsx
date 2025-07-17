@@ -4,6 +4,7 @@ import ExerciseButtons from "@/components/ExerciseButtons";
 import ThemeImage from "@/components/ThemeImage";
 import Dropdown from "@/components/Dropdown";
 import OrganizationCard from "@/components/OrganizationCard";
+import NextPageButton from "@/components/NextPageButton";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -195,6 +196,7 @@ export default async function Page({ params }: PageProps) {
             },
           }}
         />
+        <NextPageButton currentSection={section} currentSlug={slug} />
       </div>
     </MainLayout>
   );
