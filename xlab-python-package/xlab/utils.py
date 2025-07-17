@@ -282,6 +282,67 @@ def show_image(img):
     plt.imshow(img.permute(1, 2, 0).detach().numpy())
 
 
+def show_grayscale_image(img, title=None, figsize=(3, 3)):
+    """
+    Display a grayscale image tensor (e.g., MNIST digits) using matplotlib.
+    
+    This function is specifically designed for displaying grayscale images like
+    MNIST digits with proper formatting and visualization.
+    
+    Parameters:
+    -----------
+    img : torch.Tensor
+        Grayscale image tensor. Can be either:
+        - Shape [1, 28, 28] (with channel dimension)  
+        - Shape [28, 28] (without channel dimension)
+        Values should be in range [0, 1].
+    title : str, optional
+        Title to display above the image.
+    figsize : tuple, default=(3, 3)
+        Figure size (width, height) in inches.
+    
+    Examples:
+    --------
+    >>> # Display single MNIST digit
+    >>> mnist_images, labels = load_mnist_test_samples(1)
+    >>> show_grayscale_image(mnist_images[0], title=f"Digit: {labels[0]}")
+    
+    >>> # Display with custom size
+    >>> show_grayscale_image(mnist_images[0], title="MNIST Sample", figsize=(2, 2))
+    
+    >>> # Works with [28, 28] tensors too
+    >>> digit_28x28 = mnist_images[0].squeeze(0)  # Remove channel dim
+    >>> show_grayscale_image(digit_28x28)
+    """
+    # Convert to numpy and handle different input shapes
+    if isinstance(img, torch.Tensor):
+        img_np = img.detach().cpu().numpy()
+    else:
+        img_np = img
+    
+    # Handle different tensor shapes
+    if img_np.ndim == 3:  # [1, 28, 28] or [28, 28, 1]
+        if img_np.shape[0] == 1:  # [1, 28, 28]
+            img_np = img_np.squeeze(0)  # Remove first dimension
+        elif img_np.shape[2] == 1:  # [28, 28, 1]
+            img_np = img_np.squeeze(2)  # Remove last dimension
+        else:
+            raise ValueError(f"Unexpected 3D tensor shape: {img_np.shape}. Expected [1, 28, 28] or [28, 28, 1]")
+    elif img_np.ndim != 2:  # Should be [28, 28]
+        raise ValueError(f"Expected 2D or 3D tensor, got {img_np.ndim}D with shape {img_np.shape}")
+    
+    # Create the plot
+    plt.figure(figsize=figsize)
+    plt.imshow(img_np, cmap='gray', vmin=0, vmax=1)
+    plt.axis('off')  # Remove axes for cleaner display
+    
+    if title is not None:
+        plt.title(title, fontsize=12, pad=5)
+    
+    plt.tight_layout()
+    plt.show()
+
+
 def process_image(path):
     """
     Convert file path to scaled torch tensor
