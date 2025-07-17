@@ -42,7 +42,7 @@ $$
 And in a slight abuse of notation, we define
 
 $$
-p(x_{n + 1 : n + H} | x_{1:n}) = \prod_{i = 1}^H p(x_{n + 1} | x_{1 : n + i - 1})
+p(x_{n + 1 : n + H} | x_{1:n}) = \prod_{i = 1}^H p(x_{n + i} | x_{1 : n + i - 1})
 $$
 
 That is, the probability of generating all the tokens in the sequence $x_{n + 1 : n + H}$ equals the multiplied probabilities of generating all the tokens up to that point.
