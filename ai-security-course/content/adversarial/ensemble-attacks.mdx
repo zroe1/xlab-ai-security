@@ -9,7 +9,29 @@ one model, and use it to successfully attack an entirely different model. We can
 see an analogous quality for the adversarial suffix jailbreaks on language models
 which you will explore in the [GCG section](https://xlabaisecurity.com/jailbreaking/gcg/) later in this course.
 
-## Why Care About Transferability
+## Targeted vs Untargeted Transfers
+
+Finding targeted adversarial examples that transfer is much harder than finding untargeted examples [@liu2017delvingtransferableadversarialexamples].
+This is because the loss landscape for driving the loss up is much eaiser to navigate than
+the loss landscape for predicting a singular target class. As a mental model we propose
+you think about an indiviudal attempting to climb up a mountain: in the untargeted case
+it is easy to climb straight up while in the untargeted case it is unclear which direction to
+climb.
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/targeted_untargeted_light.png"
+    darkSrc="/images/targeted_untargeted_dark.png"
+    alt="Swiss cheese security model"
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br>Targeted vs untargeted loss landscape for image classification security
+</div>
+
+## Threat Model for Transferability
 
 Transferible adversarial images and jailbreaks are interesting, but it may not be
 entirely obvious why they are important for security. One reason is that in many cases,

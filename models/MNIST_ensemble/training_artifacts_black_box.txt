@@ -1,0 +1,74 @@
+The model was trained for 2 epochs on the MNIST handwriten digit dataset.
+Model training was done over a few minutes on a consumer MAC laptop.
+
+The output of the training run is as follows:
+
+Using device: cuda
+Black Box MLP parameters: 209,514
+Downloading http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-images-idx3-ubyte.gz to ./data/MNIST/raw/train-images-idx3-ubyte.gz
+100.0%
+Extracting ./data/MNIST/raw/train-images-idx3-ubyte.gz to ./data/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/train-labels-idx1-ubyte.gz to ./data/MNIST/raw/train-labels-idx1-ubyte.gz
+100.0%
+Extracting ./data/MNIST/raw/train-labels-idx1-ubyte.gz to ./data/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw/t10k-images-idx3-ubyte.gz
+100.0%
+Extracting ./data/MNIST/raw/t10k-images-idx3-ubyte.gz to ./data/MNIST/raw
+
+Downloading http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+Failed to download (trying next):
+HTTP Error 404: Not Found
+
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz
+Downloading https://ossci-datasets.s3.amazonaws.com/mnist/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz
+100.0%
+Extracting ./data/MNIST/raw/t10k-labels-idx1-ubyte.gz to ./data/MNIST/raw
+
+Starting training...
+Epoch: 1 | Batch: 50/469 | Train Loss: 1.587 | Train Acc: 60.844% | Test Loss: 0.973 | Test Acc: 76.875%
+Epoch: 1 | Batch: 100/469 | Train Loss: 1.158 | Train Acc: 71.914% | Test Loss: 0.579 | Test Acc: 86.719%
+Epoch: 1 | Batch: 150/469 | Train Loss: 0.932 | Train Acc: 77.510% | Test Loss: 0.418 | Test Acc: 90.000%
+Epoch: 1 | Batch: 200/469 | Train Loss: 0.789 | Train Acc: 80.879% | Test Loss: 0.311 | Test Acc: 92.656%
+Epoch: 1 | Batch: 250/469 | Train Loss: 0.691 | Train Acc: 83.128% | Test Loss: 0.266 | Test Acc: 92.812%
+Epoch: 1 | Batch: 300/469 | Train Loss: 0.620 | Train Acc: 84.737% | Test Loss: 0.255 | Test Acc: 92.656%
+Epoch: 1 | Batch: 350/469 | Train Loss: 0.565 | Train Acc: 85.980% | Test Loss: 0.201 | Test Acc: 94.375%
+Epoch: 1 | Batch: 400/469 | Train Loss: 0.520 | Train Acc: 86.998% | Test Loss: 0.189 | Test Acc: 94.219%
+Epoch: 1 | Batch: 450/469 | Train Loss: 0.483 | Train Acc: 87.840% | Test Loss: 0.180 | Test Acc: 95.000%
+Epoch 1/2 Summary -> Train Loss: 0.471, Train Acc: 88.135% | Test Loss: 0.177, Test Acc: 94.900%
+Epoch: 2 | Batch: 50/469 | Train Loss: 0.159 | Train Acc: 95.594% | Test Loss: 0.150 | Test Acc: 95.469%
+Epoch: 2 | Batch: 100/469 | Train Loss: 0.152 | Train Acc: 95.805% | Test Loss: 0.141 | Test Acc: 95.938%
+Epoch: 2 | Batch: 150/469 | Train Loss: 0.148 | Train Acc: 95.911% | Test Loss: 0.147 | Test Acc: 95.938%
+Epoch: 2 | Batch: 200/469 | Train Loss: 0.147 | Train Acc: 95.988% | Test Loss: 0.132 | Test Acc: 96.250%
+Epoch: 2 | Batch: 250/469 | Train Loss: 0.142 | Train Acc: 96.066% | Test Loss: 0.118 | Test Acc: 96.250%
+Epoch: 2 | Batch: 300/469 | Train Loss: 0.139 | Train Acc: 96.112% | Test Loss: 0.107 | Test Acc: 97.188%
+Epoch: 2 | Batch: 350/469 | Train Loss: 0.137 | Train Acc: 96.145% | Test Loss: 0.102 | Test Acc: 97.500%
+Epoch: 2 | Batch: 400/469 | Train Loss: 0.135 | Train Acc: 96.193% | Test Loss: 0.102 | Test Acc: 97.656%
+Epoch: 2 | Batch: 450/469 | Train Loss: 0.134 | Train Acc: 96.227% | Test Loss: 0.104 | Test Acc: 97.188%
+Epoch 2/2 Summary -> Train Loss: 0.134, Train Acc: 96.225% | Test Loss: 0.111, Test Acc: 96.730%
+Finished Training
+Total training time: 00:00:05 (hours:minutes:seconds)
+
+--- Final Model Statistics ---
+Final Train Loss: 0.0880 | Final Train Accuracy: 97.61%
+Final Test Loss:  0.1113 | Final Test Accuracy:  96.73%
+---------------------------------
+
+Batch training history plot saved to black_box_mlp_training_performance.png
+Saved model weights to mnist_black_box_mlp.pth
