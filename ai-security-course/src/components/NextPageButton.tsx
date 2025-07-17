@@ -2,13 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import styles from "./NextPageButton.module.css";
 import { navigationItems, type DirectLink, type SubItem } from "../data/navigation";
-
-interface NextPageButtonProps {
-  currentSection: string;
-  currentSlug: string;
-}
 
 // Helper function to flatten all navigation links into a sequential array
 function getAllLinks(): DirectLink[] {
@@ -31,7 +27,16 @@ function getAllLinks(): DirectLink[] {
   return links;
 }
 
-const NextPageButton: React.FC<NextPageButtonProps> = ({ currentSection, currentSlug }) => {
+const NextPageButton: React.FC = () => {
+  const params = useParams();
+  const currentSection = params.section as string;
+  const currentSlug = params.slug as string;
+
+  // If section and slug aren't available, we can't determine the next page
+  if (!currentSection || !currentSlug) {
+    return null;
+  }
+
   const allLinks = getAllLinks();
   const currentPath = `/${currentSection}/${currentSlug}`;
 

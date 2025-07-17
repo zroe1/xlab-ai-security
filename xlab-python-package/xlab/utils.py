@@ -12,6 +12,7 @@ from torchvision import datasets, transforms
 from PIL import Image
 import os
 import pkg_resources
+from xlab.models import BlackBox
 
 def load_cifar10_test_samples(n, download=True, transform=None, data_dir='./data'):
     """
@@ -73,6 +74,95 @@ def load_cifar10_test_samples(n, download=True, transform=None, data_dir='./data
     
     # Load CIFAR-10 test dataset
     test_dataset = datasets.CIFAR10(
+        root=data_dir,
+        train=False,  # Use test set
+        download=download,
+        transform=transform
+    )
+    
+    # Ensure n doesn't exceed dataset size
+    n = min(n, len(test_dataset))
+    
+    if n <= 0:
+        raise ValueError("n must be a positive integer")
+    
+    # Extract first n samples
+    images = []
+    labels = []
+    
+    for i in range(n):
+        image, label = test_dataset[i]
+        images.append(image)
+        labels.append(label)
+    
+    # Stack into tensors
+    images = torch.stack(images)
+    labels = torch.tensor(labels, dtype=torch.long)
+    
+    return images, labels
+
+
+def load_mnist_test_samples(n, download=True, transform=None, data_dir='./data'):
+    """
+    Load the first n test set examples from MNIST.
+    
+    This function provides a convenient way to load a subset of MNIST test data
+    for experimentation and educational purposes, particularly useful for adversarial
+    attacks and security research.
+    
+    Parameters:
+    -----------
+    n : int
+        Number of test samples to load. If n exceeds the test set size (10,000),
+        all available samples will be returned.
+    download : bool, default=True
+        Whether to download MNIST if not already present.
+    transform : torchvision.transforms, optional
+        Optional transform to apply to the images. If None, applies standard
+        transforms (ToTensor) suitable for most models.
+    data_dir : str, default='./data'
+        Directory to store/load MNIST data.
+    
+    Returns:
+    --------
+    images : torch.Tensor
+        Tensor of shape (n, 1, 28, 28) containing the image data.
+        Values are normalized to [0, 1] if using default transform.
+    labels : torch.Tensor
+        Tensor of shape (n,) containing the integer labels (0-9).
+    
+    Examples:
+    --------
+    >>> # Load first 100 test samples with default transforms
+    >>> images, labels = load_mnist_test_samples(100)
+    >>> print(f"Images shape: {images.shape}")  # torch.Size([100, 1, 28, 28])
+    >>> print(f"Labels shape: {labels.shape}")  # torch.Size([100])
+    
+    >>> # Load with custom transforms
+    >>> from torchvision import transforms
+    >>> custom_transform = transforms.Compose([
+    ...     transforms.ToTensor(),
+    ...     transforms.Normalize((0.5,), (0.5,))  # [-1, 1] range for grayscale
+    ... ])
+    >>> images, labels = load_mnist_test_samples(50, transform=custom_transform)
+    
+    Notes:
+    ------
+    - MNIST test set contains 10,000 samples total
+    - Images are 28x28 grayscale (1 channel)
+    - Default transform normalizes to [0, 1] range using ToTensor()
+    - For adversarial attacks, you may want to use [-1, 1] normalization
+    - Labels are digits 0-9
+    """
+    # Set default transform if none provided
+    if transform is None:
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            # Note: ToTensor() automatically normalizes PIL Images to [0, 1]
+        ])
+    
+    # Load MNIST test dataset
+    test_dataset = datasets.MNIST(
         root=data_dir,
         train=False,  # Use test set
         download=download,
@@ -508,6 +598,183 @@ def plot_2d(x, y, x_range=None, y_range=None, title=None, figsize=(8, 6), **kwar
     return fig, ax
 
 
+class BlackBoxModelWrapper:
+    """
+    A wrapper for black box models that hides implementation details.
+    
+    This class downloads and loads a pre-trained model from HuggingFace Hub
+    and provides a simple interface for making predictions while keeping
+    the actual model hidden from casual inspection.
+    
+    Examples:
+    --------
+    >>> # Load MNIST black box model
+    >>> black_box = BlackBoxModelWrapper('mnist-black-box')
+    >>> 
+    >>> # Make predictions (expects MNIST format: 1x28x28)
+    >>> predictions = black_box.predict(mnist_images)
+    >>> class_probs = black_box.predict_proba(mnist_images)
+    """
+    
+    def __init__(self, model_type='mnist-black-box', device='cpu'):
+        """
+        Initialize the black box model wrapper.
+        
+        Parameters:
+        -----------
+        model_type : str, default='mnist-black-box'
+            Type of model to load. Currently supports:
+            - 'mnist-black-box': Pre-trained MNIST classifier
+        device : str, default='cpu' 
+            Device to run the model on ('cpu' or 'cuda')
+        """
+        self._device = torch.device(device)
+        self._model_type = model_type
+        self._model = None
+        self._is_loaded = False
+        
+        # Load the model
+        self._load_model()
+    
+    def _load_model(self):
+        """Internal method to download and load the model."""
+        try:
+            if self._model_type == 'mnist-black-box':
+                from huggingface_hub import hf_hub_download
+                
+                # Download the model file
+                model_path = hf_hub_download(
+                    repo_id="uchicago-xlab-ai-security/mnist-ensemble",
+                    filename="mnist_black_box_mlp.pth"
+                )
+                
+                # Load the model
+                self._model = torch.load(model_path, map_location=self._device, weights_only=False)
+                self._model.eval()
+                self._is_loaded = True
+                
+            else:
+                raise ValueError(f"Unknown model type: {self._model_type}")
+                
+        except Exception as e:
+            raise RuntimeError(f"Failed to load black box model: {str(e)}")
+    
+    def predict(self, x):
+        """
+        Make predictions on input data.
+        
+        Parameters:
+        -----------
+        x : torch.Tensor
+            Input tensor. For MNIST models, should be shape (batch_size, 1, 28, 28)
+            or (1, 28, 28) for single image.
+        
+        Returns:
+        --------
+        predictions : torch.Tensor
+            Predicted class labels (integers)
+        """
+        if not self._is_loaded:
+            raise RuntimeError("Model not loaded")
+        
+        # Ensure input is on correct device
+        if x.device != self._device:
+            x = x.to(self._device)
+        
+        # Add batch dimension if needed
+        if x.dim() == 3:  # (1, 28, 28)
+            x = x.unsqueeze(0)  # (1, 1, 28, 28)
+        
+        with torch.no_grad():
+            logits = self._model(x)
+            predictions = torch.argmax(logits, dim=1)
+        
+        return predictions
+    
+    def predict_proba(self, x):
+        """
+        Get prediction probabilities for input data.
+        
+        Parameters:
+        -----------
+        x : torch.Tensor
+            Input tensor. For MNIST models, should be shape (batch_size, 1, 28, 28)
+            or (1, 28, 28) for single image.
+        
+        Returns:
+        --------
+        probabilities : torch.Tensor  
+            Class probabilities (softmax applied)
+        """
+        if not self._is_loaded:
+            raise RuntimeError("Model not loaded")
+        
+        # Ensure input is on correct device
+        if x.device != self._device:
+            x = x.to(self._device)
+        
+        # Add batch dimension if needed
+        if x.dim() == 3:  # (1, 28, 28)
+            x = x.unsqueeze(0)  # (1, 1, 28, 28)
+        
+        with torch.no_grad():
+            logits = self._model(x)
+            probabilities = torch.softmax(logits, dim=1)
+        
+        return probabilities
+    
+    def __call__(self, x):
+        """Allow the wrapper to be called like a function."""
+        return self.predict(x)
+    
+    def __repr__(self):
+        """Custom representation that doesn't reveal internal model details."""
+        return f"BlackBoxModelWrapper(type='{self._model_type}', device='{self._device}')"
+    
+    @property
+    def device(self):
+        """Get the device the model is running on."""
+        return self._device
+    
+    @property
+    def model_type(self):
+        """Get the type of model loaded."""
+        return self._model_type
+
+
+def load_black_box_model(model_type='mnist-black-box', device='cpu'):
+    """
+    Convenience function to load a black box model.
+    
+    This function provides a simple way to load and use pre-trained models
+    without exposing the underlying implementation details.
+    
+    Parameters:
+    -----------
+    model_type : str, default='mnist-black-box'
+        Type of model to load. Currently supports:
+        - 'mnist-black-box': Pre-trained MNIST classifier  
+    device : str, default='cpu'
+        Device to run the model on ('cpu' or 'cuda')
+    
+    Returns:
+    --------
+    model : BlackBoxModelWrapper
+        Wrapped model that can make predictions
+    
+    Examples:
+    --------
+    >>> # Load model and make predictions
+    >>> model = load_black_box_model('mnist-black-box')
+    >>> predictions = model.predict(mnist_data)
+    >>> probabilities = model.predict_proba(mnist_data) 
+    
+    >>> # Use as a function
+    >>> predictions = model(mnist_data)
+    """
+    return BlackBoxModelWrapper(model_type=model_type, device=device)
+
+
 def f_6(logits, target, k=0.1):
     i_neq_t = torch.argmax(logits)
     if i_neq_t == target:
@@ -676,15 +943,3 @@ def plot_dual_2d(
 
     plt.tight_layout()
     return fig, ax1, ax2
-
-def show_image(img):
-    """
-    Display image tensor using plt
-    
-    Parameters:
-    -----------
-    img : Tensor
-        image Tensor to be displayed
-    """
-    img = img.squeeze(0)
-    plt.imshow(img.permute(1, 2, 0).detach().numpy()) #Reorder columns as PIL and Torch order image data differently

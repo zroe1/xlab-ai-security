@@ -1,5 +1,5 @@
 The model was trained for 2 epochs on the MNIST handwriten digit dataset.
-Model training was done over a few minutes on a consumer MAC laptop.
+Model training was done in a few seconds on an H100 GPU.
 
 The output of the training run is as follows:
 

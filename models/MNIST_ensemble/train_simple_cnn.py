@@ -6,10 +6,10 @@ import numpy as np
 import time
 from train_mnist_utils import get_mnist_train_and_test_loaders, train, evaluate_model, plot_training_history, plot_batch_training_history, log_final_model_stats, count_parameters
 
-class SimpleCNN(nn.Module):
+class ConvolutionalMNIST(nn.Module):
     """Simple CNN for MNIST classification"""
     def __init__(self, num_classes=10, dropout_rate=0.3):
-        super(SimpleCNN, self).__init__()
+        super(ConvolutionalMNIST, self).__init__()
         
         # Convolutional layers
         self.conv1 = Conv2d(1, 16, kernel_size=3, padding=1)
@@ -80,7 +80,7 @@ def main():
     
     print(f"Using device: {device}")
 
-    model = SimpleCNN().to(device)
+    model = ConvolutionalMNIST().to(device)
     print(f"Simple CNN parameters: {count_parameters(model):,}")
     
     train_loader, test_loader = get_mnist_train_and_test_loaders()

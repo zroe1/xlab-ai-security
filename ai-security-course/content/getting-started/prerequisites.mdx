@@ -107,3 +107,5 @@ AttributeError: module 'torch.functional' has no attribute 'softmax'
 ```
 
 If you ask an LLM what is the problem here, you will find that the issue is the import should be `import torch.nn.functional as F` rather than import `torch.functional as F`. This particular bug may take a minute to figure out even if you are looking at the documentation. Using an LLM in these cases can let you worry less about syntax and more about learning the core concepts of the course.
+
+<NextPageButton />

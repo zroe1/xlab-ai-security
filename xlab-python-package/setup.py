@@ -51,6 +51,8 @@ setup(
         "matplotlib>=3.3.0",
         "pytest>=6.0",
         "Pillow>=8.0.0",
+        "hf_xet",
+        "huggingface_hub>=0.15.0",
     ],
     extras_require={
         "dev": [
