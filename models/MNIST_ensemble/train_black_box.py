@@ -6,10 +6,10 @@ import numpy as np
 import time
 from train_mnist_utils import get_mnist_train_and_test_loaders, train, evaluate_model, plot_training_history, plot_batch_training_history, log_final_model_stats, count_parameters
 
-class BlackBoxMLP(nn.Module):
+class BlackBox(nn.Module):
     """Black box MLP for MNIST classification with specified architecture"""
     def __init__(self, num_classes=10):
-        super(BlackBoxMLP, self).__init__()
+        super(BlackBox, self).__init__()
         
         # Input size for MNIST: 28 * 28 = 784
         input_size = 28 * 28
@@ -51,7 +51,7 @@ def main():
     
     print(f"Using device: {device}")
 
-    model = BlackBoxMLP().to(device)
+    model = BlackBox().to(device)
     print(f"Black Box MLP parameters: {count_parameters(model):,}")
     
     train_loader, test_loader = get_mnist_train_and_test_loaders()
