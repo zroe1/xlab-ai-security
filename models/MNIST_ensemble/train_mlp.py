@@ -6,10 +6,10 @@ import numpy as np
 import time
 from train_mnist_utils import get_mnist_train_and_test_loaders, train, evaluate_model, plot_training_history, plot_batch_training_history, log_final_model_stats, count_parameters
 
-class SimpleMLP(nn.Module):
+class FeedforwardMNIST(nn.Module):
     """Simple 4-layer MLP for MNIST classification"""
     def __init__(self, num_classes=10, hidden_size=48):
-        super(SimpleMLP, self).__init__()
+        super(FeedforwardMNIST, self).__init__()
         
         # Input size for MNIST: 28 * 28 = 784
         input_size = 28 * 28
@@ -51,8 +51,8 @@ def main():
     
     print(f"Using device: {device}")
 
-    model = SimpleMLP().to(device)
-    print(f"Simple MLP parameters: {count_parameters(model):,}")
+    model = FeedforwardMNIST().to(device)
+    print(f"FeedforwardMNIST parameters: {count_parameters(model):,}")
     
     train_loader, test_loader = get_mnist_train_and_test_loaders()
     criterion = torch.nn.CrossEntropyLoss()
