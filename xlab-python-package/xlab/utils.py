@@ -836,6 +836,52 @@ def load_black_box_model(model_type='mnist-black-box', device='cpu'):
     return BlackBoxModelWrapper(model_type=model_type, device=device)
 
 
+def get_best_device():
+    """
+    Get the best available PyTorch device for the current system.
+    
+    This function automatically detects and returns the best available device
+    in order of preference: CUDA (NVIDIA GPU) > MPS (Apple Silicon) > CPU.
+    
+    Returns:
+    --------
+    device : torch.device
+        The best available device for PyTorch operations.
+        
+    Examples:
+    --------
+    >>> # Get best device and use it
+    >>> device = get_best_device()
+    >>> print(f"Using device: {device}")
+    >>> tensor = torch.randn(3, 3).to(device)
+    
+    >>> # Use with models
+    >>> model = MyModel().to(get_best_device())
+    
+    >>> # Use with black box model
+    >>> device_str = str(get_best_device())  # Convert to string
+    >>> model = load_black_box_model('mnist-black-box', device=device_str)
+    
+    Notes:
+    ------
+    - CUDA: For NVIDIA GPUs (fastest for most deep learning tasks)
+    - MPS: For Apple Silicon Macs (M1, M2, etc.)
+    - CPU: Fallback option, always available
+    - The function checks device availability, not just existence
+    """
+    # Check for CUDA (NVIDIA GPU)
+    if torch.cuda.is_available():
+        return torch.device('cuda')
+    
+    # Check for MPS (Apple Silicon)
+    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+        return torch.device('mps')
+    
+    # Fallback to CPU
+    else:
+        return torch.device('cpu')
+
+
 def f_6(logits, target, k=0.1):
     i_neq_t = torch.argmax(logits)
     if i_neq_t == target:
