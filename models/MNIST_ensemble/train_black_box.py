@@ -56,9 +56,9 @@ def main():
     
     train_loader, test_loader = get_mnist_train_and_test_loaders()
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=2e-3)
+    optimizer = torch.optim.Adam(model.parameters(), lr=5e-4)
 
-    epochs = 2
+    epochs = 1
     
     history = {'train_loss': [], 'train_acc': [], 'test_loss': [], 'test_acc': []}
     batch_history = {'train_loss': [], 'train_acc': [], 'test_loss': [], 'test_acc': []}
