@@ -1050,3 +1050,30 @@ def plot_dual_2d(
 
     plt.tight_layout()
     return fig, ax1, ax2
+
+def clip(x, x_original, epsilon):
+    """
+    Clips adversarial perturbations to stay within epsilon-ball of original
+    image and ensures valid pixel values between 0 and 1.
+
+    Args:
+        x (Tensor): perturbed image tensor to be clipped
+        x_original (Tensor): original unperturbed image tensor
+        epsilon (float): maximum allowed perturbation magnitude
+
+    Returns [1, 3, 32, 32]: clipped image tensor with perturbations bounded
+        by epsilon and pixel values clamped to [0, 1] range
+    """
+    
+    x_final = None
+
+    diff = x - x_original
+    
+    # 1. Clip x epsilon distance away
+    diff = torch.clamp(diff, -epsilon, epsilon)
+    x_clipped = x_original + diff
+
+    # 2. Clip x between 0 and 1
+    x_final = torch.clamp(x_clipped, 0, 1)
+
+    return x_final
