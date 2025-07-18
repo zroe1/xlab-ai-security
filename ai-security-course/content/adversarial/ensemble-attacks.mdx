@@ -3,6 +3,14 @@ title: "Ensemble Attacks"
 description: "Background information and mathematical intuition behind ensemble attacks on image classifiers."
 ---
 
+This section has a series of coding problems using PyTorch. _As always, we highly recommend you read
+all the content on this page before starting the coding exercises._
+
+<ExerciseButtons
+  githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/robust_bench.ipynb"
+  colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/robust_bench.ipynb"
+/>
+
 One interesting feature of adversarial images is that they often "transfer" to
 other models. By transfer, we mean that we can optimize an adversarial example on
 one model, and use it to successfully attack an entirely different model. We can
@@ -11,11 +19,14 @@ which you will explore in the [GCG section](https://xlabaisecurity.com/jailbreak
 
 ## Targeted vs Untargeted Transfers
 
-Finding targeted adversarial examples that transfer is much harder than finding untargeted examples [@liu2017delvingtransferableadversarialexamples].
-This is because the loss landscape for driving the loss up is much eaiser to navigate than
-the loss landscape for predicting a singular target class. As a mental model we propose
-you think about an indiviudal attempting to climb up a mountain: in the untargeted case
-it is easy to climb straight up while in the untargeted case it is unclear which direction to
+Finding targeted adversarial examples that transfer is much harder than finding untargeted examples
+that transfer [@liu2017delvingtransferableadversarialexamples].
+This is because it is much easier to drive the loss up when there isn't a contraint
+on the exact direction the loss should be moving upwards. In other words,
+the loss landscape for predicting a singular target class is less generous than
+the landscape for predicting any class other than the clean label. As a mental model, we propose
+you think about an indiviudal attempting to climb up a mountain: in the untargeted case,
+it is easy to climb straight up while in the targeted case, it is unclear which direction to
 climb.
 
 <p align="center">
@@ -28,7 +39,7 @@ climb.
 </p>
 
 <div align="center">
-  **Fig. 1** <br></br>Targeted vs untargeted loss landscape for image classification security
+  **Fig. 1** <br></br>Targeted vs untargeted loss landscape
 </div>
 
 ## Threat Model for Transferability
@@ -60,7 +71,7 @@ perturbation, let $\ell_i(x + \delta)$ be the attack loss for a specific model $
 You can think of $\ell_k(x + \delta)$ as being similar to the $f$ function from
 the Carlini-Wagner attack in a previous section. Let $D(\delta)$ be some distance
 metric such as an $L_p$ norm. Then we try to find $\delta$ such
-that it minimizes the following equation.
+that it minimizes the following:
 
 $$
 \argmin_\delta D(\delta) + \sum_{i=1}^k \alpha_i \cdot \ell_i(x + \delta)
@@ -73,10 +84,11 @@ that are conceptually similar can use other losses.
 
 The original authors of the [Delving into Transferable Adversarial Examples and Black-box Attacks](https://arxiv.org/pdf/1611.02770)
 paper use a very different notation than the one we use above. We changed the notionation
-for clarity and to be more consistent with the other notebooks and eaiser to understand,
+for clarity and to be more consistent with the other notebooks,
 but it is a good excercise to get used to parsing less-than-ideal notion. For reference,
 here is the orginal formulation for optimizing ensemble attacks. $y^*$ is undersood to be
-a one hot vector and $J_i$ gives the softmax probabilities for model $i$. For more details
+a one hot vector and $J_i$ gives the softmax probabilities for model $i$. The $-\log$ term
+will find the [cross entropy loss](https://docs.pytorch.org/docs/2.7/generated/torch.nn.CrossEntropyLoss.html). For more details
 you can reference the paper itself.
 
 $$
@@ -84,6 +96,13 @@ $$
 $$
 
 </Dropdown>
+
+If you have completed the coding excerises in the previous two sections you will
+probably notice that the optimization above is more similar to a Carlini-Wagner
+attack than PGD. For simplicity, we diverge from the original paper a bit in our
+coding excersises where you will complete something more similar to PGD. This involves
+less code and no hyperparameters, but you are welcome to try a version more faithful to
+the original paper if you are interested.
 
 <NextPageButton />
 
