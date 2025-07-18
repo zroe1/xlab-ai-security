@@ -31,4 +31,21 @@ Runpod is a paid service for cloud computing. There are many powerful machines y
 
 To run your exercises using SSH, follow [Runpod's documentation](https://docs.runpod.io/pods/configuration/use-ssh) (or see [here](https://docs.runpod.io/pods/configuration/connect-to-ide) if you prefer using SSH with VSCode or Cursor). If you'd prefer using JupyterLab to run your code (which is perhaps the most beginner-friendly method), see [here](https://docs.runpod.io/pods/connect-to-a-pod#jupyterlab-connection).
 
+Because setting up SSH forwarding (e.g. to `git commit` from your remote connection) is a bit difficult, we provide some additional steps to do this below:
+1. Make sure your public key is added to the Runpod public keys in the settings.
+2. Start your desired Runpod instance (*ensure it is a secure cloud pod, which are TCP enabled by default*) and ensure to confirm SSH terminal access before deploying.
+3. Copy the command to connect via SSH *using exposed TCP*.
+4. Add the comand to your `~/.ssh/config` file. For example, you'd turn `ssh root@123.456.789 -p 1234 -i ~/.ssh/id_ed25519` into
+```
+Host runpod
+  HostName 123.456.789
+  Port 1234
+  User root
+  IdentityFile ~/.ssh/id_ed25519
+  ForwardAgent yes
+```
+5. Add your github SSH key to your ssh agent: `ssh-add ~/.ssh/<GITHUB_PRIVATE_KEY>`.
+5. Run `ssh runpod`.
+6. Confirm that you can access github on the Runpod instance: `ssh -T git@github.com`.
+
 <NextPageButton />
