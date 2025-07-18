@@ -7,8 +7,8 @@ This section has a series of coding problems using PyTorch. _As always, we highl
 all the content on this page before starting the coding exercises._
 
 <ExerciseButtons
-  githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/robust_bench.ipynb"
-  colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/robust_bench.ipynb"
+  githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/ensemble.ipynb"
+  colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/ensemble_colab.ipynb"
 />
 
 One interesting feature of adversarial images is that they often "transfer" to
@@ -21,11 +21,11 @@ which you will explore in the [GCG section](https://xlabaisecurity.com/jailbreak
 
 Finding targeted adversarial examples that transfer is much harder than finding untargeted examples
 that transfer [@liu2017delvingtransferableadversarialexamples].
-This is because it is much easier to drive the loss up when there isn't a contraint
+This is because it is much easier to drive the loss up when there isn't a constraint
 on the exact direction the loss should be moving upwards. In other words,
 the loss landscape for predicting a singular target class is less generous than
 the landscape for predicting any class other than the clean label. As a mental model, we propose
-you think about an indiviudal attempting to climb up a mountain: in the untargeted case,
+you think about an individual attempting to climb up a mountain: in the untargeted case,
 it is easy to climb straight up while in the targeted case, it is unclear which direction to
 climb.
 
@@ -44,27 +44,27 @@ climb.
 
 ## Threat Model for Transferability
 
-Transferible adversarial images and jailbreaks are interesting, but it may not be
+Transferable adversarial images and jailbreaks are interesting, but it may not be
 entirely obvious why they are important for security. One reason is that in many cases,
-an attacker may want to attack a model that is sucured behind an API. In other words,
+an attacker may want to attack a model that is secured behind an API. In other words,
 the attacker doesn't have white-box access and therefore cannot run an algorithm like
-PGD or CW. They may also not be able to query the model repeatidly without arousing
-suspicion or encurring high API costs. One solution to this issue is to attack a white
+PGD or CW. They may also not be able to query the model repeatedly without arousing
+suspicion or incurring high API costs. One solution to this issue is to attack a white
 box model for free using as many iterations as the attacker would like, and then hope
 that the attack transfers. When a white box model is used in this way, you may hear
-it refered to as a "surrogate model." Because there are plenty of open source models available for
+it referred to as a "surrogate model." Because there are plenty of open source models available for
 download, there are plenty of surrogate models to choose from, making these transfer attacks practical to execute.
 
 ## Improving Transferability
 
-One problem with attacks that rely on transferibility is that they aren't reliable.
+One problem with attacks that rely on transferability is that they aren't reliable.
 Sometimes the transfer works, but other times it doesn't and in practice, it is difficult
-to know which model is a good choice to use as a sorrogate. One solution to this
-problem is to use a diverse selection of sorrogate models rather
-than to choose one and hope for this best. These kinds of attacks are called ensamble
+to know which model is a good choice to use as a surrogate. One solution to this
+problem is to use a diverse selection of surrogate models rather
+than to choose one and hope for the best. These kinds of attacks are called ensemble
 attacks [@liu2017delvingtransferableadversarialexamples].
 
-In an ensamble attack, you choose $k$ models and assign each a weight $\alpha$ for how much that model should
+In an ensemble attack, you choose $k$ models and assign each a weight $\alpha$ for how much that model should
 influence the attack loss. Traditionally $\sum_{i=1}^k \alpha_i = 1$, so you can think about
 the total loss as being shared between each model. If $x$ is our clean image and $\delta$ is our adversarial
 perturbation, let $\ell_i(x + \delta)$ be the attack loss for a specific model $i$.
@@ -83,10 +83,10 @@ that are conceptually similar can use other losses.
 <Dropdown title="Comments on notation">
 
 The original authors of the [Delving into Transferable Adversarial Examples and Black-box Attacks](https://arxiv.org/pdf/1611.02770)
-paper use a very different notation than the one we use above. We changed the notionation
+paper use a very different notation than the one we use above. We changed the notation
 for clarity and to be more consistent with the other notebooks,
-but it is a good excercise to get used to parsing less-than-ideal notion. For reference,
-here is the orginal formulation for optimizing ensemble attacks. $y^*$ is undersood to be
+but it is a good exercise to get used to parsing less-than-ideal notation. For reference,
+here is the original formulation for optimizing ensemble attacks. $y^*$ is understood to be
 a one hot vector and $J_i$ gives the softmax probabilities for model $i$. The $-\log$ term
 will find the [cross entropy loss](https://docs.pytorch.org/docs/2.7/generated/torch.nn.CrossEntropyLoss.html). For more details
 you can reference the paper itself.
@@ -97,10 +97,10 @@ $$
 
 </Dropdown>
 
-If you have completed the coding excerises in the previous two sections you will
+If you have completed the coding exercises in the previous two sections you will
 probably notice that the optimization above is more similar to a Carlini-Wagner
 attack than PGD. For simplicity, we diverge from the original paper a bit in our
-coding excersises where you will complete something more similar to PGD. This involves
+coding exercises where you will complete something more similar to PGD. This involves
 less code and no hyperparameters, but you are welcome to try a version more faithful to
 the original paper if you are interested.
 
