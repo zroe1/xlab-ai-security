@@ -71,6 +71,9 @@ Thus, when applied to the loss of each token, it penalizes the overall loss if o
     style={{ align: "center", width: "100%", display: "block", margin: "0 auto" }}
   />
 </p>
+<div align="center">
+  **Fig. 1** <br></br> AmpleGCG [@liaoAmpleGCGLearningUniversal2024]
+</div>
 
 
 Now that we understand why GCG's original objective is flawed, what (other than using mellowmax) can we do to improve it? Another finding of the AmpleGCG paper is that even though the GCG algorithm only returns one adversarial suffix, throughout the optimization process it generates thousands of other *successful* suffixes (which are candidate suffixes normally discarded by GCG) [@liaoAmpleGCGLearningUniversal2024]. When using all these suffixes to attack a model, we also see a great increase in attack success rate (ASR). Given that there are so many suffixes not returned by GCG, can we learn to generate them?
@@ -82,6 +85,20 @@ At the time of its release, AmpleGCG was very effective at jailbreaking models, 
 ***
 
 ## Adaptive Dense-to-sparse Constrained Optimization
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/adc_light.png"
+    darkSrc="/images/adc_dark.png"
+    alt="Adaptive Dense-to-Sparse Constrained Optimization Attack"
+    style={{ align: "center", width: "100%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 2** <br></br> Adaptive Dense-to-Sparse Constrained Optimization Attack [@huEfficientLLMJailbreak2024]
+</div>
+
 @huEfficientLLMJailbreak2024 also aims to improve the GCG algorithm, proposing an adaptive dense-to-sparse constrained (ADC) attack. Their insight is that because GCG optimizes over discrete tokens, the process is rather inefficient compared to continuous optimizations. As a solution, they propose relaxing the discrete tokens into vectors in $\mathbb{R}^V$, then gradually constraining the optimization into a highly sparse space over time. This is also preferable to entirely working in $\mathbb{R}^V$ and projecting into the token space at the end, as the nearest tokens to the vectors in $\mathbb{R}^V$ may not be very close.
 
 ### Notation, Notation, Notation
@@ -117,7 +134,7 @@ You're right! To fix this, @huEfficientLLMJailbreak2024 randomly select $\text{r
 
 </Dropdown>
 
-How do we make the vectors a certain sparsity? We use the algorithm below!
+To make the vectors a certain sparsity, we'll use the algorithm below:
 
 $$
 \begin{array}{l}
@@ -134,7 +151,7 @@ $$
 
 The $10^{-6}$ is added for numerical stability. The authors note that this isn't a projection algorithm and they use it basically just because it works. This happens a lot in machine learning.
 
-Now, letting $\mathcal{L}(z_{1:n}) = \sum_{k = 1}^m \text{CE} (\text{LLM}(x_{1:l} \oplus z_{1:n} \oplus y_{1:k - 1}), y_k)$, here's the full algorithm:
+Now, letting $\mathcal{L}(z_{1:n}) = \sum_{k = 1}^m \text{CE} (\text{LLM}(x_{1:l} \oplus z_{1:n} \oplus y_{1:k - 1}), y_k)$ (our cross-entropy loss from before), here's the full algorithm:
 $$
 \begin{array}{l}
 \text{\bf Algorithm: } \text{Adaptive Dense-to-Sparse Optimization} \\
