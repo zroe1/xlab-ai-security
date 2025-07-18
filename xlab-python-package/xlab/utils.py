@@ -282,6 +282,67 @@ def show_image(img):
     plt.imshow(img.permute(1, 2, 0).detach().numpy())
 
 
+def show_grayscale_image(img, title=None, figsize=(3, 3)):
+    """
+    Display a grayscale image tensor (e.g., MNIST digits) using matplotlib.
+    
+    This function is specifically designed for displaying grayscale images like
+    MNIST digits with proper formatting and visualization.
+    
+    Parameters:
+    -----------
+    img : torch.Tensor
+        Grayscale image tensor. Can be either:
+        - Shape [1, 28, 28] (with channel dimension)  
+        - Shape [28, 28] (without channel dimension)
+        Values should be in range [0, 1].
+    title : str, optional
+        Title to display above the image.
+    figsize : tuple, default=(3, 3)
+        Figure size (width, height) in inches.
+    
+    Examples:
+    --------
+    >>> # Display single MNIST digit
+    >>> mnist_images, labels = load_mnist_test_samples(1)
+    >>> show_grayscale_image(mnist_images[0], title=f"Digit: {labels[0]}")
+    
+    >>> # Display with custom size
+    >>> show_grayscale_image(mnist_images[0], title="MNIST Sample", figsize=(2, 2))
+    
+    >>> # Works with [28, 28] tensors too
+    >>> digit_28x28 = mnist_images[0].squeeze(0)  # Remove channel dim
+    >>> show_grayscale_image(digit_28x28)
+    """
+    # Convert to numpy and handle different input shapes
+    if isinstance(img, torch.Tensor):
+        img_np = img.detach().cpu().numpy()
+    else:
+        img_np = img
+    
+    # Handle different tensor shapes
+    if img_np.ndim == 3:  # [1, 28, 28] or [28, 28, 1]
+        if img_np.shape[0] == 1:  # [1, 28, 28]
+            img_np = img_np.squeeze(0)  # Remove first dimension
+        elif img_np.shape[2] == 1:  # [28, 28, 1]
+            img_np = img_np.squeeze(2)  # Remove last dimension
+        else:
+            raise ValueError(f"Unexpected 3D tensor shape: {img_np.shape}. Expected [1, 28, 28] or [28, 28, 1]")
+    elif img_np.ndim != 2:  # Should be [28, 28]
+        raise ValueError(f"Expected 2D or 3D tensor, got {img_np.ndim}D with shape {img_np.shape}")
+    
+    # Create the plot
+    plt.figure(figsize=figsize)
+    plt.imshow(img_np, cmap='gray', vmin=0, vmax=1)
+    plt.axis('off')  # Remove axes for cleaner display
+    
+    if title is not None:
+        plt.title(title, fontsize=12, pad=5)
+    
+    plt.tight_layout()
+    plt.show()
+
+
 def process_image(path):
     """
     Convert file path to scaled torch tensor
@@ -773,6 +834,52 @@ def load_black_box_model(model_type='mnist-black-box', device='cpu'):
     >>> predictions = model(mnist_data)
     """
     return BlackBoxModelWrapper(model_type=model_type, device=device)
+
+
+def get_best_device():
+    """
+    Get the best available PyTorch device for the current system.
+    
+    This function automatically detects and returns the best available device
+    in order of preference: CUDA (NVIDIA GPU) > MPS (Apple Silicon) > CPU.
+    
+    Returns:
+    --------
+    device : torch.device
+        The best available device for PyTorch operations.
+        
+    Examples:
+    --------
+    >>> # Get best device and use it
+    >>> device = get_best_device()
+    >>> print(f"Using device: {device}")
+    >>> tensor = torch.randn(3, 3).to(device)
+    
+    >>> # Use with models
+    >>> model = MyModel().to(get_best_device())
+    
+    >>> # Use with black box model
+    >>> device_str = str(get_best_device())  # Convert to string
+    >>> model = load_black_box_model('mnist-black-box', device=device_str)
+    
+    Notes:
+    ------
+    - CUDA: For NVIDIA GPUs (fastest for most deep learning tasks)
+    - MPS: For Apple Silicon Macs (M1, M2, etc.)
+    - CPU: Fallback option, always available
+    - The function checks device availability, not just existence
+    """
+    # Check for CUDA (NVIDIA GPU)
+    if torch.cuda.is_available():
+        return torch.device('cuda')
+    
+    # Check for MPS (Apple Silicon)
+    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+        return torch.device('mps')
+    
+    # Fallback to CPU
+    else:
+        return torch.device('cpu')
 
 
 def f_6(logits, target, k=0.1):
