@@ -18,7 +18,7 @@ const LandingPageContent = () => {
           </div>
           <div className="landing-header-actions">
             <a
-              href="https://github.com"
+              href="https://github.com/zroe1/xlab-ai-security"
               className="github-link"
               target="_blank"
               rel="noopener noreferrer">
@@ -87,7 +87,9 @@ const LandingPageContent = () => {
                 <img src="/images/x_white.png" alt="" className="button-icon xlab-icon" />
                 View the Course
               </Link>
-              <a href="https://github.com" className="action-button secondary">
+              <a
+                href="https://github.com/zroe1/xlab-ai-security"
+                className="action-button secondary">
                 <svg
                   width="16"
                   height="16"
@@ -284,7 +286,10 @@ const LandingPageContent = () => {
               <h4>Community</h4>
               <ul>
                 <li>
-                  <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="https://github.com/zroe1/xlab-ai-security"
+                    target="_blank"
+                    rel="noopener noreferrer">
                     Contribute
                   </a>
                 </li>

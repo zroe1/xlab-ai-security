@@ -120,7 +120,7 @@ export const navigationItems: NavigationItem[] = [
           {
             id: "2.6.2",
             title: "State of the Art",
-            href: "/adversarial/state-of-the-art",
+            href: "/adversarial/sota",
             type: "link",
           },
           {
@@ -149,7 +149,12 @@ export const navigationItems: NavigationItem[] = [
         type: "folder",
         items: [
           { id: "3.2.1", title: "GCG", href: "/jailbreaking/gcg", type: "link" },
-          { id: "3.2.2", title: "AmpleGCG & Dense-to-Sparse Optimization", href: "/jailbreaking/amplegcg_adc", type: "link" },
+          {
+            id: "3.2.2",
+            title: "AmpleGCG & Dense-to-Sparse Optimization",
+            href: "/jailbreaking/amplegcg_adc",
+            type: "link",
+          },
         ],
       },
       {
@@ -158,7 +163,12 @@ export const navigationItems: NavigationItem[] = [
         type: "folder",
         items: [
           { id: "3.3.1", title: "PAIR & TAP", href: "/jailbreaking/pair-tap", type: "link" },
-          { id: "3.3.2", title: "GPTFuzzer & AutoDAN", href: "/jailbreaking/gptfuzzer", type: "link" },
+          {
+            id: "3.3.2",
+            title: "GPTFuzzer & AutoDAN",
+            href: "/jailbreaking/gptfuzzer",
+            type: "link",
+          },
         ],
       },
       {

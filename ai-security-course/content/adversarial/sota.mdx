@@ -1,0 +1,30 @@
+---
+title: "State of the Art"
+description: "Background information on state-of-the-art robustness on CIFAR-10."
+---
+
+## Scaling Laws
+
+Bartoldson et al. demonstrated that adversarial robustness follows predictable scaling laws with respect to compute (FLOPs) and data quality. Their work shows that robustness can be significantly improved through optimal allocation of computational resources and high-quality training data.
+
+<AdversarialScalingExplorer />
+
+## Bartoldson et al. Methodology
+
+The autors barrow some methodology from [@wang2023betterdiffusionmodelsimprove]
+to train their models. We highlight two conceptually important details below, but the
+authors give a detailed account of all their training setttings in the
+[original paper]().
+
+1. **PGD-Based Adversarial Training:** To generate adversarial images at training time, the
+   authors use 10 steps of PGD with $\alpha=2/255$.
+2. **Label Smoothing:** Label smoothing [@szegedy2015rethinkinginceptionarchitecturecomputer] is conceptually similar to defensive distilation
+   which you explored in a previous section. The math is slighly different but if you are
+   interested, we highly reccomend section 7 of the [orginal label smoothing paper](https://arxiv.org/abs/1512.00567)
+   which presents the math in a clear, concise way.
+
+The approach here is nothing new but we include it for context. The insight that made
+the authors' approach state of the art was not a clever new algorithm but rahter scaling
+compute and data in an optimal way.
+
+## Citations
