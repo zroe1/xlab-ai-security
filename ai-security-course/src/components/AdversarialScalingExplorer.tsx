@@ -86,9 +86,10 @@ const AdversarialScalingExplorer: React.FC = () => {
     ctx.fillRect(0, 0, width, height);
 
     // Chart dimensions
-    const margin = 60;
+    const margin = 70;
     const chartWidth = width - 2 * margin;
-    const chartHeight = height - 2 * margin - 30; // Reduced bottom space
+    // const margin = 0;
+    const chartHeight = height - 2 * margin - 0; // Reduced bottom space
 
     // Coordinate transformations
     const minFlopsPower = 17;
@@ -256,7 +257,6 @@ const AdversarialScalingExplorer: React.FC = () => {
 
         {/* Results Display */}
         <div className={styles.results}>
-          <h3 className={styles.resultsTitle}>Predicted Performance</h3>
           <div className={styles.metricsGrid}>
             <div className={styles.metric}>
               <div className={styles.metricValue}>{(currentAccuracy * 100).toFixed(1)}%</div>
@@ -273,15 +273,7 @@ const AdversarialScalingExplorer: React.FC = () => {
           </div>
         </div>
 
-        {/* Information */}
-        <div className={styles.info}>
-          <p>
-            <strong>About:</strong> This interactive visualization shows the scaling law from
-            &ldquo;Adversarial Robustness Limits via Scaling-Law and Human-Alignment Studies&rdquo;
-            (Bartoldson et al., 2024). The curve shows how adversarial accuracy scales with compute
-            (FLOPs) and data quality (FID). Lower FID = higher quality data.
-          </p>
-        </div>
+        {/* Information section removed for compactness */}
       </div>
     </div>
   );
