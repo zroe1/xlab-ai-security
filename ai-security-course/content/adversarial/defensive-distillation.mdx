@@ -3,6 +3,39 @@ title: "Defensive Distilation"
 description: "Background information and mathematical intuition behind defensive distilation."
 ---
 
+## Distilation
+
+Distilation, proposed by [@hinton2015distillingknowledgeneuralnetwork], is a technique
+to leverage a more complex and capible model to produce a more compute-efficent model
+that preserves the performace. The author's accomplish this by training the smaller model
+on the outputs of the capible model.
+
+As a review, when we train an image classifer we usually use what are called "hard labels".
+For an image of a 2 in the MNIST dataset, the hard label would assign 100% probability to the
+"2" class and 0% probability to every other class. In distilation however, we use "soft labels"
+from a trained model which assign various positive probabilites to every class.
+
+Why train on these soft labels? Aren't the hard labels a more accurate measure of ground truth?
+The original paper claims that these soft labels are useful because they give context to the underlying
+structure of the dataset. One example they give is for an image of a 2, a model
+may give $10^{-6}$ probability of the image being a 3 and a $10^{-9}$ probability of it being a 7.
+In another example, of a 2 you may find the reverse. The authors claim that this extracts
+more detailed infromation about the data. Rather than training a model to learn what is a
+2 and what is not a 2, we can use these soft labels to also teach the model which 2s look more like
+3s than they do 7s.
+
+By adding a temperature, we can make this information more salient. The example from
+the original distilation paper is that if you are training a model on MNIST, you may get
+softmax probabilies as low as $10^{-6}$ or $10^{-9}$. The difference between these values
+encodes real information, but if you train on these outputs, they are so close to zero
+that they barely influence the loss.
+
+In practice, it should be often useful to train on some combination of the soft labels
+and the hard labels. The authors note:
+
+> Typically, the small model cannot exactly match the soft targets and erring in the direction of the
+> correct answer turns out to be helpful.
+
 ## Intuition
 
 <p align="center">
