@@ -24,8 +24,25 @@ more detailed infromation about the data. Rather than training a model to learn 
 2 and what is not a 2, we can use these soft labels to also teach the model which 2s look more like
 3s than they do 7s.
 
-By adding a temperature, we can make this information more salient. The example from
-the original distilation paper is that if you are training a model on MNIST, you may get
+### Adding Temperature
+
+A traditional softmax is calculated via the following equation. When there are $k$ classes,
+and $z$ is the pre-softmax output, the equation below gives the probability for class $i$:
+
+$$
+q_i = \frac{e^{z_i}}{\sum_{j=1}^{k}e^{z_j}}
+$$
+
+If we want the output of the softmax to be smoother, we can add a constant $T$ which
+forces the distibution to be more uniform. Note that are traditional softmax is the equivalent
+to the equation below when $T = 1$.
+
+$$
+q_i = \frac{e^{z_i / T}}{\sum_{j=1}^{k}e^{z_j / T }}
+$$
+
+Why add temperature? Smoother labels make distinctions between small probabilites
+more salient. Returning to our example of an MNIST image of a 2, you may get
 softmax probabilies as low as $10^{-6}$ or $10^{-9}$. The difference between these values
 encodes real information, but if you train on these outputs, they are so close to zero
 that they barely influence the loss.
