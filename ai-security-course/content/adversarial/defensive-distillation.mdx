@@ -74,7 +74,10 @@ Therefore, unlike the variation proposed by [@hinton2015distillingknowledgeneura
 defensive distilation, uses the same model archieture for both the original and
 distilled models.
 
-### Why does this work?
+The motivation behind using distilation as a defense is it produces a smoother model
+which generalizes better to inputs an epsilon distance away from clean images. In other words,
+gradients of the loss with respect to indiviudal pixel values should be small if
+a model is distilled properly. The authors say:
 
 > If adversarial gradients are high, crafting adversarial samples becomes easier
 > because small perturbations will induce high DNN output
@@ -82,7 +85,10 @@ distilled models.
 > therefore reduce variations around the input, and consequently
 > the amplitude of adversarial gradients
 
-## Intuition
+You can think about navigating up a mountain where climbing up in a certain direction
+increases the loss. When you are optimizing an adversarial example, you are trying to
+climb up as fast as possible. If a model is properly distilled however, it will be
+difficult to climb up because the landscape is mostly flat.
 
 <p align="center">
   <ThemeImage
@@ -92,3 +98,5 @@ distilled models.
     style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
   />
 </p>
+
+### Implmenting defensive distilation
