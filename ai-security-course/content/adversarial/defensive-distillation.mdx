@@ -3,6 +3,11 @@ title: "Defensive Distilation"
 description: "Background information and mathematical intuition behind defensive distilation."
 ---
 
+In this section, you will learn about "defensive distilation," a technique to defend
+against adversarial attacks in computer vision. Although this defense has be broken [@carlini2017evaluatingrobustnessneuralnetworks],
+similar techniques with analogous motivations have pushed the state of the art forward [@bartoldson2024adversarialrobustnesslimitsscalinglaw].
+In this document, we will explain distilation, then defensive distilation and the intuition behind the defense.
+
 ## Distilation
 
 Distilation, proposed by [@hinton2015distillingknowledgeneuralnetwork], is a technique
@@ -26,11 +31,11 @@ more detailed infromation about the data. Rather than training a model to learn 
 
 ### Adding Temperature
 
-A traditional softmax is calculated via the following equation. When there are $k$ classes,
+A traditional softmax is calculated via the following equation. When there are $K$ classes,
 and $z$ is the pre-softmax output, the equation below gives the probability for class $i$:
 
 $$
-q_i = \frac{e^{z_i}}{\sum_{j=1}^{k}e^{z_j}}
+q_i = \frac{e^{z_i}}{\sum_{j=0}^{K-1}e^{z_j}}
 $$
 
 If we want the output of the softmax to be smoother, we can add a constant $T$ which
@@ -38,7 +43,7 @@ forces the distibution to be more uniform. Note that are traditional softmax is 
 to the equation below when $T = 1$.
 
 $$
-q_i = \frac{e^{z_i / T}}{\sum_{j=1}^{k}e^{z_j / T }}
+q_i = \frac{e^{z_i / T}}{\sum_{j=0}^{K-1}e^{z_j / T }}
 $$
 
 Why add temperature? Smoother labels make distinctions between small probabilites
@@ -47,7 +52,7 @@ softmax probabilies as low as $10^{-6}$ or $10^{-9}$. The difference between the
 encodes real information, but if you train on these outputs, they are so close to zero
 that they barely influence the loss.
 
-### Training on soft labels
+<Dropdown title="Soft labels don't replace hard labels">
 
 For the reasons mentioned above, training on soft labels is helpful for distilling
 a larger model into a lighter weight alternative. In practice, it should be often
@@ -59,6 +64,23 @@ and the hard labels. The authors note:
 
 In other words, you should be aware that soft labels encode useful information but shouldn't
 be treated as a complete replacement of hard labels.
+
+</Dropdown>
+
+## Defensive Distilation
+
+In AI security we are less concerned with efficiency and more concerned with robustness.
+Therefore, unlike the variation proposed by [@hinton2015distillingknowledgeneuralnetwork],
+defensive distilation, uses the same model archieture for both the original and
+distilled models.
+
+### Why does this work?
+
+> If adversarial gradients are high, crafting adversarial samples becomes easier
+> because small perturbations will induce high DNN output
+> variations. To defend against such perturbations, one must
+> therefore reduce variations around the input, and consequently
+> the amplitude of adversarial gradients
 
 ## Intuition
 
