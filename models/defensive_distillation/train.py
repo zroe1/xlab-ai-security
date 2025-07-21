@@ -6,6 +6,22 @@ import numpy as np
 import time
 from train_mnist_utils import get_mnist_train_and_test_loaders, train, evaluate_model, plot_training_history, plot_batch_training_history, log_final_model_stats, count_parameters
 
+class TemperatureScaledNLLLoss(nn.Module):
+    """Negative log-likelihood with temperature-scaled softmax.
+
+    The logits are divided by temperature **T** before the log-softmax is taken.
+    Setting T=1 reduces to the standard NLL loss.
+    """
+    def __init__(self, T: float = 1.0):
+        super().__init__()
+        self.T = T
+        self.nll_loss = nn.NLLLoss()
+
+    def forward(self, logits, target):
+        # Scale logits by temperature and compute log-probabilities
+        log_probs = F.log_softmax(logits / self.T, dim=1)
+        return self.nll_loss(log_probs, target)
+
 class FeedforwardMNIST(nn.Module):
     """Simple 4-layer MLP for MNIST classification"""
     def __init__(self, num_classes=10):
@@ -42,7 +58,10 @@ def main():
     print(f"FeedforwardMNIST parameters: {count_parameters(model):,}")
     
     train_loader, test_loader = get_mnist_train_and_test_loaders()
-    criterion = torch.nn.CrossEntropyLoss()
+    # Temperature to use for softmax scaling
+    temperature = 20
+    print(f"Training with T={temperature}")
+    criterion = TemperatureScaledNLLLoss(temperature)
     optimizer = torch.optim.Adam(model.parameters(), lr=2e-3)
 
     epochs = 2
