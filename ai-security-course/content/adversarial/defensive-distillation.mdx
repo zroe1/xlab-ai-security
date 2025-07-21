@@ -47,11 +47,18 @@ softmax probabilies as low as $10^{-6}$ or $10^{-9}$. The difference between the
 encodes real information, but if you train on these outputs, they are so close to zero
 that they barely influence the loss.
 
-In practice, it should be often useful to train on some combination of the soft labels
+### Training on soft labels
+
+For the reasons mentioned above, training on soft labels is helpful for distilling
+a larger model into a lighter weight alternative. In practice, it should be often
+useful to train on some combination of the soft labels
 and the hard labels. The authors note:
 
 > Typically, the small model cannot exactly match the soft targets and erring in the direction of the
 > correct answer turns out to be helpful.
+
+In other words, you should be aware that soft labels encode useful information but shouldn't
+be treated as a complete replacement of hard labels.
 
 ## Intuition
 
