@@ -166,7 +166,7 @@ export const navigationItems: NavigationItem[] = [
           {
             id: "3.3.2",
             title: "GPTFuzzer & AutoDAN",
-            href: "/jailbreaking/gptfuzzer",
+            href: "/jailbreaking/gptfuzzer_autodan",
             type: "link",
           },
         ],

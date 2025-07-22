@@ -19,7 +19,7 @@ So far, we've looked at _token-level, white-box jailbreaks:_ attacks that requir
 </p>
 
 <div align="center">
-  **Fig. 1** <br></br> Prompt Automatic Iterative Refinement (PAIR), modified from [@chaoJailbreakingBlackBox2024]
+  **Fig. 1** <br></br> Prompt Automatic Iterative Refinement (PAIR), modified from @chaoJailbreakingBlackBox2024
 </div>
 
 The crux of the algorithm is simple: an attacker LLM tries to jailbreak a target LLM by iteratively refining a given prompt. Before looking at the psuedocode, however, we'll first define the notation used by the paper. Let $R \sim q_M(P)$ represent sampling the response $R$ from model $M$ when queried with prompt $P$. Let $S == \texttt{JUDGE}(P, R)$ be a binary score from a judge LLM, with $1$ indicating that a jailbreak has occured and $0$ indicating that no jailbreak has occured given prompt $P$ and response $R$. We additionally define model $A$ as the attacker LLM and model $T$ as the target LLM that model $A$ tries to jailbreak.
