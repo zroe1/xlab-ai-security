@@ -191,6 +191,130 @@ def load_mnist_test_samples(n, download=True, transform=None, data_dir='./data')
     return images, labels
 
 
+def load_mnist_train_samples(n, download=True, transform=None, data_dir='./data'):
+    """
+    Load the first n training set examples from MNIST.
+
+    This function mirrors `load_mnist_test_samples` but pulls data from the
+    training split of the dataset (60,000 samples) instead of the test split.
+
+    Parameters:
+    -----------
+    n : int
+        Number of training samples to load. If n exceeds the train set size
+        (60,000), all available samples will be returned.
+    download : bool, default=True
+        Whether to download MNIST if not already present.
+    transform : torchvision.transforms, optional
+        Optional transform to apply to the images. If None, applies standard
+        transforms (ToTensor) suitable for most models.
+    data_dir : str, default='./data'
+        Directory to store/load MNIST data.
+
+    Returns:
+    --------
+    images : torch.Tensor
+        Tensor of shape (n, 1, 28, 28) containing the image data.
+    labels : torch.Tensor
+        Tensor of shape (n,) containing the integer labels (0-9).
+    """
+
+    # Set default transform if none provided
+    if transform is None:
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            # ToTensor() normalizes PIL Images to [0, 1]
+        ])
+
+    # Load MNIST training dataset
+    train_dataset = datasets.MNIST(
+        root=data_dir,
+        train=True,  # Use training set
+        download=download,
+        transform=transform
+    )
+
+    # Ensure n doesn't exceed dataset size
+    n = min(n, len(train_dataset))
+
+    if n <= 0:
+        raise ValueError("n must be a positive integer")
+
+    # Extract first n samples
+    images = []
+    labels = []
+
+    for i in range(n):
+        image, label = train_dataset[i]
+        images.append(image)
+        labels.append(label)
+
+    # Stack into tensors
+    images = torch.stack(images)
+    labels = torch.tensor(labels, dtype=torch.long)
+
+    return images, labels
+
+# ---------------------------------------------------------------------------
+# DataLoader helper for MNIST (training split)
+# ---------------------------------------------------------------------------
+
+def get_mnist_train_loader(
+    batch_size=64,
+    shuffle=True,
+    download=True,
+    transform=None,
+    data_dir='./data',
+):
+    """
+    Create a PyTorch ``DataLoader`` for the MNIST training set.
+
+    Parameters
+    ----------
+    batch_size : int, default=64
+        Number of samples per batch to load.
+    shuffle : bool, default=True
+        Whether to shuffle the dataset each epoch.
+    download : bool, default=True
+        Download the dataset if it is not present locally.
+    transform : torchvision.transforms, optional
+        Transformations to apply to each image. If ``None``, a default
+        ``ToTensor`` transform is applied that scales pixel values to ``[0,1]``.
+    data_dir : str, default='./data'
+        Directory where the MNIST data is stored / will be downloaded to.
+
+    Returns
+    -------
+    torch.utils.data.DataLoader
+        A DataLoader yielding batches of ``(images, labels)`` where ``images``
+        has shape ``(batch_size, 1, 28, 28)`` and ``labels`` has shape
+        ``(batch_size,)``.
+    """
+
+    # Default transform
+    if transform is None:
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+        ])
+
+    # Load the training dataset
+    train_dataset = datasets.MNIST(
+        root=data_dir,
+        train=True,
+        download=download,
+        transform=transform,
+    )
+
+    # Construct the DataLoader
+    train_loader = torch.utils.data.DataLoader(
+        train_dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+    )
+
+    return train_loader
+
+
 def add_noise(img, stdev=0.001, mean=0):
     """
     Helper function for PGD_generator
