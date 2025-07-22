@@ -1,4 +1,73 @@
 ---
-title: "Introduction to Adversarial Machine Learning"
+title: "Introduction to Adversarial Examples"
 description: "This section gives an overview of adversarial machine learning, using computer vision as a toy example."
 ---
+
+As the deep learning revolution was gaining momentum, [@szegedy2014intriguingpropertiesneuralnetworks]
+discovered an "intriguing" property of deep learning models trained for classification.
+They show that you can take an input image that a model classifies correctly
+and optimize it such that a model will misclassify the image while keeping the "adversarial image" indistinguishable from the original.
+
+<img
+  src="/images/panda_gibbon.png"
+  alt="Different CW results depending on choice of c"
+  style={{ width: "70%", display: "block", margin: "0 auto" }}
+/>
+
+<div align="center">
+  **Fig. 1** <br></br> A famous adversarial image from [@goodfellow2015explainingharnessingadversarialexamples].
+  While the image on the right appears identical to the one on the left, it is misclassified by the model.
+</div>
+
+There are several popular methods for optimizing adversarial images, several of which you
+will learn in this course. Historically, there has been a kind of cat and mouse game, where
+as researchers propose new defenses against adversarial attacks, others propose stronger
+attacks to break those defenses. While methods such as adversarial
+training [@goodfellow2015explainingharnessingadversarialexamples], defensive distillation
+[@papernot2016distillationdefenseadversarialperturbations], and countless other techniques
+aim to solve this issue, guaranteeing adversarial robustness for computer vision is
+still an open research problem.
+
+Adversarial attacks could be a security concern when computer vision models are
+deployed in high stakes settings. Imagine a stop sign is physically altered,
+such that a self-driving car classifies it as a cake. This could cause a car to continue
+moving when others expect it to stop, potentially causing a crash.
+
+<p align="center">
+  <img src="/images/traffic.png" alt="A descriptive alt text" />
+</p>
+
+<div align="center">
+  **Fig. 2** <br></br>Source: [@pavlitska2023adversarialattackstrafficsign]
+</div>
+
+Although these vulnerabilities can certainly cause safety concerns in some settings,
+our main motivation for including this section in the course is to introduce AI security
+concepts in a digestible way. When you perform analogous attacks and defenses against language
+models later in the course, you will find that many of the concepts you learn about
+in this section will map onto more complicated scenarios.
+
+## Section Table of Contents
+
+1. **[Models and Data](./models-and-data)** - Overview of the CIFAR-10 and MNIST datasets, along with the models used throughout this section
+
+2. **White Box Attacks** - Attacks that assume full knowledge of the target model
+
+   - **[FGSM and PGD](./adversarialimages)** - Fast Gradient Sign Method, Basic Iterative Method, and Projected Gradient Descent
+   - **[Carlini & Wagner](./cw)** - A sophisticated optimization-based attack method
+
+3. **Black Box Attacks** - Attacks that work without knowledge of model internals
+
+   - **[Square Attack](./square-attack)** - A query-efficient black-box attack method
+   - **[Ensemble Attacks](./ensemble-attacks)** - Using multiple surrogate models to improve transferability
+
+4. **Defenses** - Methods to protect models against adversarial attacks
+
+   - **[Defensive Distillation](./defensive-distillation)** - Using temperature scaling to smooth model gradients
+   - **Adversarial Training** - Training models on adversarial examples to improve robustness
+
+5. **Benchmarks & State of the Art** - How to properly evaluate adversarial robustness
+   - **[RobustBench](./robustbench)** - The standard benchmark for evaluating adversarial defenses
+   - **[State of the Art](./sota)** - How scaling compute and data set a new record for adversarial robustness
+
+## Citations

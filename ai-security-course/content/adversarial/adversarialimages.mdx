@@ -5,28 +5,6 @@ description: "Background information on FGSM, BIM, and PGD attacks"
 
 ## Creating Adversarial Images
 
-Adversarial images are slightly perturbed images which can be misclassified by
-a network trained for computer vision. These perturbations could be as small as
-changing the value of a few pixels, leading to dramatic reductions in accuracy,
-depending on the robustness of the network. While methods such as adversarial
-training [@goodfellow2015explainingharnessingadversarialexamples], defensive distilation
-[@papernot2016distillationdefenseadversarialperturbations], and countless other techniques
-aim to solve this issue, guaranteeing adversarial robustness for computer vision is
-still an open research problem.
-
-Adversarial attacks could be a security concern when computer vision models are
-deployed in high stakes settings. Imagine a stop sign is physically altered,
-such that self-driving car classifies it as a cake. This could cause a car to continue
-moving when others expect it to stop, potentially causing a crash.
-
-<p align="center">
-  <img src="/images/traffic.png" alt="A descriptive alt text" />
-  <br />
-  <b>Fig. 1</b>
-  <br />
-  <em>Source: [@pavlitska2023adversarialattackstrafficsign]</em>
-</p>
-
 This segment of the course focuses on generating adversarial samples to fool a
 convolutional neural network trained on the CIFAR-10 dataset.
 We will cover the Fast Gradient Sign Method (FGSM), its iterative variant (BIM),
