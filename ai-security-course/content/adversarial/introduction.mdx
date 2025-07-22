@@ -3,11 +3,10 @@ title: "Introduction to Adversarial Examples"
 description: "This section gives an overview of adversarial machine learning, using computer vision as a toy example."
 ---
 
-As the deep learning revolution was gaining momentum around 2014, [@szegedy2014intriguingpropertiesneuralnetworks]
+As the deep learning revolution was gaining momentum, [@szegedy2014intriguingpropertiesneuralnetworks]
 discovered an "intriguing" property of deep learning models trained for classification.
 They show that you can take an input image that a model classifies correctly
-and optimize it such that a model will misclassify the image but the "adversarial image"
-remains indistinguishable from the orginal.
+and optimize it such that a model will misclassify the image while keeping the "adversarial image" indistinguishable from the original.
 
 <img
   src="/images/panda_gibbon.png"
@@ -16,31 +15,37 @@ remains indistinguishable from the orginal.
 />
 
 <div align="center">
-  **Fig. 2** <br></br> A famous adversarial image from [@goodfellow2015explainingharnessingadversarialexamples]
-  which misclassifies a panda as a gibbon
+  **Fig. 1** <br></br> A famous adversarial image from [@goodfellow2015explainingharnessingadversarialexamples].
+  While the image on the right appears identical to the one on the left, it is misclassified by the model.
 </div>
 
 There are several popular methods for optimizing adversarial images, several of which you
 will learn in this course. Historically, there has been a kind of cat and mouse game, where
 as researchers propose new defenses against adversarial attacks, others propose stronger
-attacks to break these defenses. While methods such as adversarial
-training [@goodfellow2015explainingharnessingadversarialexamples], defensive distilation
+attacks to break those defenses. While methods such as adversarial
+training [@goodfellow2015explainingharnessingadversarialexamples], defensive distillation
 [@papernot2016distillationdefenseadversarialperturbations], and countless other techniques
 aim to solve this issue, guaranteeing adversarial robustness for computer vision is
 still an open research problem.
 
 Adversarial attacks could be a security concern when computer vision models are
 deployed in high stakes settings. Imagine a stop sign is physically altered,
-such that self-driving car classifies it as a cake. This could cause a car to continue
+such that a self-driving car classifies it as a cake. This could cause a car to continue
 moving when others expect it to stop, potentially causing a crash.
 
 <p align="center">
   <img src="/images/traffic.png" alt="A descriptive alt text" />
-  <br />
-  <b>Fig. 1</b>
-  <br />
-  <em>Source: [@pavlitska2023adversarialattackstrafficsign]</em>
 </p>
+
+<div align="center">
+  **Fig. 2** <br></br>Source: [@pavlitska2023adversarialattackstrafficsign]
+</div>
+
+Although these vulnerabilities can certainly cause safety concerns in some settings,
+our main motivation for including this section in the course is to introduce AI security
+concepts in a digestible way. When you perform analogous attacks and defenses against language
+models later in the course, you will find that many of the concepts you learn about
+in this section will map onto more complicated scenarios.
 
 ## Section Table of Contents
 
@@ -63,6 +68,6 @@ moving when others expect it to stop, potentially causing a crash.
 
 5. **Benchmarks & State of the Art** - How to properly evaluate adversarial robustness
    - **[RobustBench](./robustbench)** - The standard benchmark for evaluating adversarial defenses
-   - **[State of the Art](./sota)** - Current best practices and scaling laws for adversarial robustness
+   - **[State of the Art](./sota)** - How scaling compute and data set a new record for adversarial robustness
 
 ## Citations
