@@ -1,0 +1,34 @@
+Using device: mps
+FeedforwardMNIST parameters: 218,058
+Training with T=20
+Starting training...
+Epoch: 1 | Batch: 50/469 | Train Loss: 1.734 | Train Acc: 46.891% | Test Loss: 0.998 | Test Acc: 71.094%
+Epoch: 1 | Batch: 100/469 | Train Loss: 1.207 | Train Acc: 63.281% | Test Loss: 0.568 | Test Acc: 83.281%
+Epoch: 1 | Batch: 150/469 | Train Loss: 0.957 | Train Acc: 71.109% | Test Loss: 0.438 | Test Acc: 87.031%
+Epoch: 1 | Batch: 200/469 | Train Loss: 0.812 | Train Acc: 75.641% | Test Loss: 0.406 | Test Acc: 87.188%
+Epoch: 1 | Batch: 250/469 | Train Loss: 0.721 | Train Acc: 78.472% | Test Loss: 0.361 | Test Acc: 89.219%
+Epoch: 1 | Batch: 300/469 | Train Loss: 0.657 | Train Acc: 80.453% | Test Loss: 0.313 | Test Acc: 91.094%
+Epoch: 1 | Batch: 350/469 | Train Loss: 0.610 | Train Acc: 82.002% | Test Loss: 0.307 | Test Acc: 90.000%
+Epoch: 1 | Batch: 400/469 | Train Loss: 0.571 | Train Acc: 83.170% | Test Loss: 0.284 | Test Acc: 91.562%
+Epoch: 1 | Batch: 450/469 | Train Loss: 0.538 | Train Acc: 84.151% | Test Loss: 0.270 | Test Acc: 92.031%
+Epoch 1/2 Summary -> Train Loss: 0.527, Train Acc: 84.485% | Test Loss: 0.257, Test Acc: 92.610%
+Epoch: 2 | Batch: 50/469 | Train Loss: 0.248 | Train Acc: 93.281% | Test Loss: 0.246 | Test Acc: 92.031%
+Epoch: 2 | Batch: 100/469 | Train Loss: 0.259 | Train Acc: 92.734% | Test Loss: 0.262 | Test Acc: 92.969%
+Epoch: 2 | Batch: 150/469 | Train Loss: 0.252 | Train Acc: 92.812% | Test Loss: 0.234 | Test Acc: 92.500%
+Epoch: 2 | Batch: 200/469 | Train Loss: 0.242 | Train Acc: 93.219% | Test Loss: 0.222 | Test Acc: 92.500%
+Epoch: 2 | Batch: 250/469 | Train Loss: 0.236 | Train Acc: 93.381% | Test Loss: 0.213 | Test Acc: 93.594%
+Epoch: 2 | Batch: 300/469 | Train Loss: 0.232 | Train Acc: 93.495% | Test Loss: 0.202 | Test Acc: 94.062%
+Epoch: 2 | Batch: 350/469 | Train Loss: 0.225 | Train Acc: 93.665% | Test Loss: 0.177 | Test Acc: 94.375%
+Epoch: 2 | Batch: 400/469 | Train Loss: 0.220 | Train Acc: 93.781% | Test Loss: 0.198 | Test Acc: 93.594%
+Epoch: 2 | Batch: 450/469 | Train Loss: 0.216 | Train Acc: 93.892% | Test Loss: 0.170 | Test Acc: 93.906%
+Epoch 2/2 Summary -> Train Loss: 0.215, Train Acc: 93.930% | Test Loss: 0.168, Test Acc: 94.900%
+Finished Training
+Total training time: 00:01:07 (hours:minutes:seconds)
+
+--- Final Model Statistics ---
+Final Train Loss: 0.1633 | Final Train Accuracy: 95.28%
+Final Test Loss:  0.1680 | Final Test Accuracy:  94.90%
+---------------------------------
+
+Batch training history plot saved to mlp_training_performance.png
+Saved model weights to mnist_mlp.pth
