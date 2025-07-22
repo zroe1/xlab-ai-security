@@ -364,7 +364,7 @@ def PGD_generator(model, loss_fn, path, y, epsilon=1 / 1000, alpha=0.0005, num_i
         loss_gradient = x.grad.data
         x = x.detach()
         x = x + alpha * torch.sign(loss_gradient)
-        x = clip(x, epsilon)
+        x = clip(x, x, epsilon)
     return x
 
 
@@ -1303,3 +1303,105 @@ def clip(x, x_original, epsilon):
     x_final = torch.clamp(x_clipped, 0, 1)
 
     return x_final
+
+
+def PGD(
+    model: torch.nn.Module,
+    loss_fn: torch.nn.Module,
+    x: torch.Tensor,
+    y: torch.Tensor,
+    epsilon: float = 8 / 255,
+    alpha: float = 0.01,
+    num_iters: int = 6,
+    random_start: bool = True,
+    clamp_min: float = 0.0,
+    clamp_max: float = 1.0,
+) -> torch.Tensor:
+    """Generate adversarial examples via the **Projected Gradient Descent** (PGD) method.
+
+    This implementation works out-of-the-box for MNIST but makes **no dataset-specific
+    assumptions** about input shape or channel count and therefore can be applied to
+    any image-classification model.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+        The target model to attack. It will be temporarily put into ``eval`` mode.
+    loss_fn : torch.nn.Module
+        Loss function used to compute gradients (e.g. ``nn.CrossEntropyLoss``).
+    x : torch.Tensor
+        Input image(s) to perturb. Shape should be ``(N, C, H, W)`` or
+        ``(C, H, W)`` for a single image.
+    y : torch.Tensor
+        Ground-truth labels corresponding to ``x``.  If ``x`` is a single image,
+        ``y`` can be a scalar tensor.
+    epsilon : float, default=8/255
+        Maximum *L-infinity* perturbation magnitude.
+    alpha : float, default=0.01
+        Step size for each PGD iteration.
+    num_iters : int, default=6
+        Number of gradient ascent steps.
+    random_start : bool, default=True
+        If ``True``, starts from a random point within the epsilon-ball around
+        the original image (recommended).
+    clamp_min : float, default=0.0
+        Minimum allowed pixel value after each projection.
+    clamp_max : float, default=1.0
+        Maximum allowed pixel value after each projection.
+
+    Returns
+    -------
+    torch.Tensor
+        Adversarially perturbed version of ``x`` with the same shape.
+    """
+
+    # Ensure batch dimension
+    single_image = False
+    if x.dim() == 3:
+        x = x.unsqueeze(0)
+        y = y.unsqueeze(0) if y.dim() == 0 else y
+        single_image = True
+
+    original_x = x.clone().detach()
+
+    # Move to appropriate device
+    device = next(model.parameters()).device
+    x = x.to(device)
+    y = y.to(device)
+    original_x = original_x.to(device)
+
+    # Optional random start within epsilon ball (uniform noise)
+    if random_start:
+        # Uniform noise in [-epsilon, epsilon]
+        noise = torch.empty_like(x).uniform_(-epsilon, epsilon)
+        x = torch.clamp(x + noise, clamp_min, clamp_max)
+
+    model_was_training = model.training
+    model.eval()
+
+    for _ in range(num_iters):
+        x.requires_grad = True
+
+        logits = model(x)
+        loss = loss_fn(logits, y)
+
+        model.zero_grad()
+        loss.backward()
+        grad = x.grad.detach()
+
+        # Gradient ascent step
+        x = x + alpha * torch.sign(grad)
+
+        # Project back into the epsilon ball & valid data range
+        x = clip(x.detach(), original_x, epsilon)
+        x = torch.clamp(x, clamp_min, clamp_max)
+
+    # Restore training mode if necessary
+    if model_was_training:
+        model.train()
+
+    # Remove added batch dimension if input was a single image
+    if single_image:
+        x = x.squeeze(0)
+
+    return x
