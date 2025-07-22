@@ -1006,6 +1006,108 @@ def get_best_device():
         return torch.device('cpu')
 
 
+# ---------------------------------------------------------------------------
+# Model Evaluation Helper
+# ---------------------------------------------------------------------------
+
+def evaluate_mnist_accuracy(
+    model: torch.nn.Module,
+    batch_size: int = 256,
+    device: "torch.device | str | None" = None,
+    download: bool = True,
+    transform: "transforms.Compose | None" = None,
+    data_dir: str = './data',
+) -> float:
+    """Evaluate a PyTorch model's accuracy on the MNIST *test* split.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+        The model to evaluate. It will be switched to ``eval`` mode for the
+        duration of this function.
+    batch_size : int, default=256
+        Number of samples per batch when iterating over the dataset.  Larger
+        batches speed up evaluation at the cost of higher memory usage.
+    device : torch.device | str | None, optional
+        Device on which to run the evaluation.  If ``None`` (default), the
+        ``get_best_device`` helper is used to automatically choose the fastest
+        available device (CUDA ➜ MPS ➜ CPU).  A string such as ``'cuda'`` or
+        ``'mps'`` is also accepted.
+    download : bool, default=True
+        Whether to download the MNIST dataset if it is not already present in
+        ``data_dir``.
+    transform : torchvision.transforms.Compose, optional
+        Optional transform applied to each image.  If ``None`` (default),
+        applies ``transforms.ToTensor()`` which converts images to the
+        ``[0,1]`` range expected by most MNIST models.
+    data_dir : str, default='./data'
+        Directory where the MNIST data is stored / will be downloaded to.
+
+    Returns
+    -------
+    float
+        The model's classification accuracy on the MNIST test set in the range
+        ``[0, 1]`` (e.g. ``0.985`` for 98.5 % accuracy).
+    """
+
+    # ---------------------------------------------------------------------
+    # Determine device & move model
+    # ---------------------------------------------------------------------
+    if device is None:
+        device = get_best_device()
+    device = torch.device(device) if isinstance(device, str) else device
+
+    # Move model to the target device only if it's not already there
+    if next(model.parameters()).device != device:
+        model = model.to(device)
+
+    # Ensure evaluation mode
+    model_was_training = model.training
+    model.eval()
+
+    # ---------------------------------------------------------------------
+    # Prepare dataset & dataloader
+    # ---------------------------------------------------------------------
+    if transform is None:
+        transform = transforms.Compose([transforms.ToTensor()])
+
+    test_dataset = datasets.MNIST(
+        root=data_dir,
+        train=False,
+        download=download,
+        transform=transform,
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        test_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+    )
+
+    # ---------------------------------------------------------------------
+    # Iterate through data & accumulate accuracy
+    # ---------------------------------------------------------------------
+    correct = 0
+    total = 0
+
+    with torch.no_grad():
+        for images, labels in test_loader:
+            images = images.to(device)
+            labels = labels.to(device)
+
+            outputs = model(images)
+            _, preds = torch.max(outputs, dim=1)
+
+            correct += (preds == labels).sum().item()
+            total += labels.size(0)
+
+    # Restore original training mode if necessary
+    if model_was_training:
+        model.train()
+
+    return correct / total if total > 0 else 0.0
+
+
 def f_6(logits, target, k=0.1):
     i_neq_t = torch.argmax(logits)
     if i_neq_t == target:
