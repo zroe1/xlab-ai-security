@@ -59,7 +59,7 @@ def main():
     
     train_loader, test_loader = get_mnist_train_and_test_loaders()
     # Temperature to use for softmax scaling
-    temperature = 20
+    temperature = 1
     print(f"Training with T={temperature}")
     criterion = TemperatureScaledNLLLoss(temperature)
     optimizer = torch.optim.Adam(model.parameters(), lr=2e-3)
@@ -105,8 +105,8 @@ def main():
     
     plot_batch_training_history(batch_history, save_path="mlp_training_performance.png")
 
-    torch.save(model, "mnist_mlp.pth")
-    print("Saved model weights to mnist_mlp.pth")
+    torch.save(model, f"mnist_mlp_temp_{temperature}.pth")
+    print(f"Saved model weights to mnist_mlp_temp_{temperature}.pth")
 
 if __name__ == '__main__':
     main() 
