@@ -1,0 +1,159 @@
+---
+title: "GPTFuzzer and AutoDAN"
+description: "More Advanced Prompt-Level Jailbreaks"
+---
+
+So far we've looked at PAIR and TAP, two prompt-level jailbreaking algorithms that operate primarily by simply asking an LLM to jailbreak another. Here, we'll introduce two slightly more advanced prompt-level jailbreaking algorithms: GPTFuzzer and AutoDAN. (Interestingly, both of these algorithms take inspiration for areas outside of machine learning!)
+
+## GPTFuzzer
+Fuzzing is a technique originating form software testing that involves giving random inputs to a piece of software to uncover possible bugs and vulnerabilities. As explained by @yuGPTFUZZERRedTeaming2024, the process generally involves four steps: 
+
+1. Initializing the seed pool, or the collection of inputs that can be sent to the program.
+2. Selecting a seed (this sometimes involves algorithms to select seeds more likely to break the software).
+3. Mutating the seed to generate a new input.
+4. Send the new input to the program.
+
+Through the GPTFuzzer algorithm, @yuGPTFUZZERRedTeaming2024 ports this software-originating red-teaming method to the domain of LLMs, using manually-crafted jailbreaks as the seed pool. In fact, the algorithm essentially mirrors the four steps given above.
+
+$$
+\begin{array}{l}
+\text{\bf Algorithm: } \text{GPTFuzzer} \\
+\hline
+\text{\bf Data: } \text{Human-written jailbreak templates from the Internet} \\
+\text{\bf Result: } \text{Discovered jailbreaks} \\[0.375em]
+\text{\bf Initialization:} \\
+\quad \text{Load initial dataset} \\
+\textbf{while } \text{query budget remains and stopping criteria unmet} \textbf{ do} \\
+\quad \text{seed} \leftarrow \text{selectFromPool()} \\
+\quad \text{newTemplate} \leftarrow \text{applyMutation(seed)} \\
+\quad \text{newPrompt} \leftarrow \text{combine(newTemplate, target question)} \\
+\quad \text{response} \leftarrow \text{queryLLM(newPrompt)} \\
+\quad \textbf{if } \text{successfulJailbreak(response)} \textbf{ then} \\
+\quad \quad \text{Retain newTemplate in seed pool} \\
+\hline
+\end{array}
+$$
+
+There are two main novelties of this algorithm which we'll look into: seed selection and prompt mutation.
+
+### Seed Selection (MCTS-Explore)
+A popular choice among software fuzzers is using the Upper Confidence Bound (UCB) score for seed selection. Each seed's UCB score is given by
+$$
+\text{score} = \bar{r} + c \sqrt{\frac{2 \ln(N)}{n + 1}}.
+$$
+
+Here, $\bar{r}$ is the seed's average reward, $N$ is the number of iterations, and $n$ is the seed's selection count. Essentially, the $\bar{r}$ term favors using seeds that have previously been successful, whereas $\sqrt{\frac{2 \ln(N)}{n+1}}$ favors seeds that haven't been selected, with $c$ serving to balance the two objectives. Unfortunately, the UCB strategy has the drawback of getting stuck in local minima. To combat this problem, @yuGPTFUZZERRedTeaming2024 created a modified version of Monte-Carlo tree search named MCTS-Explore. 
+
+$$
+\begin{array}{l}
+\textbf{Algorithm: } \text{MCTS-Explore} \\
+\hline
+\textbf{Input: } \text{Root node } \text{root}, \text{ early-termination probability } p, \text{seed set } S \\
+\textbf{Input: } \text{ reward penalty } \alpha, \text{ minimal reward } \beta \\
+\textbf{Initialize:} \\
+\quad \textbf{for each } \text{seed} \in S \textbf{ do} \\
+\quad \quad \text{root.addChild(seed)} \\[0.5em]
+\text{path} \gets [\text{root}] \\
+\text{node} \gets \text{root} \\
+\textbf{while } \text{node is not a leaf} \textbf{ do} \\
+\quad \text{bestScore} \gets -\infty \\
+\quad \text{bestChild} \gets \text{null} \\
+\quad \textbf{for each } \text{child in node.children} \textbf{ do} \\
+\quad \quad \text{score} \gets \text{child.UCBscore} \\
+\quad \quad \textbf{if } \text{score > bestScore} \textbf{ then} \\
+\quad \quad \quad \text{bestScore} \gets \text{score} \\
+\quad \quad \quad \text{bestChild} \gets \text{child} \\
+\quad \text{node} \gets \text{bestChild} \\
+\quad \text{append}(\text{path}, \text{node}) \\
+\quad \textbf{if } \text{random}(0, 1) < p \textbf{ then break} \\[0.5em]
+\text{newNode} \gets \text{Mutate}(\text{last}(\text{path})) \\
+\text{reward} \gets \text{Oracle}(\text{Execute}(\text{newNode})) \\[0.5em]
+\textbf{if } \text{reward} > 0 \textbf{ then} \\
+\quad \text{reward} \gets \max(\text{reward} - \alpha \cdot \text{length}(\text{path}), \beta) \\
+\text{path[-1].addChild(newNode)} \\
+\textbf{for each } \text{node in path} \textbf{ do} \\
+\quad \text{node.visits} \gets \text{node.visits} + 1 \\
+\quad \text{node.r} \gets \text{node.r} + \text{reward} \\
+\quad \text{node.UCBscore} \gets \frac{node.r}{\text{node.visits}} + c \sqrt{\frac{2 \ln(\text{parent(node).visits})}{\text{node.visits}}} \\
+\hline
+\end{array}
+$$
+
+There might look like a lot going on here, but the core ideas are fairly simple. We first add all the initial seeds as the "children" of the root node in the tree. Next, inside the `while` loop, we travel down the tree, each step moving to the child with the highest UCB score. To ensure that non-leaf prompts also get selected, there's a probability $p$ of stopping at any non-leaf node. After constructing our path, we mutate the selected prompt and get a reward score for the mutation. We then modify the reward amount if the mutant was successful based on the parameters $\alpha$ and $\beta$; $\alpha$ penalizes scores that come from longer paths to encourage a wider breadth of exploration, whereas $\beta$ serves as a "minimum" score to prevent successful prompts with high length penalties from getting ignored. Finally, we add our new node as a child to its original node then update the scores in the path accordingly.
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/mcts-explore.png"
+    darkSrc="/images/mcts-explore.png"
+    alt="Visualization of UCB, MCTS, and MCTS-Explore algorithms."
+    style={{ align: "center", width: "100%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> Visualization of UCB, MCTS, and MCTS-Explore Algorithms, from @yuLLMFuzzerScalingAssessment2024 
+</div>
+
+### Mutation and Reward Scoring
+In the MCTS-Explore algorithm, we `Mutate()` the existing seeds to get new ones, but how exactly does this work? First, @yuGPTFUZZERRedTeaming2024 covers 5 main mutation methods: generate, crossover, expand, shorten, and rephrase. Succinctly, generate maintains style but changes content, crossover melds multiple templates into one, expand augments existing content, shorten condenses existing content, and rephrase restructures existing content. The first two serve to diversity the seed pool, whereas the last 3 refine existing templates. All of these operations are done with an LLM (hopefully, you're noticing a trend in the prompt-level jailbreak techniques here). To score the jailbreak prompts, the authors utilize a fine-tuned RoBERTa model that returns `1` in the case of a successful jailbreak and `0` otherwise.
+
+That's about all there is to GPTFuzzer! Interestingly, GPTFuzzer's attacks were able to transfer very well, with an ASR against the Llama-2 herd at or above 80%, although its ASR against GPT-4 was only 60%, even when starting with the five most effective manually-crafted jailbreaks.
+
+***
+
+## AutoDAN
+@liuAutoDANGeneratingStealthy2023
+
+Similarly to how GPTFuzzer pulled from software testing to introduce fuzzing to LLMs, @liuAutoDANGeneratingStealthy2023 used a hierarchical genetic algorithm to automatically jailbreak LLMs in their AutoDAN algorithm.
+
+### Genetic Algorithms
+Genetic algorithms are a kind of algorithm drawing from evolution and natural selection. They start with a population of candidate solutions, to which certain genetic policies (e.g. mutation) are applied to generate offspring. Then, a fitness evaluation is applied to the offspring to determine which offspring are selected for the next iteration. This process continues until some stopping criteria is reached.
+
+### Population Initialization & Fitness Evaluation
+Similarly to GPTFuzzer, the initial population begins with a successful manually-crafted jailbreak prompt which is then diversified into a number of prompts by an LLM. To evaluate the fitness of each prompt, @liuAutoDANGeneratingStealthy2023 adopts the GCG negative log likelihood loss from @zouUniversalTransferableAdversarial2023.
+
+### Genetic Policies
+AutoDAN employs a two-level hierarchy of genetic policies to diversify the prompt space, consisting of a paragraph-level policy and a word-level policy.
+
+In the paragraph-level policy, we first let the top $\alpha N$ elite prompts through to the next round without change. To select the remaining $N - \alpha N$ prompts, we apply the softmax transformation to each prompt's score to get a probability distribution, from which we sample the $N - \alpha N$ prompts. For each prompt, we perform a crossover between prompts at various breakpoints with probability $p_{\text{crossover}}$, then mutate the prompts with probability $p_{\text{mutation}}$ (once again with an LLM). These offspring are then combined with the initial elite prompts to get the next iteration.
+
+In the sentence-level policy, we first apply the prompt's fitness score to every word, averaging the scores of words that appear across different prompts. We also average the word's score with the previous iteration's score of the word to incorporate momentum and reduce instability. Next, we filter out various common words and proper nouns to achieve a word score dictionary. Finally, we swap the top-$K$ words in the dictionary with their near synonyms in other prompts.
+
+### Stopping Criteria
+The AutoDAN algorithm continues to run until a set number of iterations is reached or no word in a set of refusal word $L_{\text{refuse}}$ is detected. The full algorithm is below (although it is relatively informal due to the lengthiness of many of the described required steps).
+
+$$
+\begin{array}{l}
+\textbf{Algorithm: } \text{AutoDAN Hierarchical Genetic Algorithm (HGA)} \\
+\hline
+\textbf{Input: } \text{Initial prompt } J_p, \text{ Refusal lexicon } L_{\text{refuse}}, \text{ Population size } N, \\
+\quad \text{Hyperparameters: elite fraction } \alpha, \text{ crossover prob. } p_c, \text{ mutation prob. } p_m, \text{ top-K words } K \\
+\textbf{Output: } \text{Optimal jailbreak prompt } J_{\text{max}} \\[0.5em]
+\textbf{Initialize: } \text{Population } P \leftarrow \text{DiversifyWithLLM}(J_p, N) \\[0.5em]
+\textbf{while } \text{response contains words in } L_{\text{refuse}} \text{ and iterations not exhausted} \textbf{ do} \\
+\quad \textbf{for } i=1, \dots, T_{\text{sentence}} \textbf{ do} \\
+\quad\quad \text{Evaluate fitness score for each individual } J \in P \\
+\quad\quad W \leftarrow \text{CalculateMomentumWordScores}(P) \\
+\quad\quad P \leftarrow \text{SwapTopKSynonyms}(P, W, K) \\[0.5em]
+\quad \textbf{for } j=1, \dots, T_{\text{paragraph}} \textbf{ do} \\
+\quad\quad \text{Evaluate fitness score for each individual } J \in P \\
+\quad\quad P_{\text{elite}} \leftarrow \text{SelectTopPrompts}(P, \alpha N) \\
+\quad\quad P_{\text{parent}} \leftarrow \text{SampleFromDistribution}(P, N - \alpha N) \\
+\quad\quad P_{\text{offspring}} \leftarrow \emptyset \\
+\quad\quad \textbf{for each } J_{\text{parent}} \in P_{\text{parent}} \textbf{ do} \\
+\quad\quad\quad J_{\text{crossed}} \leftarrow \text{Crossover}(J_{\text{parent}}, P_{\text{parent}}, p_c) \\
+\quad\quad\quad J_{\text{mutated}} \leftarrow \text{MutateWithLLM}(J_{\text{crossed}}, p_m) \\
+\quad\quad\quad P_{\text{offspring}} \leftarrow P_{\text{offspring}} \cup \{J_{\text{mutated}}\} \\
+\quad\quad P \leftarrow P_{\text{elite}} \cup P_{\text{offspring}} \\[0.5em]
+J_{\text{max}} \leftarrow \underset{J \in P}{\arg \max} (\text{Fitness}(J)) \\
+\textbf{return } J_{\text{max}} \\
+\hline
+\end{array}
+$$
+
+Similarly to GPTFuzzer, AutoDAN performed very well against Vicuna (ASR > 97%) and decently well against Llama-2 and GPT-3.5-Turbo (ASR ~65%). Interestingly, though, AutoDAN had an ASR on GPT-4 of less than 1%. Additionally, the authors noted that the jailbreaks generated by AutoDAN are "stealthy"; unlike GCG, they do note have high perplexity and can thus bypass naive perplexity filters.
+
+## A Fair Fight?
+@liuAutoDANGeneratingStealthy2023 also noted that AutoDAN wall-clock time cost was equivalent or better than GCG's, which, when combined with its ability to evade perplexity filters, makes it seem like the unequivocally best choice. However, Confirm Labs again makes an insight that these comparisons [aren't apples-to-apples](https://confirmlabs.org/posts/TDC2023#summary-of-our-major-takeaways). While the authors ran GCG on a single NVIDIA A100, their AutoDAN algorithm involves making dozens if not hundreds of API calls to GPT-4 [@straznickas2024]. Thus, keep in mind that even if these prompt-based attacks prove to be more effective than GCG, if they rely on LLM calls, they're likely much less efficient.
+
+## References
