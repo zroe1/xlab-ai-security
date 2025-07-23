@@ -6,7 +6,7 @@ description: "Overview of the models and data sources for this section."
 For the "Adversarial Basics" section of this course you will use two datasets, train
 one model, and load one pretrained model from our [Hugging Face](https://huggingface.co/uchicago-xlab-ai-security).
 Before beginning, we will give an overview of the datasets you will use and some
-context about the model you will be loading. We reccomend you do not skip this section,
+context about the model you will be loading. We recommend you do not skip this section,
 because it is always extremely important to understand the data and models you are
 working with.
 
@@ -15,9 +15,9 @@ working with.
 The CIFAR 10 Dataset [@krizhevsky2009learning] was created by [Alex Krizhevsky](https://scholar.google.com/citations?view_op=list_works&hl=en&hl=en&user=xegzhJcAAAAJ)
 and [Geoffrey Hinton](https://en.wikipedia.org/wiki/Geoffrey_Hinton) to study feature extraction for image classification.
 
-There are a total of 10 classes in the dataset: airplane, automobile, bird, cat
+There are a total of 10 classes in the dataset: airplane, automobile, bird, cat,
 deer, dog, frog, horse, ship, truck. Each image is a 32 $\times$ 32 color image (meaning $32\cdot32\cdot3$ floating point values
-per image). Each value $x_{ijz}$ in an image $X$ is contrained such that $0 \leq x_{ijz} \leq 1$.
+per image). Each value $x_{ijz}$ in an image $X$ is constrained such that $0 \leq x_{ijz} \leq 1$.
 
 <img
   src="/images/cifar10_samples.png"
@@ -28,13 +28,13 @@ per image). Each value $x_{ijz}$ in an image $X$ is contrained such that $0 \leq
 ## Dataset #2: MNIST Handwritten Digits
 
 The MNIST dataset of handwritten digits [@lecun2010mnist] is a modified version of the NIST dataset [@grother2016nist]
-which was produced by the US government. Interestingly, depite being incredibly popular, some
-important details related to it's construction were never documented and remain unknown [@NEURIPS2019_51c68dc0].
+which was produced by the US government. Interestingly, despite being incredibly popular, some
+important details related to its construction were never documented and remain unknown [@NEURIPS2019_51c68dc0].
 
 The dataset features 70,000 labeled 28 $\times$ 28 grayscale images of handwritten
 numbers. Because the image is grayscale, there are only $28 \cdot 28$ values per
 image rather than $28 \cdot 28 \cdot 3$. Like CIFAR 10, each value in the image is
-contrained such that $0 \leq x_{ij} \leq 1$.
+constrained such that $0 \leq x_{ij} \leq 1$.
 
 <img
   src="/images/mnist_samples.png"
@@ -46,13 +46,13 @@ contrained such that $0 \leq x_{ij} \leq 1$.
 
 For sections using the CIFAR 10 dataset, we provide you access to our pretrained
 CIFAR 10 classifier via our [Hugging Face](https://huggingface.co/uchicago-xlab-ai-security). The architecture of the model is inspired
-by the [@zagoruyko2017wideresidualnetworks] but is much more compact compared to
+by [@zagoruyko2017wideresidualnetworks] but is much more compact compared to
 a state-of-the-art model. We designed this model to be as small and efficient as
 possible to make it as easy as possible for you to run regardless of your hardware.
 
 ### Technical Details of the CIFAR 10 Model
 
-The model has 165,722 parameters was trained for 75 epochs on the CIFAR 10 training dataset.
+The model has 165,722 parameters and was trained for 75 epochs on the CIFAR 10 training dataset.
 Training took at a total of about 4 minutes and 20 seconds on a single H100 GPU.
 The final train accuracy was 86.66% and the final test accuracy was 83.86%. The
 figure below shows the loss and accuracy curves for both the train and test set
@@ -69,8 +69,7 @@ To replicate these results, you may reference our code [here](https://github.com
 ### Running the CIFAR 10 Model
 
 The nice part about using Hugging Face, is you don't have to manually download
-anything. We will provide the below code for you in the notebooks, but you
-just so you can see, it is quite simple.
+anything. We will provide the below code for you in the notebooks, but just so you can see, it is quite simple.
 
 ```python
 from huggingface_hub import hf_hub_download
@@ -86,12 +85,9 @@ model = torch.load(model_path, map_location='cpu')
 
 ## Model #2: The MNIST Model
 
-In the defensive distilaiton section of this course, you will be using an MLP MNIST
-model which you will train from scratch. The reason why you will be using the MNIST
-dataset on this section is because it is much easier to train a small model for
-MNIST classification rather than CIFAR classification. As a sidenote, researchers
-today use MNIST sparingly for adversarial robustness research because models trained
-on the dataset are in general too easy to break and results don't generize to other
+In the defensive distillation and the ensemble attack sections of this course, you will be using a variety of different compact models trained on the MNIST dataset. You can find training details for ensemble attack models [here](https://github.com/zroe1/xlab-ai-security/tree/main/models/MNIST_ensemble) and the details for the distillation model [here](https://github.com/zroe1/xlab-ai-security/tree/main/models/defensive_distillation). The reason why you will be using the MNIST dataset on these sections is because it is much easier to train and run a small model for
+MNIST classification rather than CIFAR classification. It is also because it is useful to get hands
+on experience with different datasets. As a sidenote, researchers today use MNIST sparingly for adversarial robustness research because models trained on the dataset are in general too easy to break and results don't generalize to other
 settings.
 
 <NextPageButton />
