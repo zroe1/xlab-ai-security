@@ -31,7 +31,7 @@ $$
 
 In seeing this equation, hopefully the flaw in the GCG loss becomes clear. Even if the loss over the *full target sequence* $x_{n + 1: n + H}$ is low, the loss on the *very first token* of the target sequence ($-\log p(x_{n + 1} | x_{1:n})$) is what determines whether the LLM's response will start with, e.g., "Sure" or "Sorry". If the input sequence's loss on the first target token is high—even with a low average loss—the attack will likely fail. Unfortunately, the GCG loss does not factor in this observation.
 
-It is for this reason, as pointed out by [Daniel Paleka](https://newsletter.danielpaleka.com/i/143659818/amplegcg-learning-a-universal-and-transferable-generative-model-of-adversarial-suffixes-for-jailbreaking-both-open-and-closed-llms), that Confirm Labs found [mellowmax to be a better GCG objective](https://confirmlabs.org/posts/TDC2023) in practice.
+It is for this reason, as pointed out by [Daniel Paleka](https://newsletter.danielpaleka.com/i/143659818/amplegcg-learning-a-universal-and-transferable-generative-model-of-adversarial-suffixes-for-jailbreaking-both-open-and-closed-llms), that Confirm Labs found [mellowmax to be a better GCG objective](https://confirmlabs.org/posts/TDC2023) in practice [@straznickas2024].
 
 
 <Dropdown title="Why is mellowmax a better objective?">
