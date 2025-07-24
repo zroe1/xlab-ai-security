@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
 
 const LandingPageContent = () => {
   const { theme, toggleTheme } = useTheme();
+  const [showSlackModal, setShowSlackModal] = useState(false);
 
   return (
     <div className="landing-page-wrapper">
@@ -87,6 +88,17 @@ const LandingPageContent = () => {
                 <img src="/images/x_white.png" alt="" className="button-icon xlab-icon" />
                 View the Course
               </Link>
+              <button onClick={() => setShowSlackModal(true)} className="action-button secondary">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="button-icon slack-icon">
+                  <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.521-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.523 2.521h-2.521V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.521A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.523v-2.521h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" />
+                </svg>
+                Join Slack Community
+              </button>
               <a
                 href="https://github.com/zroe1/xlab-ai-security"
                 className="action-button secondary">
@@ -210,6 +222,63 @@ const LandingPageContent = () => {
           </section>
         </div>
       </main>
+
+      {/* Slack Modal */}
+      {showSlackModal && (
+        <div className="modal-overlay" onClick={() => setShowSlackModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Join the XLab AI Security Slack</h3>
+              <button
+                className="modal-close"
+                onClick={() => setShowSlackModal(false)}
+                aria-label="Close modal">
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <p>
+                Join our Slack workspace to connect with other learners and get help with the
+                course:
+              </p>
+
+              <div className="modal-step">
+                <strong>Step 1:</strong> Join the Slack workspace
+                <br />
+                <a
+                  href="https://join.slack.com/t/existentialri-kag4101/shared_invite/zt-39yk3m51i-A_55o2E2TOktKnCUZ1yS9g"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="slack-invite-button">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.521-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.523 2.521h-2.521V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.521A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.523v-2.521h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" />
+                  </svg>
+                  Join Slack Workspace
+                </a>
+              </div>
+
+              <div className="modal-step">
+                <strong>Step 2:</strong> Once you&apos;re in the workspace, join the course channel
+                <br />
+                <div className="channel-info">
+                  <code>#xlab-ai-security-course</code>
+                  <p>This is where all course discussions, Q&A, and announcements happen.</p>
+                </div>
+              </div>
+
+              <div className="modal-step">
+                <strong>How to join the channel:</strong>
+                <ol>
+                  <li>Click on &quot;Channels&quot; in the left sidebar</li>
+                  <li>Click &quot;Browse channels&quot;</li>
+                  <li>Search for &quot;xlab-ai-security-course&quot;</li>
+                  <li>Click &quot;Join&quot; to join the channel</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="landing-footer">

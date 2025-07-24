@@ -1621,6 +1621,196 @@ body[data-theme='dark'] .footer-contact a {
   color: var(--primary-color);
 }
 
+/* Slack Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background-color: var(--white);
+  border-radius: 12px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-color);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--secondary-text);
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.modal-close:hover {
+  background-color: var(--light-bg);
+  color: var(--text-color);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-body > p {
+  margin-bottom: 24px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+.modal-step {
+  margin-bottom: 28px;
+  padding: 20px;
+  background-color: var(--light-bg);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.modal-step strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.slack-invite-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-top: 12px;
+  transition: all 0.3s ease;
+}
+
+.slack-invite-button:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 23, 36, 0.3);
+  color: white;
+  text-decoration: none;
+}
+
+.channel-info {
+  margin-top: 12px;
+  padding: 16px;
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+.channel-info code {
+  background-color: rgba(139, 23, 36, 0.1);
+  color: var(--primary-color);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: 'Menlo', 'Consolas', 'Monaco', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.channel-info p {
+  margin: 8px 0 0 0;
+  font-size: 0.9rem;
+  color: var(--secondary-text);
+}
+
+.modal-step ol {
+  margin-top: 12px;
+  padding-left: 20px;
+}
+
+.modal-step li {
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-color);
+}
+
+/* Dark mode modal styles */
+body[data-theme='dark'] .modal-content {
+  background-color: #1a1a1a;
+  border-color: var(--border-color);
+}
+
+body[data-theme='dark'] .modal-header {
+  border-color: var(--border-color);
+}
+
+body[data-theme='dark'] .modal-header h3 {
+  color: var(--text-color);
+}
+
+body[data-theme='dark'] .modal-step {
+  background-color: #2a2a2a;
+  border-color: var(--border-color);
+}
+
+body[data-theme='dark'] .channel-info {
+  background-color: #161616;
+  border-color: var(--border-color);
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 10px;
+  }
+  
+  .modal-content {
+    margin: 10px;
+    max-height: 95vh;
+  }
+  
+  .modal-header,
+  .modal-body {
+    padding: 16px;
+  }
+  
+  .modal-step {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+}
+
 body[data-theme='dark'] .footer-column h4 {
   color: #e0e0e0;
 }
