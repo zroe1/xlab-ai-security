@@ -61,3 +61,5 @@ Thumbs.db
 *.sublime-project
 *.swp
 *.swo
+
+local/
