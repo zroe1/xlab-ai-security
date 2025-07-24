@@ -53,7 +53,7 @@ possible to make it as easy as possible for you to run regardless of your hardwa
 ### Technical Details of the CIFAR 10 Model
 
 The model has 165,722 parameters and was trained for 75 epochs on the CIFAR 10 training dataset.
-Training took at a total of about 4 minutes and 20 seconds on a single H100 GPU.
+Training took a total of about 4 minutes and 20 seconds on a single H100 GPU.
 The final train accuracy was 86.66% and the final test accuracy was 83.86%. The
 figure below shows the loss and accuracy curves for both the train and test set
 for each epoch.
@@ -68,7 +68,7 @@ To replicate these results, you may reference our code [here](https://github.com
 
 ### Running the CIFAR 10 Model
 
-The nice part about using Hugging Face, is you don't have to manually download
+The nice part about using Hugging Face is you don't have to manually download
 anything. We will provide the below code for you in the notebooks, but just so you can see, it is quite simple.
 
 ```python
@@ -85,9 +85,8 @@ model = torch.load(model_path, map_location='cpu')
 
 ## Model #2: The MNIST Model
 
-In the defensive distillation and the ensemble attack sections of this course, you will be using a variety of different compact models trained on the MNIST dataset. You can find training details for ensemble attack models [here](https://github.com/zroe1/xlab-ai-security/tree/main/models/MNIST_ensemble) and the details for the distillation model [here](https://github.com/zroe1/xlab-ai-security/tree/main/models/defensive_distillation). The reason why you will be using the MNIST dataset on these sections is because it is much easier to train and run a small model for
-MNIST classification rather than CIFAR classification. It is also because it is useful to get hands
-on experience with different datasets. As a sidenote, researchers today use MNIST sparingly for adversarial robustness research because models trained on the dataset are in general too easy to break and results don't generalize to other
+In the defensive distillation and the ensemble attack sections of this course, you will be using a variety of different compact models trained on the MNIST dataset. You can find training details for ensemble attack models [here](https://github.com/zroe1/xlab-ai-security/tree/main/models/MNIST_ensemble) and the details for the distillation model [here](https://github.com/zroe1/xlab-ai-security/tree/main/models/defensive_distillation). The reason why you will be using the MNIST dataset in these sections is because it is much easier to train and run a small model for
+MNIST classification rather than CIFAR classification. It is also because it is useful to get hands-on experience with different datasets. As a side note, researchers today use MNIST sparingly for adversarial robustness research because models trained on the dataset are in general too easy to break and results don't generalize to other
 settings.
 
 <NextPageButton />
