@@ -12,7 +12,7 @@ def get_version():
         for line in f:
             if line.startswith('__version__'):
                 return line.split('=')[1].strip().strip('"\'')
-    return "0.1.8"
+    return "0.1.9"
 
 # Read the README file for long description
 def get_long_description():
