@@ -1,6 +1,6 @@
 ---
-title: "Defensive Distilation"
-description: "Background information and mathematical intuition behind defensive distilation."
+title: "Defensive Distillation"
+description: "Background information and mathematical intuition behind defensive distillation."
 ---
 
 This section has a series of coding problems using PyTorch. _As always, we highly recommend you read
@@ -11,21 +11,21 @@ all the content on this page before starting the coding exercises._
   colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/defensive_distillation.ipynb"
 />
 
-In this section, you will learn about "defensive distilation," a technique to defend
+In this section, you will learn about "defensive distillation," a technique to defend
 against adversarial attacks in computer vision. Although this defense has be broken [@carlini2017evaluatingrobustnessneuralnetworks],
 similar techniques with analogous motivations have pushed the state of the art forward [@bartoldson2024adversarialrobustnesslimitsscalinglaw].
-In this document, we will explain distilation, then defensive distilation and the intuition behind the defense.
+In this document, we will explain distillation, then defensive distillation and the intuition behind the defense.
 
-## Distilation
+## Distillation
 
-Distilation, proposed by [@hinton2015distillingknowledgeneuralnetwork], is a technique
+Distillation, proposed by [@hinton2015distillingknowledgeneuralnetwork], is a technique
 to leverage a more complex and capible model to produce a more compute-efficent model
 that preserves the performace. The author's accomplish this by training the smaller model
 on the outputs of the capible model.
 
 As a review, when we train an image classifer we usually use what are called "hard labels".
 For an image of a 2 in the MNIST dataset, the hard label would assign 100% probability to the
-"2" class and 0% probability to every other class. In distilation however, we use "soft labels"
+"2" class and 0% probability to every other class. In distillation however, we use "soft labels"
 from a trained model which assign various positive probabilites to every class.
 
 Why train on these soft labels? Aren't the hard labels a more accurate measure of ground truth?
@@ -75,14 +75,14 @@ be treated as a complete replacement of hard labels.
 
 </Dropdown>
 
-## Defensive Distilation
+## Defensive Distillation
 
 In AI security we are less concerned with efficiency and more concerned with robustness.
 Therefore, unlike the variation proposed by [@hinton2015distillingknowledgeneuralnetwork],
-defensive distilation, uses the same model archieture for both the original and
+defensive distillation, uses the same model archieture for both the original and
 distilled models.
 
-The motivation behind using distilation as a defense is it produces a smoother model
+The motivation behind using distillation as a defense is it produces a smoother model
 which generalizes better to inputs an epsilon distance away from clean images. In other words,
 gradients of the loss with respect to indiviudal pixel values should be small if
 a model is distilled properly. The authors say:
