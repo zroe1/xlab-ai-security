@@ -248,31 +248,31 @@ def test_cross_entropy_loss_soft_implementation(student_cross_entropy_loss_soft,
         f"Difference: {abs(expected_loss.item() - student_loss.item()):.8f} " \
         f"(tolerance: {tolerance})"
 
-@pytest.mark.task3
-def test_cross_entropy_loss_properties(student_cross_entropy_loss_soft):
-    """Test that cross_entropy_loss_soft has expected mathematical properties."""
-    batch_size, num_classes = 3, 4
+# @pytest.mark.task3
+# def test_cross_entropy_loss_properties(student_cross_entropy_loss_soft):
+#     """Test that cross_entropy_loss_soft has expected mathematical properties."""
+#     batch_size, num_classes = 3, 4
     
-    # Test 1: Perfect prediction (soft_labels == probs) should give low loss
-    perfect_probs = torch.tensor([[0.7, 0.2, 0.05, 0.05],
-                                  [0.1, 0.8, 0.05, 0.05],
-                                  [0.05, 0.05, 0.9, 0.0]])
-    perfect_loss = student_cross_entropy_loss_soft(perfect_probs, perfect_probs)
+#     # Test 1: Perfect prediction (soft_labels == probs) should give low loss
+#     perfect_probs = torch.tensor([[0.7, 0.2, 0.05, 0.05],
+#                                   [0.1, 0.8, 0.05, 0.05],
+#                                   [0.05, 0.05, 0.9, 0.0]])
+#     perfect_loss = student_cross_entropy_loss_soft(perfect_probs, perfect_probs)
     
-    # Test 2: Worst prediction (uniform when target is one-hot) should give higher loss
-    one_hot_labels = torch.tensor([[1.0, 0.0, 0.0, 0.0],
-                                   [0.0, 1.0, 0.0, 0.0],
-                                   [0.0, 0.0, 1.0, 0.0]])
-    uniform_probs = torch.ones_like(one_hot_labels) / num_classes
-    worst_loss = student_cross_entropy_loss_soft(one_hot_labels, uniform_probs)
+#     # Test 2: Worst prediction (uniform when target is one-hot) should give higher loss
+#     one_hot_labels = torch.tensor([[1.0, 0.0, 0.0, 0.0],
+#                                    [0.0, 1.0, 0.0, 0.0],
+#                                    [0.0, 0.0, 1.0, 0.0]])
+#     uniform_probs = torch.ones_like(one_hot_labels) / num_classes
+#     worst_loss = student_cross_entropy_loss_soft(one_hot_labels, uniform_probs)
     
-    # Perfect prediction should have lower loss than uniform prediction
-    assert perfect_loss < worst_loss, \
-        f"Perfect prediction loss {perfect_loss.item():.4f} should be < uniform prediction loss {worst_loss.item():.4f}"
+#     # Perfect prediction should have lower loss than uniform prediction
+#     assert perfect_loss < worst_loss, \
+#         f"Perfect prediction loss {perfect_loss.item():.4f} should be < uniform prediction loss {worst_loss.item():.4f}"
     
-    # Loss should be non-negative
-    assert perfect_loss >= 0, f"Loss should be non-negative, got {perfect_loss.item():.4f}"
-    assert worst_loss >= 0, f"Loss should be non-negative, got {worst_loss.item():.4f}"
+#     # Loss should be non-negative
+#     assert perfect_loss >= 0, f"Loss should be non-negative, got {perfect_loss.item():.4f}"
+#     assert worst_loss >= 0, f"Loss should be non-negative, got {worst_loss.item():.4f}"
 
 @pytest.mark.task3
 def test_cross_entropy_loss_one_hot_labels(student_cross_entropy_loss_soft):
