@@ -8,7 +8,7 @@ all the content on this page before starting the coding exercises._
 
 <ExerciseButtons
   githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/ensemble.ipynb"
-  colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/ensemble_colab.ipynb"
+  colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/ensemble.ipynb"
 />
 
 One interesting feature of adversarial images is that they often "transfer" to
@@ -33,7 +33,7 @@ climb.
   <ThemeImage
     lightSrc="/images/targeted_light.png"
     darkSrc="/images/targeted_dark.png"
-    alt="Swiss cheese security model"
+    alt="Targeted vs untargeted loss landscape"
     style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
   />
 </p>
@@ -49,9 +49,9 @@ entirely obvious why they are important for security. One reason is that in many
 an attacker may want to attack a model that is secured behind an API. In other words,
 the attacker doesn't have white-box access and therefore cannot run an algorithm like
 PGD or CW. They may also not be able to query the model repeatedly without arousing
-suspicion or incurring high API costs. One solution to this issue is to attack a white
-box model for free using as many iterations as the attacker would like, and then hope
-that the attack transfers. When a white box model is used in this way, you may hear
+suspicion or incurring high API costs. One solution to this issue is to attack a white-box
+model for free using as many iterations as the attacker would like, and then hope
+that the attack transfers. When a white-box model is used in this way, you may hear
 it referred to as a "surrogate model." Because there are plenty of open source models available for
 download, there are plenty of surrogate models to choose from, making these transfer attacks practical to execute.
 
