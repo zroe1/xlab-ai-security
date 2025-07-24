@@ -2,7 +2,7 @@
 xlab - A Python package for AI security and helper functions.
 """
 
-__version__ = "0.1.8"
+__version__ = "0.1.9"
 
 from .core import hello_world
 from . import tests
