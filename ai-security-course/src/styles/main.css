@@ -1237,6 +1237,22 @@ a.citation:hover {
   transition: all 0.3s ease;
   border: 2px solid transparent;
   cursor: pointer;
+  font-family: inherit;
+  background: none;
+}
+
+/* Normalize button elements with action-button class */
+button.action-button {
+  background: none;
+  border: 2px solid transparent;
+  font-family: inherit;
+  text-decoration: none;
+  outline: none;
+}
+
+button.action-button:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
 }
 
 .action-button.primary {
