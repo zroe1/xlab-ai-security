@@ -29,7 +29,7 @@ export const navigationItems: NavigationItem[] = [
     items: [
       { id: "1.1", title: "Welcome", href: "/getting-started/welcome", type: "link" },
       { id: "1.2", title: "Prerequisites", href: "/getting-started/prerequisites", type: "link" },
-      { id: "1.3", title: "Setting Up Environment", href: "/getting-started/setup", type: "link" },
+      { id: "1.3", title: "Setting Up Environment", href: "/getting-started/set-up", type: "link" },
       {
         id: "1.4",
         title: "Running Coding Exercises",
@@ -176,7 +176,12 @@ export const navigationItems: NavigationItem[] = [
         title: "Novel Attack Vectors",
         type: "folder",
         items: [
-          { id: "3.4.1", title: "Visual Jailbreaks", href: "/jailbreaking/visual-jailbreaks", type: "link" },
+          {
+            id: "3.4.1",
+            title: "Visual Jailbreaks",
+            href: "/jailbreaking/visual-jailbreaks",
+            type: "link",
+          },
           {
             id: "3.4.2",
             title: "Many-Shot Jailbreaking",
@@ -298,7 +303,12 @@ export const navigationItems: NavigationItem[] = [
         ],
       },
       { id: "4.4", title: "Durability Evaluation", href: "/tampering/durability", type: "link" },
-      { id: "4.5", title: "Deep Safety Alignment (pt. 2)", href: "/tampering/deep-safety-alignment-2", type: "link" },
+      {
+        id: "4.5",
+        title: "Deep Safety Alignment (pt. 2)",
+        href: "/tampering/deep-safety-alignment-2",
+        type: "link",
+      },
     ],
   },
   {

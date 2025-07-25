@@ -1,0 +1,58 @@
+---
+title: "Setting Up Environment"
+description: "Setting up a secure AI development environment"
+---
+
+In general, our course requires fairly basic requirements: [PyTorch](https://pytorch.org/),
+[Matplotlib](https://matplotlib.org/), etc. One less conventional package you will need to
+install is our own [xlab-security](https://pypi.org/project/xlab-security/) package which you will use for utility functions and running
+tests.
+
+Please note that if you plan on running our code primarily on Google Colab, you won't
+have to install anything manually. It is still recommended that you read this document.
+
+## Installing xlab-security
+
+To install `xlab-security` all you will need to do is run:
+
+```
+pip install xlab-security
+```
+
+Or within a jupyter notebook:
+
+```
+!pip install xlab-security
+```
+
+To import the package within a python file or jupyter notebook, you may run:
+
+```python
+import xlab
+```
+
+We will always show you how to use the package within the notebooks so there is nothing new
+here you need to learn. The package is still in development, so if something isn't working as
+expected, you should submit an issue on [our GitHub](https://github.com/zroe1/xlab-ai-security)
+or flag it in our slack. Before you alert us of the error, always make sure that you have updated your
+package to the most recent version. You can update the package by running:
+
+```
+pip install --upgrade xlab-security
+```
+
+## Installing other packages
+
+In addition to having python3, we will assume that you have installed the following
+packages already:
+
+- `huggingface_hub`: Installation instructions can be found [here](https://github.com/huggingface/huggingface_hub)
+- `pytorch`: Installation instructions can be found [here](https://pytorch.org/get-started/locally/)
+- `matplotlib`: Installation instructions can be found [here](https://matplotlib.org/stable/install/index.html)
+- `numpy`: Installation instructions can be found [here](https://numpy.org/install/)
+
+For the most part, you will not actually need to know much about how to use matplotlib.
+However, some parts of the coding exercises will include cells with matplotlib code we
+have completed for you for useful visualizations.
+
+<NextPageButton />
