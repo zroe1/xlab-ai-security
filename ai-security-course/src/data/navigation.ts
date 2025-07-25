@@ -123,12 +123,6 @@ export const navigationItems: NavigationItem[] = [
             href: "/adversarial/sota",
             type: "link",
           },
-          {
-            id: "2.6.3",
-            title: "Natural Limitations",
-            href: "/adversarial/scaling-challenges",
-            type: "link",
-          },
         ],
       },
     ],
