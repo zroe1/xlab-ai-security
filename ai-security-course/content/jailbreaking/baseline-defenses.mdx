@@ -3,7 +3,7 @@ title: "Baseline Defenses and Perplexity Filters"
 description: "Defense Basics"
 ---
 
-At this point, we've looked at many methods of attacking models, be it token-level, prompt-level, or other novel vectors. We haven't, however, touched on defenses, which are just as (if not more) important than attacks. In this section we'll cover some basic defenses for language models with a particular emphasis on perplexity filters [@jainBaselineDefensesAdversarial2023; @alonDetectingLanguageModel2023]. The goal of this section is not to present the satte-of-the-art, but rather to provide a background on some early defenses that informed later, stronger approaches.
+At this point, we've looked at many methods of attacking models, be it token-level, prompt-level, or other novel vectors. We haven't, however, touched on defenses, which are just as (if not more) important than attacks. In this section we'll cover some basic defenses for language models (with a particular emphasis on perplexity filters) [@jainBaselineDefensesAdversarial2023; @alonDetectingLanguageModel2023]. These defenses primarily are designed to defeat GCG-like attacks. The goal of this section is not to present the state-of-the-art, but rather to provide a background on some early defenses that informed later, stronger approaches.
 
 ## Perplexity
 When using an optimization-based technique like GCG, many of the resulting sufixes appear nonsensical. As an example, the starting-point suffix in the GCG notebook is:
@@ -37,5 +37,10 @@ If we use an auxiliary model to paraphrase a harmful prompt with an adversarial 
 ### Retokenization
 Because GCG suffixes are so dependent on the exact tokens contained within them, does tokenizing the prompt different make the suffixes less effective? Unfortunately, they found that this strategy isn't very effective; it only somewhat decreased the ASR for 2 out of 3 models. Their hypothesis is that retokenizing the harmful prompts disrupts the ability of the model's RLHF/instruction-tuning (which are done using normal tokenization) to proprly induce refusals.
 
+<Dropdown title="What if we perform adversarial training against GCG-like suffixes?">
+
+Great idea! This was done by @mazeikaHarmBenchStandardizedEvaluation2024 in their Robust Refusal Dynamic Defense (R2D2) algorithm; Zephyr 7B + R2D2 was the most robust model against GCG, with an ASR under 10%.
+
+</Dropdown>
 
 ## References
