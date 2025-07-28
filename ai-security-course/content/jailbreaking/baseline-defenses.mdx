@@ -1,0 +1,46 @@
+---
+title: "Baseline Defenses and Perplexity Filters"
+description: "Defense Basics"
+---
+
+At this point, we've looked at many methods of attacking models, be it token-level, prompt-level, or other novel vectors. We haven't, however, touched on defenses, which are just as (if not more) important than attacks. In this section we'll cover some basic defenses for language models (with a particular emphasis on perplexity filters) [@jainBaselineDefensesAdversarial2023; @alonDetectingLanguageModel2023]. These defenses primarily are designed to defeat GCG-like attacks. The goal of this section is not to present the state-of-the-art, but rather to provide a background on some early defenses that informed later, stronger approaches.
+
+## Perplexity
+When using an optimization-based technique like GCG, many of the resulting sufixes appear nonsensical. As an example, the starting-point suffix in the GCG notebook is:
+```
+x undone xọShe "",\n sauce Abdullah"F}.\niovocodeara indis：ctionsPut accent after x
+```
+
+As you can hopefully tell, this is completely incomprehensible to us humans (which, as previously mentioned, is drawback of token-level jailbreaks). Language models also have a measurement of how "surprising" a given sequence of tokens is to them called perplexity (PPL):
+$$
+\text{PPL}(x_{1:n}) = \exp \left( -\frac{1}{n} \sum_{i = 1}^n \log p(x_i | x_{< i})  \right).
+$$
+
+In words, perplexity is the exponentiated average negative log-likelihood over a sequence of tokens $X$. In essence, this captures how "surprised" a language model is by a given sequence of tokens; a high perplexity equals high surprise, a low perplexity equals low surprise. Because of the nonsensicality of GCG-generated suffixes, they tend to also have high perplexity. For example, the perplexity of the above GCG-generated suffix from Zephyr-1.6b is ~1696696 (which is *very* high—a sequence like that would never show up in its training corpus). 
+
+## Perplexity Filters
+The high perplexity incurred by GCG's suffixes provides a rather simple way to detect GCG attacks on language models: perplexity *filters* [@alonDetectingLanguageModel2023; @jainBaselineDefensesAdversarial2023]. For example, @jainBaselineDefensesAdversarial2023 proposes two styles of perplexity filters, the first of which simply checks that the prompt $x_{1:n}$ has perplexity less than a threshold $T$, i.e., $\text{PPL}(x_{1:n}) < T$. The second style of filter is a sliding window that raises the alarm if any chunk of text has high perplexity. @alonDetectingLanguageModel2023 went further and trained a Light Gradient-Boosted Machine (LightGBM) classifier on prompt perplexity and token sequence length. Ultimately, however, all of these methods proved effective ways to foil GCG-style attacks, although the LightGBM classifier was slightly more performant.
+
+<Dropdown title="Can't we just constrain our GCG suffixes to have low perplexity?">
+
+Despite what was initially found by @jainBaselineDefensesAdversarial2023, we can create fluent (though not always interpretable) optimization-generated suffixes. For more, see @zhuAutoDANInterpretableGradientBased2023 and @thompsonFLRTFluentStudentTeacher2024.
+
+</Dropdown>
+
+
+## Other Defenses
+We'll also touch on two other defenses covered in @jainBaselineDefensesAdversarial2023: paraphrasing and retokenization.
+
+### Paraphrasing
+If we use an auxiliary model to paraphrase a harmful prompt with an adversarial suffix, will it get rid of the suffix and leave us only with the harmful prompt (which the main model will hopefully refuse)? Indeed, this approach does reduce the ASR of GCG down to the baseline (the harmful prompt without GCG). However, it comes at a cost: performance on `AlpacaEval` drops 10-15%. This is a rather bad performance drop, and as pointed out by the authors, it likely worsens with in-context learning and extended conversations.
+
+### Retokenization
+Because GCG suffixes are so dependent on the exact tokens contained within them, does tokenizing the prompt different make the suffixes less effective? Unfortunately, they found that this strategy isn't very effective; it only somewhat decreased the ASR for 2 out of 3 models. Their hypothesis is that retokenizing the harmful prompts disrupts the ability of the model's RLHF/instruction-tuning (which are done using normal tokenization) to proprly induce refusals.
+
+<Dropdown title="What if we perform adversarial training against GCG-like suffixes?">
+
+Great idea! This was done by @mazeikaHarmBenchStandardizedEvaluation2024 in their Robust Refusal Dynamic Defense (R2D2) algorithm; Zephyr 7B + R2D2 was the most robust model against GCG, with an ASR under 10%.
+
+</Dropdown>
+
+## References

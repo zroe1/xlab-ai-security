@@ -204,7 +204,7 @@ export const navigationItems: NavigationItem[] = [
           {
             id: "3.5.1",
             title: "Perplexity Filters & Baseline Defenses",
-            href: "/jailbreaking/ppl-baseline",
+            href: "/jailbreaking/baseline-defenses",
             type: "link",
           },
           {
