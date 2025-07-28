@@ -1,11 +1,11 @@
 ---
 title: "Prompt Automatic Interative Refinement (PAIR) & Tree of Attacks with Pruning (TAP)"
-description: "From 'Jailbreaking Black Box Large Language Models in Twenty Queries' and 'Tree of Attacks: Jailbreaking Black-Box LLMs Automatically'"
+description: "Simple, Automatic Prompt-Level Jailbreaking"
 ---
 
 ## Motivation
 
-So far, we've looked at _token-level, white-box jailbreaks:_ attacks that require access to the loss of some model given an input and target sqeuence. But what if we want to jailbreak a model like ChatGPT, where we don't have white-box access? This requires a black-box algorithm that doesn't rely on access to model internals. One of the earliest and most famous algorithms that achieved this goal is Prompt Automatic Iterative Refinement, or PAIR [@chaoJailbreakingBlackBox2024]. PAIR was additionally developed with the goal of improving the efficiency of token-level jailbreaks like GCG, which (as you likely experienced) require lots of queries and generally lack interpretability.
+In the previous subsection, we looked at _token-level, white-box jailbreaks:_ attacks that require access to the loss of some model given an input and target sqeuence. But what if we want to jailbreak a model like ChatGPT, where we don't have white-box access? This requires a black-box algorithm that doesn't rely on access to model internals. One of the earliest and most famous algorithms that achieved this goal is Prompt Automatic Iterative Refinement, or PAIR [@chaoJailbreakingBlackBox2024]. PAIR was additionally developed with the goal of improving the efficiency of token-level jailbreaks like GCG, which (as you likely experienced) require lots of queries and generally lack interpretability.
 
 ## Prompt Automatic Iterative Refinement (PAIR)
 
