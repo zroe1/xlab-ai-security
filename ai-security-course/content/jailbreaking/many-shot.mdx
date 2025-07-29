@@ -53,9 +53,25 @@ and competing objective attacks [@weiJailbrokenHowDoes2023]. They find that comp
 pairing MSJ with a competeing objective jailbreak makes MSJ more effective. The high level takeaway is that
 it is possible to pair MSJ with other jailbreaks to make it more effective, but this won't work easily in all cases.
 
-### Scaling Laws
+### Scaling In-Context Examples
 
-wip
+Perhaps the most intersting finding from [@anil2024manyshot] is that the in-context
+jailbreak scales with the number of in-context examples. This "many-shot" approach is provably
+more effective than jailbreaks with fewer examples. In the plot to the left, the attack success rate
+of MSJ can be over 60% given enough high-quality examples. In the plot to the right,
+the authors measure the NLL of a harmful response rather than just the success rate. They find that
+that the effectiveness of MSJ increases with the number of incontext examples for a variety of different model sizes.
+
+<img
+  src="/images/many-shot-scaling.png"
+  alt="Many-shot jailbreak scaling"
+  style={{ width: "70%", display: "block", margin: "0 auto" }}
+/>
+
+<div align="center">
+  **Fig. 1** <br></br> Attack success rate and NLL of harmful response as a function of number of incontext
+  examples. Image taken from figure 3 of [@anil2024manyshot].
+</div>
 
 ### Quality of outputs
 
