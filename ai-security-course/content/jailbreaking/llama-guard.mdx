@@ -14,7 +14,21 @@ One of the earliest and most straightforward defenses proposed for this purpose 
 3. The conversation: each task (unsurprisingly) contains the conversation that Llama Guard scrutinizes.
 4. The output format: each task contains an output format; Llama Guard specifically responds either just "safe" or "unsafe" along with the index of the violated guideline category.
 
-The authors then fine-tune Llama-2 on Anthropic's [helpfulness and harmfulness dataset](https://huggingface.co/datasets/Anthropic/hh-rlhf) with their own labeling, following Llama Guard's task structure (note: we believe the citation in the original Llama Guard paper is incorrect).
+The authors then fine-tune Llama-2 on the prompts from Anthropic's [helpfulness and harmfulness dataset](https://huggingface.co/datasets/Anthropic/hh-rlhf) with their own labels, following Llama Guard's task structure (note: we believe the citation in the original Llama Guard paper is incorrect). Using Llama Guard is as simple as formatting a conversation into the given task structure and sending it as a prompt.
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/llama_guard.png"
+    darkSrc="/images/llama_guard.png"
+    alt="Llama Guard"
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> Llama Guard; Figure 1 from @inanLlamaGuardLLMbased
+</div>
+
 
 ## Does it work?
 A somewhat common theme throughout the jailbreaking section has been that getting LLMs to do things for us often just works, and this trend is not going to stop with Llama Guard. Llama Guard outperformed OpenAI's moderation API on its own test set, and performed nearly as well on OpenAI's own moderation dataset without undergoing *any* training on it, demonstrating a remarkable amount of of adaptability. Llama Guard was also able to improve its performance on new categories with in-context learning and by fine-tuning on other taxonomies. In fact, Llama Guard 4 now has [multimodal safety capabilities](https://huggingface.co/meta-llama/Llama-Guard-4-12B)—it's probably not going anywhere anytime soon.
