@@ -26,7 +26,7 @@ As researchers make new breakthroughs in ML, there will be new attack surfaces t
 
 ### Variations of the attack
 
-In the paper the authors try three kinds of variations on the vanilla MSJ attack. They
+In the paper the authors try three variations on the formatting of the vanilla MSJ attack. They
 
 1. Swap the user and assistant tags such that the user answers questions and the assistant asks them.
 2. Translate the examples into a language other than english.
@@ -49,7 +49,7 @@ diverse enough examples there may exist a universal in-context jailbreak:
 > could potentially construct a “universal” jailbreak.
 
 Finally, the authors try to compose MSJ with GCG [@zouUniversalTransferableAdversarial2023]
-and competing objective attacks [@wei2023jailbrokendoesllmsafety]. They find that composing MSJ with GCG is challenging while
+and competing objective attacks [@weiJailbrokenHowDoes2023]. They find that composing MSJ with GCG is challenging while
 pairing MSJ with a competeing objective jailbreak makes MSJ more effective. The high level takeaway is that
 it is possible to pair MSJ with other jailbreaks to make it more effective, but this won't work easily in all cases.
 
