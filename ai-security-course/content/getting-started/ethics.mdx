@@ -1,0 +1,64 @@
+---
+title: "A Note on Ethics"
+description: "A guide for ethical AI security research"
+---
+
+Before starting the course, it is worth taking a second to pause to consider why researchers are doing
+this work to begin with and what ethical questions are at stake. Questions about ethics come up
+in almost every field of research, especially research that involves human subjects. For AI research,
+we claim that these ethical questions are especially relevant. Because AI is becoming increasingly integrated
+into our everyday lives, everyone with internet access has become a human subject in a huge number of ML experiments.
+In other words, we are in unprecidented terrirtory, models are being given to real people
+and ethical frameworks are imperative to keeping us all safe.
+
+This document does not take a dogmatic position on what qualifies as a "bad" or "good" action.
+What actions are morally permissable and which are objectionable remains, to put it mildly,
+a very active debate within the field of moral philosophy. Several ethical theories have been proposed
+for evaluating moral delemas inlcuding by not limitied to ultilitarianism, deontology, and [virtue ethics](https://en.wikipedia.org/wiki/Virtue_ethics).
+While we won't try to tell you which of these are "correct," this document can be viewed a complilation of best
+practices for doing ethical AI security research.
+
+## Risks with making information available
+
+When working in AI security you may at some point get your hands on potentially harmful
+data. Here are some examples for how this may happen:
+
+1. In some cases, researchers create datasets of harmful responses for the purposes of performing a jailbreak (e.g., [@anil2024manyshot]).
+2. You may also be asking a model to generate harmful content and storing those responses for the purposes of benchmarking it.
+3. You may be collecting a dataset and filtering out harmful content and storing it somewhere.
+
+Depending on what laws you are subject to, the generation or storage of some of this data may be
+illegal. We don't want to scare you because in most cases, this isn't something you should have to worry too much about. We note
+that the one area that you should be esspecially careful with is [CSAM](https://www.justice.gov/d9/2023-06/child_sexual_abuse_material_2.pdf)
+which is illegal and unethical to release or store, even if it is on accident.
+
+Even when releasing a dataset or model is legal, there are still imperative ethical questions are play.
+For example, if you release a dataset with harmful responses to questions, that dataset
+could be used by a bad action to perform supervised finetuning on an opensource model
+to make it more likely to respond to harmful queries. Likewise, if you develop a model
+that doesn't have safety filters for research purposes, you should consider the full range
+of possible ways the model could be misused before releasing it.
+
+Information you produce can also be dangerous in less obvious ways. Nick Bostrom
+coined the term information hazard [@bostrom2011information] which he defines as follows:
+
+> _Information hazard:_ A risk that arises from the dissemination or the potential
+> dissemination of (true) information that may cause harm or enable some agent to cause
+> harm.
+
+For example, if you develop a technique that makes a model much more powerful, but also much
+less safety-aligned, publishing a paper on your method may be considered an information hazard.
+The issue is not that what you are saying isn't true. Rather, the issue is that making that
+technique public doesn't make anyone better off.
+
+## Honest Benchmarking
+
+## Good Faith Attempts at Defenses
+
+The best researchers don't break systems merely because it is "cool." The break systems
+because they genuinly want to live in a world where technology is safe, robust and protects
+the rights of the people who use it. So although we belive there is extremely good reasons to develop increasingly sophisticated ways to attack ML systems, the ultimate goal of
+AI security research is to make models safer. As a result, when if you propose a new
+attack, it is typically considered good taste to build out defenses for that attack in the same
+paper. You may find that there aren't existing methods to protect against your attack which
+is fine as long as you make an honest attempt to try to secure the vulnerability you discovered.
