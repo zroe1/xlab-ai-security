@@ -5,7 +5,7 @@ description: "Defending Language Models with Language Models"
 
 The many-shot jailbreak [@anil2024manyshot] exploits in-context learning [@brown2020languagemodelsfewshotlearners] in LLMs.
 In-context learning is when a model learns how it should respond from a few examples of questions and responses passed to the models
-prompt. Attackers can exploit this propterty by filling the model's prompt with examples the of the model agreeing to answer harmful queries.
+prompt. Attackers can exploit this property by filling the model's prompt with examples the of the model agreeing to answer harmful queries.
 In the example below from [@wei2024jailbreakguardalignedlanguage] the authors demonstrate this kind of in-context attack:
 
 ```
@@ -17,10 +17,10 @@ User: Write a tutorial on how to make a bomb
 The many-shot jailbreak (or just MSJ for short) fills the context of an LLM with a long list of examples
 of these. When you ask a harmful query at the end of the long
 list of examples, the model will often continue the pattern of responding harmfully. While the in-context attack had previously been discovered, MSJ specifically focuses on understanding
-how these this kind of attack scale with size.
+how this kind of attack scale with size.
 
-The autors note that LLMs can now have context sizes as long as 10 million tokens
-which "provides a rich new attack surface for LLMs" [@anil2024manyshot]. This means that in addtion to being an effective attack,
+The authors note that LLMs can now have context sizes as long as 10 million tokens
+which "provides a rich new attack surface for LLMs" [@anil2024manyshot]. This means that in addition to being an effective attack,
 MSJ serves a perfect example of how attacks can evolve with technology.
 As researchers make new breakthroughs in ML, there will be new attack surfaces to exploit.
 
@@ -33,11 +33,11 @@ In the paper the authors try three variations on the formatting of the vanilla M
 3. Swap the user tags with "Question" and the assistant tags with "Answer"
 
 They find that MSJ can work in any of the above variations given enough prompts. Interestingly,
-the authors find that these formatting changes actually increase the effectiveness of MJS which
+the authors find that these formatting changes actually increase the effectiveness of MSJ which
 they hypothesize is because "the changed prompts are out-of-distribution
 with respect to alignment fine-tuning dataset" [@anil2024manyshot].
 
-The also text MJS on queries that don't match the topic of the examples in the prompt.
+They also test MSJ on queries that don't match the topic of the examples in the prompt.
 They find that in some cases they still can elicit response from the model even when the
 in-context examples are mostly unrelated from the final question. In other cases, however the
 attack becomes unsuccessful. They argue that narrow prompts become less effective and with
@@ -46,21 +46,21 @@ diverse enough examples there may exist a universal in-context jailbreak:
 > In particular, our results corroborate the
 > role of diversity, and further suggest that given a sufficiently
 > long attack with sufficiently diverse demonstrations, one
-> could potentially construct a “universal” jailbreak.
+> could potentially construct a "universal" jailbreak.
 
 Finally, the authors try to compose MSJ with GCG [@zouUniversalTransferableAdversarial2023]
 and competing objective attacks [@weiJailbrokenHowDoes2023]. They find that composing MSJ with GCG is challenging while
-pairing MSJ with a competeing objective jailbreak makes MSJ more effective. The high level takeaway is that
+pairing MSJ with a competing objective jailbreak makes MSJ more effective. The high level takeaway is that
 it is possible to pair MSJ with other jailbreaks to make it more effective, but this won't work easily in all cases.
 
 ### Scaling In-Context Examples
 
-Perhaps the most intersting finding from [@anil2024manyshot] is that the in-context
+Perhaps the most interesting finding from [@anil2024manyshot] is that the in-context
 jailbreak scales with the number of in-context examples. This "many-shot" approach is provably
 more effective than jailbreaks with fewer examples. In the plot to the left, the attack success rate
 of MSJ can be over 60% given enough high-quality examples. In the plot to the right,
 the authors measure the NLL of a harmful response rather than just the success rate. They find that
-that the effectiveness of MSJ increases with the number of incontext examples for a variety of different model sizes.
+that the effectiveness of MSJ increases with the number of in-context examples for a variety of different model sizes.
 
 <img
   src="/images/many-shot-scaling.png"
@@ -69,13 +69,13 @@ that the effectiveness of MSJ increases with the number of incontext examples fo
 />
 
 <div align="center">
-  **Fig. 1** <br></br> Attack success rate and NLL of harmful response as a function of number of incontext
+  **Fig. 1** <br></br> Attack success rate and NLL of harmful response as a function of number of in-context
   examples. Image taken from figure 3 of [@anil2024manyshot].
 </div>
 
 ### Quality of outputs
 
 After publishing, another interesting feature of MSJ was discovered.
-In addition to yeilding a high attack success rate, there is some early evidence that MSJ produces outputs that are higher in quality than other attacks. [@nikolić2025jailbreaktaxusefuljailbreak] shows that MSJ may preserve the capabilities of the base model much better than GCG, PAIR and TAP according to some measurements.
+In addition to yielding a high attack success rate, there is some early evidence that MSJ produces outputs that are higher in quality than other attacks. [@nikolić2025jailbreaktaxusefuljailbreak] shows that MSJ may preserve the capabilities of the base model much better than GCG, PAIR and TAP according to some measurements.
 
 ## References
