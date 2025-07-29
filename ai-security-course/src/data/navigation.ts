@@ -179,7 +179,7 @@ export const navigationItems: NavigationItem[] = [
           {
             id: "3.4.2",
             title: "Many-Shot Jailbreaking",
-            href: "/jailbreaking/many-shot-jailbreaking",
+            href: "/jailbreaking/many-shot",
             type: "link",
           },
           {
