@@ -7,7 +7,7 @@ Before starting the course, it is worth taking a second to pause to consider why
 this work to begin with and what ethical questions are at stake. Questions about ethics come up
 in almost every field of research, especially research that involves human subjects. For AI research,
 we claim that these ethical questions are especially relevant. Because AI is becoming increasingly integrated
-into our everyday lives, everyone with internet access has become a human subject in a huge number of ML experiments.
+into our everyday lives, everyone with internet access has become a kind of human subject in a huge number of ML experiments.
 In other words, we are in unprecidented terrirtory, models are being given to real people
 and ethical frameworks are imperative to keeping us all safe.
 
@@ -52,6 +52,24 @@ The issue is not that what you are saying isn't true. Rather, the issue is that 
 technique public doesn't make anyone better off.
 
 ## Honest Benchmarking
+
+Multiple researchers have expressed their frustration with low-quality benchmarking in the
+literature. Many defense papers
+don't benchmark their technique against the best attacks. Likewise, many attack
+papers don't benchmark their results on the best defenses.
+
+There are several reasons why so many papers report metrics that don't hold up in
+other settings. First, implementing a state-of-the-art attack or defense can actually
+be quite difficult. For example, if you are working with Llama 3.1 405B, even loading a model
+this large into memory can be challenging, let alone implementing a complicated
+attack or defense. Another reason researchers may not benchmark properly is because
+they subconciously want to make their attack/defense look as good as possible. It
+is not in their best intrest to expend lots of effort trying to prove their paper wrong!
+
+At the very least, we beleive that researchers should be as transparent as possible
+about the metrics they report. If they didn't report results against a
+state-of-the-art attack or defense because it is technical
+difficult to implement or for any other reason, they should say so.
 
 ## Good Faith Attempts at Defenses
 
