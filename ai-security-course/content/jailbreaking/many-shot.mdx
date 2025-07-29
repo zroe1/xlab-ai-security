@@ -37,6 +37,26 @@ the authors find that these formatting changes actually increase the effectivene
 they hypothesize is because "the changed prompts are out-of-distribution
 with respect to alignment fine-tuning dataset" [@anil2024manyshot].
 
+The also text MJS on queries that don't match the topic of the examples in the prompt.
+They find that in some cases they still can elicit response from the model even when the
+in-context examples are mostly unrelated from the final question. In other cases, however the
+attack becomes unsuccessful. They argue that narrow prompts become less effective and with
+diverse enough examples there may exist a universal in-context jailbreak:
+
+> In particular, our results corroborate the
+> role of diversity, and further suggest that given a sufficiently
+> long attack with sufficiently diverse demonstrations, one
+> could potentially construct a “universal” jailbreak.
+
+Finally, the authors try to compose MSJ with GCG [@zouUniversalTransferableAdversarial2023]
+and competing objective attacks [@wei2023jailbrokendoesllmsafety]. They find that composing MSJ with GCG is challenging while
+pairing MSJ with a competeing objective jailbreak makes MSJ more effective. The high level takeaway is that
+it is possible to pair MSJ with other jailbreaks to make it more effective, but this won't work easily in all cases.
+
+### Scaling Laws
+
+wip
+
 ### Quality of outputs
 
 After publishing, another interesting feature of MSJ was discovered.
