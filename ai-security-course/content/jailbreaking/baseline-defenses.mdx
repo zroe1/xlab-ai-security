@@ -19,6 +19,21 @@ $$
 In words, perplexity is the exponentiated average negative log-likelihood over a sequence of tokens $X$. In essence, this captures how "surprised" a language model is by a given sequence of tokens; a high perplexity equals high surprise, a low perplexity equals low surprise. Because of the nonsensicality of GCG-generated suffixes, they tend to also have high perplexity. For example, the perplexity of the above GCG-generated suffix from Zephyr-1.6b is ~1696696 (which is *very* high—a sequence like that would never show up in its training corpus). 
 
 ## Perplexity Filters
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/ppl_filter_light.png"
+    darkSrc="/images/ppl_filter_dark.png"
+    alt="Perplexity Filters"
+    style={{ align: "center", width: "90%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> Perplexity Filters
+</div>
+
+
 The high perplexity incurred by GCG's suffixes provides a rather simple way to detect GCG attacks on language models: perplexity *filters* [@alonDetectingLanguageModel2023; @jainBaselineDefensesAdversarial2023]. For example, @jainBaselineDefensesAdversarial2023 proposes two styles of perplexity filters, the first of which simply checks that the prompt $x_{1:n}$ has perplexity less than a threshold $T$, i.e., $\text{PPL}(x_{1:n}) < T$. The second style of filter is a sliding window that raises the alarm if any chunk of text has high perplexity. @alonDetectingLanguageModel2023 went further and trained a Light Gradient-Boosted Machine (LightGBM) classifier on prompt perplexity and token sequence length. Ultimately, however, all of these methods proved effective ways to foil GCG-style attacks, although the LightGBM classifier was slightly more performant.
 
 <Dropdown title="Can't we just constrain our GCG suffixes to have low perplexity?">
