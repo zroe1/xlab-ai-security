@@ -17,13 +17,13 @@ a very active debate within the field of moral philosophy.
 Rather than taking positions on these ongoing debates,
 this document is a complilation of best practices for doing ethical AI security research.
 
-## Risks From AI Security Research
+# Risks From AI Security Research
 
 Before giving recommendations, we give a list of possible failure modes of AI security
 research. This list is not entended to be extensive. Instead, it should give an idea of
 why we think it is necessary to think about ethics in the first place.
 
-### Data Risks
+## Data Risks
 
 When working in AI security you may at some point get your hands on potentially harmful
 data. Here are some examples for how this may happen:
@@ -45,7 +45,7 @@ to make it more likely to respond to harmful queries. In general, a creative act
 may be able to find a number of malicious uses for datasets you may release. Thus, before
 making a dataset public, you should consider a variety of possible threat models.
 
-### Model Risks
+## Model Risks
 
 Some AI security research is done on image classifiers which in general are very
 safe to release. For most AI security research that deals with language, researchers
@@ -57,7 +57,7 @@ become ethically dubious. Except for extremely small models, _we do not reccomme
 world. It could also be misused to generate harmful data. Before releasing any model,
 you should check it's level of safety filters and consider different threat models.
 
-### Information Risks
+## Information Risks
 
 Information you produce can also be dangerous in less obvious ways. Nick Bostrom
 coined the term information hazard [@bostrom2011information] which he defines as follows:
@@ -71,40 +71,17 @@ less safety-aligned, publishing a paper on your method may be considered an info
 The issue is not that what you are saying isn't true. Rather, the issue is that making that
 technique public doesn't make anyone better off.
 
-## Honest Benchmarking
+# Our recommendations
 
-Multiple researchers have expressed their frustration with low-quality benchmarking in the
-literature. Many defense papers
-don't benchmark their technique against the best attacks. Likewise, many attack
-papers don't benchmark their results on the best defenses.
+Doing research that is honest and ethical is sometimes difficult. The list below
+is not meant to be an exhaustive list and this is a living document. If you have feedback
+you can let us know on our slack (instructions to join can be found on
+[our landing page](https://xlabaisecurity.com/))
 
-There are several reasons why so many papers report metrics that don't hold up in
-other settings. First, implementing a state-of-the-art attack or defense can actually
-be quite difficult. For example, if you are working with Llama 3.1 405B, even loading a model
-this large into memory can be challenging, let alone implementing a complicated
-attack or defense. Another reason researchers may not benchmark properly is because
-they subconciously want to make their attack/defense look as good as possible. It
-is not in their best intrest to expend lots of effort trying to prove their paper wrong!
-
-At the very least, we beleive that researchers should be as transparent as possible
-about the metrics they report. If they didn't report results against a
-state-of-the-art attack or defense because it is technical
-difficult to implement or for any other reason, they should say so.
-
-## Good Faith Attempts at Defenses
-
-The best researchers don't break systems merely because it is "cool." The break systems
-because they genuinly want to live in a world where technology is safe, robust and protects
-the rights of the people who use it. So although we belive there is extremely good reasons to develop increasingly sophisticated ways to attack ML systems, the ultimate goal of
-AI security research is to make models safer. As a result, when if you propose a new
-attack, it is typically considered good taste to build out defenses for that attack in the same
-paper. You may find that there aren't existing methods to protect against your attack which
-is fine as long as you make an honest attempt to try to secure the vulnerability you discovered.
-
-## Disinterested Ethical Analysis
+## 1. Disinterested Ethical Analysis
 
 We belive the best strategy for doing ethical AI security research is "disinterested
-ethical analysis." This term comes from
+ethical analysis." We got this term from
 [Ethical Frameworks and Computer Security Trolley Problems:
 Foundations for Conversations](https://www.usenix.org/conference/usenixsecurity23/presentation/kohno) [@291190] which adresses the conncetion
 between moral philosophy and computer security work. While moral
@@ -131,5 +108,38 @@ is so important and well said that we include the original paragrah from the pap
 > articulate any interests that they might have in the results of
 > the decision; such an articulation could be included as part of
 > a positionality statement in a paper.
+
+## 2. Honest Benchmarking
+
+Multiple researchers have expressed their frustration with low-quality benchmarking in the
+literature. Many defense papers
+don't benchmark their technique against the best attacks. Likewise, many attack
+papers don't benchmark their results on the best defenses.
+
+There are several reasons why so many papers report metrics that don't hold up in
+other settings. First, implementing a state-of-the-art attack or defense can actually
+be quite difficult. For example, if you are working with Llama 3.1 405B, even loading a model
+this large into memory can be challenging, let alone implementing a complicated
+attack or defense. Another reason researchers may not benchmark properly is because
+they subconciously want to make their attack/defense look as good as possible. It
+is not in their best intrest to expend lots of effort trying to prove their paper wrong!
+
+At the very least, we beleive that researchers should be as transparent as possible
+about the metrics they report. If they didn't report results against a
+state-of-the-art attack or defense they should say so rather than quietly ommitting it.
+
+## 3. Good Faith Attempts at Defenses
+
+The best researchers don't break systems merely because it is "cool." The break systems
+because they genuinly want to live in a world where technology is safe, robust and protects
+the rights of the people who use it. So although we belive there is extremely good reasons to develop increasingly sophisticated ways to attack ML systems, the ultimate goal of
+AI security research is to make models safer. As a result, when if you propose a new
+attack, it is typically considered good taste to build out defenses for that attack in the same
+paper. You may find that there aren't existing methods to protect against your attack which
+is fine as long as you make an honest attempt to try to secure the vulnerability you discovered.
+
+## 4. Responsible Disclosure
+
+WIP
 
 ## References

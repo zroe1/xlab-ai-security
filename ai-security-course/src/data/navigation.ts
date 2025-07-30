@@ -36,6 +36,12 @@ export const navigationItems: NavigationItem[] = [
         href: "/getting-started/running-coding-exercises",
         type: "link",
       },
+      {
+        id: "1.5",
+        title: "A Note on Ethics",
+        href: "/getting-started/ethics",
+        type: "link",
+      },
     ],
   },
   {
