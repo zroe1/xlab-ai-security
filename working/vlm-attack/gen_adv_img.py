@@ -1,4 +1,5 @@
 import random
+import os
 import tqdm
 import torch
 import xlab
@@ -10,6 +11,7 @@ from transformers import (
 )
 from torchvision.utils import save_image
 
+os.environ["TOKENIZERS_PARALLELISM"] = False
 device = torch.device(
     "cuda"
     if torch.cuda.is_available()
