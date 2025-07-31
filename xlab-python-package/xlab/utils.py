@@ -1405,3 +1405,41 @@ def PGD(
         x = x.squeeze(0)
 
     return x
+
+def tiny_llama_inference(model, tokenizer, message, max_tokens=200, temperature=0.2):
+    """Generate response token by token with live printing"""
+    # Format prompt for TinyLlama
+    prompt = f"<|user|>\n{message}<|endoftext|>\n<|assistant|>\n"
+    
+    # Tokenize
+    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    input_ids = inputs['input_ids']
+    
+    # Generate token by token
+    generated_tokens = []
+    
+    with torch.no_grad():
+        for _ in range(max_tokens):
+            # Get model outputs
+            outputs = model(input_ids)
+            logits = outputs.logits[:, -1, :]
+            logits = logits / temperature
+            
+            # Sample next token
+            probs = torch.softmax(logits, dim=-1)
+            next_token = torch.multinomial(probs, 1)
+            
+            # Add to generated tokens
+            generated_tokens.append(next_token[0].item())
+            
+            # Decode all generated tokens to get proper spacing
+            current_text = tokenizer.decode(generated_tokens, skip_special_tokens=True)
+            
+            # Update input_ids
+            input_ids = torch.cat([input_ids, next_token], dim=1)
+            
+            # Check for end token
+            if next_token[0].item() == tokenizer.eos_token_id:
+                break
+
+    return tokenizer.decode(generated_tokens, skip_special_tokens=True)
