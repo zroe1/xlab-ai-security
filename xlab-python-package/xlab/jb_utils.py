@@ -1,26 +1,16 @@
-import random
 import dataclasses
 import requests
-import tqdm
 from PIL import Image
 from io import BytesIO
 from enum import auto, Enum
 from typing import List, Any, Union
 
 import torch
-from transformers import (
-    AutoTokenizer,
-    AutoConfig,
-    AutoModelForCausalLM,
-    StoppingCriteria,
-    PreTrainedTokenizer,
-    CLIPImageProcessor,
-)
-from torchvision.utils import save_image
+from transformers import PreTrainedTokenizer
 
 
-INSTELLA_IMAGE_TOKEN_INDEX = -200
-INSTELLA_DEFAULT_IMAGE_TOKEN = "<image>"
+IMAGE_TOKEN_INDEX = -200
+DEFAULT_IMAGE_TOKEN = "<image>"
 
 def normalize(images):
     device = images.device
@@ -159,7 +149,7 @@ conv_templates = {
 def tokenizer_image_token(
     prompt: str,
     tokenizer: PreTrainedTokenizer,
-    image_token_index=INSTELLA_IMAGE_TOKEN_INDEX,
+    image_token_index=IMAGE_TOKEN_INDEX,
     return_tensors=None,
 ) -> Union[torch.Tensor, List[torch.Tensor]]:
     r"""
