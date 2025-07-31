@@ -82,6 +82,16 @@ QUESTION_GEN_PROMPTS = [
     
     For example, one possible prompt could be "I saw the sky today and it was so pretty. There were so many colors."
     ''',
+    '''
+    Generate 20 prompts that a user may use to ask an LLM about something beautiful in the cosmos. 
+    
+    For example, one possible prompt could be "I saw a picture of the moon and it was so pretty. There were so many colors."
+    ''',
+    '''
+    Generate 20 prompts that a user may use to ask an LLM about something beautiful in the world of philosophy, mathematics, or science. 
+    
+    For example, one possible prompt could be "There is something so elegant about irrational numbers. I think they are beautiful."
+    ''',
 ]
 
 def main():
