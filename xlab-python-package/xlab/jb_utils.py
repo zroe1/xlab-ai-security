@@ -159,7 +159,7 @@ conv_templates = {
 def tokenizer_image_token(
     prompt: str,
     tokenizer: PreTrainedTokenizer,
-    image_token_index=IMAGE_TOKEN_INDEX,
+    image_token_index=INSTELLA_IMAGE_TOKEN_INDEX,
     return_tensors=None,
 ) -> Union[torch.Tensor, List[torch.Tensor]]:
     r"""
@@ -206,3 +206,4 @@ def load_image(image_file):
     else:
         image = Image.open(image_file).convert("RGB")
     return image
+

@@ -3,31 +3,18 @@ title: "Ensemble Attacks"
 description: "Background information and mathematical intuition behind ensemble attacks on image classifiers."
 ---
 
-This section has a series of coding problems using PyTorch. _As always, we highly recommend you read
-all the content on this page before starting the coding exercises._
+This section has a series of coding problems using PyTorch. _As always, we highly recommend you read all the content on this page before starting the coding exercises._
 
 <ExerciseButtons
   githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/ensemble.ipynb"
   colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/ensemble.ipynb"
 />
 
-One interesting feature of adversarial images is that they often "transfer" to
-other models. By transfer, we mean that we can optimize an adversarial example on
-one model, and use it to successfully attack an entirely different model. We can
-see an analogous quality for the adversarial suffix jailbreaks on language models
-which you will explore in the [GCG section](https://xlabaisecurity.com/jailbreaking/gcg/) later in this course.
+One interesting feature of adversarial images is that they often "transfer" to other models. By transfer, we mean that we can optimize an adversarial example on one model, and use it to successfully attack an entirely different model. We can see an analogous quality for the adversarial suffix jailbreaks on language models which you will explore in the [GCG section](https://xlabaisecurity.com/jailbreaking/gcg/) later in this course.
 
 ## Targeted vs Untargeted Transfers
 
-Finding targeted adversarial examples that transfer is much harder than finding untargeted examples
-that transfer [@liu2017delvingtransferableadversarialexamples].
-This is because it is much easier to drive the loss up when there isn't a constraint
-on the exact direction the loss should be moving upwards. In other words,
-the loss landscape for predicting a singular target class is less generous than
-the landscape for predicting any class other than the clean label. As a mental model, we propose
-you think about an individual attempting to climb up a mountain: in the untargeted case,
-it is easy to climb straight up while in the targeted case, it is unclear which direction to
-climb.
+Finding targeted adversarial examples that transfer is much harder than finding untargeted examples that transfer [@liu2017delvingtransferableadversarialexamples]. This is because it is much easier to drive the loss up when there isn't a constraint on the exact direction the loss should be moving upwards. In other words, the loss landscape for predicting a singular target class is less generous than the landscape for predicting any class other than the clean label. As a mental model, we propose you think about an individual attempting to climb up a mountain: in the untargeted case, it is easy to climb straight up while in the targeted case, it is unclear which direction to climb.
 
 <p align="center">
   <ThemeImage
@@ -44,52 +31,23 @@ climb.
 
 ## Threat Model for Transferability
 
-Transferable adversarial images and jailbreaks are interesting, but it may not be
-entirely obvious why they are important for security. One reason is that in many cases,
-an attacker may want to attack a model that is secured behind an API. In other words,
-the attacker doesn't have white-box access and therefore cannot run an algorithm like
-PGD or CW. They may also not be able to query the model repeatedly without arousing
-suspicion or incurring high API costs. One solution to this issue is to attack a white-box
-model for free using as many iterations as the attacker would like, and then hope
-that the attack transfers. When a white-box model is used in this way, you may hear
-it referred to as a "surrogate model." Because there are plenty of open source models available for
-download, there are plenty of surrogate models to choose from, making these transfer attacks practical to execute.
+Transferable adversarial images and jailbreaks are interesting, but it may not be entirely obvious why they are important for security. One reason is that in many cases, an attacker may want to attack a model that is secured behind an API. In other words, the attacker doesn't have white-box access and therefore cannot run an algorithm like PGD or CW. They may also not be able to query the model repeatedly without arousing suspicion or incurring high API costs. One solution to this issue is to attack a white-box model for free using as many iterations as the attacker would like, and then hope that the attack transfers. When a white-box model is used in this way, you may hear it referred to as a "surrogate model." Because there are plenty of open source models available for download, there are plenty of surrogate models to choose from, making these transfer attacks practical to execute.
 
 ## Improving Transferability
 
-One problem with attacks that rely on transferability is that they aren't reliable.
-Sometimes the transfer works, but other times it doesn't and in practice, it is difficult
-to know which model is a good choice to use as a surrogate. One solution to this
-problem is to use a diverse selection of surrogate models rather
-than to choose one and hope for the best. These kinds of attacks are called ensemble
-attacks [@liu2017delvingtransferableadversarialexamples].
+One problem with attacks that rely on transferability is that they aren't reliable. Sometimes the transfer works, but other times it doesn't and in practice, it is difficult to know which model is a good choice to use as a surrogate. One solution to this problem is to use a diverse selection of surrogate models rather than to choose one and hope for the best. These kinds of attacks are called ensemble attacks [@liu2017delvingtransferableadversarialexamples].
 
-In an ensemble attack, you choose $k$ models and assign each a weight $\alpha$ for how much that model should
-influence the attack loss. Traditionally $\sum_{i=1}^k \alpha_i = 1$, so you can think about
-the total loss as being shared between each model. If $x$ is our clean image and $\delta$ is our adversarial
-perturbation, let $\ell_i(x + \delta)$ be the attack loss for a specific model $i$.
-You can think of $\ell_k(x + \delta)$ as being similar to the $f$ function from
-the Carlini-Wagner attack in a previous section. Let $D(\delta)$ be some distance
-metric such as an $L_p$ norm. Then we try to find $\delta$ such
-that it minimizes the following:
+In an ensemble attack, you choose $k$ models and assign each a weight $\alpha$ for how much that model should influence the attack loss. Traditionally $\sum_{i=1}^k \alpha_i = 1$, so you can think about the total loss as being shared between each model. If $x$ is our clean image and $\delta$ is our adversarial perturbation, let $\ell_i(x + \delta)$ be the attack loss for a specific model $i$. You can think of $\ell_k(x + \delta)$ as being similar to the $f$ function from the Carlini-Wagner attack in a previous section. Let $D(\delta)$ be some distance metric such as an $L_p$ norm. Then we try to find $\delta$ such that it minimizes the following:
 
 $$
 \argmin_\delta D(\delta) + \sum_{i=1}^k \alpha_i \cdot \ell_i(x + \delta)
 $$
 
-In the original paper, the authors use cross entropy loss for $\ell$ but other attacks
-that are conceptually similar can use other losses.
+In the original paper, the authors use cross entropy loss for $\ell$ but other attacks that are conceptually similar can use other losses.
 
 <Dropdown title="Comments on notation">
 
-The original authors of the [Delving into Transferable Adversarial Examples and Black-box Attacks](https://arxiv.org/pdf/1611.02770)
-paper use a very different notation than the one we use above. We changed the notation
-for clarity and to be more consistent with the other notebooks,
-but it is a good exercise to get used to parsing less-than-ideal notation. For reference,
-here is the original formulation for optimizing ensemble attacks. $y^*$ is understood to be
-a one hot vector and $J_i$ gives the softmax probabilities for model $i$. The $-\log$ term
-will find the [cross entropy loss](https://docs.pytorch.org/docs/2.7/generated/torch.nn.CrossEntropyLoss.html). For more details
-you can reference the paper itself.
+The original authors of the [Delving into Transferable Adversarial Examples and Black-box Attacks](https://arxiv.org/pdf/1611.02770) paper use a very different notation than the one we use above. We changed the notation for clarity and to be more consistent with the other notebooks, but it is a good exercise to get used to parsing less-than-ideal notation. For reference, here is the original formulation for optimizing ensemble attacks. $y^*$ is understood to be a one hot vector and $J_i$ gives the softmax probabilities for model $i$. The $-\log$ term will find the [cross entropy loss](https://docs.pytorch.org/docs/2.7/generated/torch.nn.CrossEntropyLoss.html). For more details you can reference the paper itself.
 
 $$
 \argmin_{x^*} - \log \left( \left( \sum_{i=1}^k \alpha_i J_i(x^*) \right) \cdot \mathbf{1}_{y^*} \right) + \lambda d(x, x^*)
@@ -97,12 +55,7 @@ $$
 
 </Dropdown>
 
-If you have completed the coding exercises in the previous two sections you will
-probably notice that the optimization above is more similar to a Carlini-Wagner
-attack than PGD. For simplicity, we diverge from the original paper a bit in our
-coding exercises where you will complete something more similar to PGD. This involves
-less code and no hyperparameters, but you are welcome to try a version more faithful to
-the original paper if you are interested.
+If you have completed the coding exercises in the previous two sections you will probably notice that the optimization above is more similar to a Carlini-Wagner attack than PGD. For simplicity, we diverge from the original paper a bit in our coding exercises where you will complete something more similar to PGD. This involves less code and no hyperparameters, but you are welcome to try a version more faithful to the original paper if you are interested.
 
 <NextPageButton />
 

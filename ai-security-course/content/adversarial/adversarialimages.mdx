@@ -12,40 +12,23 @@ This section has a series of coding problems using PyTorch. _As always, we highl
 
 ## Creating Adversarial Images
 
-This segment of the course focuses on generating adversarial samples to fool a
-convolutional neural network trained on the CIFAR-10 dataset.
-We will cover the Fast Gradient Sign Method (FGSM), its iterative variant (BIM),
-and Projected Gradient Descent (PGD). The Carlini-Wagner attack [@carlini2017evaluatingrobustnessneuralnetworks] and black
-box methods such as the Square Attack [@andriushchenko2020squareattackqueryefficientblackbox] will be covered in later pages as well.
+This segment of the course focuses on generating adversarial samples to fool a convolutional neural network trained on the CIFAR-10 dataset. We will cover the Fast Gradient Sign Method (FGSM), its iterative variant (BIM), and Projected Gradient Descent (PGD). The Carlini-Wagner attack [@carlini2017evaluatingrobustnessneuralnetworks] and black box methods such as the Square Attack [@andriushchenko2020squareattackqueryefficientblackbox] will be covered in later pages as well.
 
 ## Distances
 
-There are a few metrics for calculating the 'distance' between the original image and the perturbed one, the most notable being $L_0$, $L_2$, and $L_{\infty}$ .
-$L_0$ is equivalent to the number of non-matching pixels, and is easy to calculate.
-$L_2$ is the typical norm used in linear algebra, and refers to the vector distance between the two images.
-$L_{\infty}$ calculates the maximum perturbation to any of the pixels in the original image.
+There are a few metrics for calculating the 'distance' between the original image and the perturbed one, the most notable being $L_0$, $L_2$, and $L_{\infty}$. $L_0$ is equivalent to the number of non-matching pixels, and is easy to calculate. $L_2$ is the typical norm used in linear algebra, and refers to the vector distance between the two images. $L_{\infty}$ calculates the maximum perturbation to any of the pixels in the original image.
 
-For our attacks we will use $L_{\infty}$ because it is simple, cheap to calculate, and historically
-conventional for the kinds of attacks we are performing. It is also intuitive: a single dramatically
-changed pixel (for example, green to pink), would be easy to spot.
-Minimizing an $L_\infty$ metric, for example, to keep all changes within a $8/255$,
-is typically enough to prevent our adversarial images from becoming suspicious.
+For our attacks we will use $L_{\infty}$ because it is simple, cheap to calculate, and historically conventional for the kinds of attacks we are performing. It is also intuitive: a single dramatically changed pixel (for example, green to pink), would be easy to spot. Minimizing an $L_\infty$ metric, for example, to keep all changes within a $8/255$, is typically enough to prevent our adversarial images from becoming suspicious.
 
 <Dropdown title="Understanding L-norms in More Detail">
 
-The choice of distance metric significantly impacts both the attack strategy and the resulting adversarial examples.
-You may find some level of inconsistency across the literature describing the different
-distance metrics. For our course, we use the definition of an $L_p$ norm outlined in [@carlini2017evaluatingrobustnessneuralnetworks]
-where $v = x_\mathrm{original} - x_\mathrm{adversarial}$
+The choice of distance metric significantly impacts both the attack strategy and the resulting adversarial examples. You may find some level of inconsistency across the literature describing the different distance metrics. For our course, we use the definition of an $L_p$ norm outlined in [@carlini2017evaluatingrobustnessneuralnetworks] where $v = x_\mathrm{original} - x_\mathrm{adversarial}$
 
 $$
 \|v\|_p = \left(\sum_{i=1}^{n} |v_i|^p\right)^{\frac{1}{p}}
 $$
 
-If you are interested, you should be able to find the limit of the $L_p$ norm
-as $p \rightarrow \infty$ is equivalent to the maximum difference between any pixel value
-in $x_\mathrm{original}$ and $x_\mathrm{adversarial}$. Likewise, you should find that
-when $p = 0$ the $L_p$ norm is equivalent to the number of pixels changed.
+If you are interested, you should be able to find the limit of the $L_p$ norm as $p \rightarrow \infty$ is equivalent to the maximum difference between any pixel value in $x_\mathrm{original}$ and $x_\mathrm{adversarial}$. Likewise, you should find that when $p = 0$ the $L_p$ norm is equivalent to the number of pixels changed.
 
 </Dropdown>
 

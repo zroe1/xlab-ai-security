@@ -1,0 +1,50 @@
+---
+title: "SmoothLLM"
+description: "The Whole is Greater than the Sum of its Parts"
+---
+
+## An Observation Yet Again
+SmoothLLM [@robeySmoothLLMDefendingLarge2024], similarly to SafeDecoding, is another defense technique built upon an interesting observation made by the authors. Specifically, they notice that perturbing just a small fraction of the characters in adversarial suffixes leads to a drastic drop in performance of the attack. For example, swapping only 10% of the characters in an adversarial suffix that usually yields a >95% ASR on Vicuna decreased the ASR to below 1%. Intuitively, this makes sense; the adversarial perturbations select specific tokens based on their ability to decrease the token-forcing loss, so perturbing the token sequence is likely to increase that loss. Is there any way we could leverage this insight to create a defense against adversarial suffix attacks?
+
+## SmoothLLM
+Of course this observation can motivate a defense! @robeySmoothLLMDefendingLarge2024 introduce SmoothLLM as a rather simple technique to mitigate the effectiveness of adversarial suffixes. Formally, say we have a prompt $P$, an $\texttt{LLM}$, a jailbreak indicator $\text{JB} : R \to \{0, 1\}$, and a perturbation percentage $q$.
+
+The first step is perturbing the prompt passed as input, using three strategies: inserting (adding new characters), swapping (replacing characters with new, random ones), and patching (replacing a consecutive characters with new ones). Each perturbation affects $q\%$ of the characters in the prompt (the *whole* prompt, not just the suffix; we don't know where the suffix begins). We denote this transformation as $\text{RandomPerturbation}$.
+
+The next step is creating a *collection* of $N$ perturbed prompts $\{Q_i := \text{RandomPerturbation}(P, q)\}_{i = 1}^N$, which are then all passed to LLMs as inputs to get responses $\{R_i\}_{i = 1}^N$. Why a collection? Well, it's unlikely that one prompt with $q\%$ perturbed characters would affect the effectiveness of the adversarial suffix. However, we know that perturbing even a small percentage of the tokens in an adversarial suffix greatly reduced the attack's ASR. Thus, we create a collection of perturbed prompts, which is likely to contain many prompts that perturb characters in the adversarial suffix. On average, over many prompts, we hope the perturbations negate the jailbreak.
+
+Finally, we take the majority vote of our jailbreak indicator $\text{JB}$ over these responses
+$$
+\mathbb{I} \left[ \frac{1}{N} \sum_{i = 1}^N \text{JB}(R_i) > \frac{1}{2} \right].
+$$
+We then return a response consistent with the vote. If the vote is that a jailbreak occurred, we return a sampled response that *agrees that $P$ is a jailbreak prompt* and thus rejects the query. If the vote is that a jailbreak didn't occur, we return a sampled response that *agrees $P$ is not a jailbreak prompt*, answering the query. The pseudocode for SmoothLLM is given below.
+
+$$
+\begin{array}{l}
+\textbf{Algorithm: } \text{SmoothLLM} \\
+\hline
+\textbf{Data: } \text{Prompt } P \\
+\textbf{Input: } \text{Number of samples } N, \text{ perturbation percentage } q \\[0.5em]
+\textbf{for } j = 1, \dots, N \textbf{ do} \\
+\quad Q_j \leftarrow \text{RandomPerturbation}(P, q) \\
+\quad R_j \leftarrow \text{LLM}(Q_j) \\[0.5em]
+V \leftarrow \text{MajorityVote}(R_1, \dots, R_N) \\
+j^\star \sim \text{Unif}(\{j \in [N] : \text{JB}(R_j) = V\}) \\
+\textbf{return } R_{j^\star} \\[0em]
+\hline \\[-1em]
+\textbf{Function } \text{MajorityVote}(R_1, \dots, R_N): \\
+\quad \textbf{return } \mathbb{I}\left[\frac{1}{N}\sum_{j=1}^{N} \text{JB}(R_j) > \frac{1}{2}\right] \\[0.5em]
+\hline
+\end{array}
+$$
+
+To choose hyperparameters $N$ and $q$, the authors also introduce a notion of $k$-instability: a prompt is $k$-unstable if changing $\geq k$ of its characters causes the attack to fail. Using the $k$-instability of a prompt, we can create a closed-form expression giving the probability that the SmoothLLM defense succeeds in terms of $N$, $q$, and $k$. We'll spare you the math, but we encourage you to take a look at the [original paper](https://arxiv.org/abs/2310.03684)!
+
+The authors ultimately found that SmoothLLM significantly increases the robustness of models against GCG and AmpleGCG (ASR $\approx 0.1$), while also providing a non-trivial decrease in ASR (e.g. from 56% to 24% on GPT-4) against PAIR (which SmoothLLM wasn't designed to defend against).
+
+## The Drawbacks
+There are a few notable drawbacks of SmoothLLM, the first of which is fairly obvious: it requires us to pass a single query through an LLM $N$ times, and $N$ can be non-trivial (the authors found $N = 6$ to be the minimum to send ASR below 1%, but even $N = 2$ is doubling the number of required computations). Further, the random perturbations applied to the prompt decrease the model's utility, similarly to paraphrasing; the authors specifically found a decreasing linear relationship between performance on the `InstructionFollowing` dataset and the perturbation percentage $q$.
+
+These drawbacks don't make SmoothLLM completely useless, because, as pointed out by the authors, even $N = 2$ and $q = 10\%$ SmoothLLM can reduce the ASR by at least 2$\times$ and up to 18$\times$. But given that even this scaled-back setup requires an extra query to the LLM, [it'd be nice](https://en.wikipedia.org/wiki/Foreshadowing) if the defense also provided a better guarantee against prompt-level jailbreaks.
+
+## References
