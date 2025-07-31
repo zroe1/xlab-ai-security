@@ -40,6 +40,27 @@ class Model:
         )
         return completion.choices[0].message.content
 
+def parse_grok_output(text):
+    """
+    Convert a string with asterisk-prefixed items into a list of strings.
+    
+    Args:
+        text (str): Input string with items prefixed by '*'
+    
+    Returns:
+        list: List of strings, each containing the text after the asterisk
+    """
+    lines = text.strip().split('\n')
+    items = []
+    
+    for line in lines:
+        line = line.strip()
+        if line.startswith('* '):
+            # Remove the '* ' prefix and add to items
+            items.append(line[2:])
+    
+    return items
+
 ANSWER_SYS_PROMPT = '''
 You are a friendly assistant who admires the natural beauty in the world.
 
@@ -66,7 +87,7 @@ QUESTION_GEN_PROMPTS = [
 def main():
     for p in QUESTION_GEN_PROMPTS:
         grok = Model("grok", local=False, sysprompt=QUESTION_SYS_PROMPT)
-        print(grok.get_response(p))
+        print(parse_grok_output(grok.get_response(p)))
 
 if __name__ == "__main__":
     main()
