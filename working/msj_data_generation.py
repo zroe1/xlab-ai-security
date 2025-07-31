@@ -1,5 +1,6 @@
 import os
 import re
+import json
 from dotenv import load_dotenv
 from openai import OpenAI
 ACCEPTABLE_MODELS = "grok"
@@ -95,9 +96,31 @@ QUESTION_GEN_PROMPTS = [
 ]
 
 def main():
+    prompts = []
+
     for p in QUESTION_GEN_PROMPTS:
         grok = Model("grok", local=False, sysprompt=QUESTION_SYS_PROMPT)
-        print(parse_grok_output(grok.get_response(p)))
+        prompts.extend(parse_grok_output(grok.get_response(p)))
+
+    print(f"Generated {len(prompts)} prompts")
+
+    data = []
+
+    for i, prompt in enumerate(prompts):
+        print(f"Processing prompt {i+1}/{len(prompts)}")
+        grok = Model("grok", local=False, sysprompt=ANSWER_SYS_PROMPT)
+        response = grok.get_response(prompt)
+        
+        data.append({
+            "question": prompt,
+            "response": response
+        })
+
+    output_file = "beauty_qa_dataset.json"
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    
+    print(f"Saved {len(data)} question-response pairs to {output_file}")
 
 if __name__ == "__main__":
     main()
