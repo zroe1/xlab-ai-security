@@ -33,7 +33,7 @@ So far, we've looked at jailbreaks of pure LLMs, where text alone is a valid att
 
 To learn how to do this, we'll work through the methodology of [Visual Adversarial Examples Jailbreak Aligned Large Language Models](https://arxiv.org/abs/2306.13213) [@qiVisualAdversarialExamples2024]. The intuition aligns closely with GCG's: in GCG, we take some harmful request that the model would otherwise not answer and optimize an adversarial suffix to hopefully force the model to answer the query, whereas @qiVisualAdversarialExamples2024 instead optimizes an *image* to force an answer. Optimizing images has two distinct advantages. First, we can optimize in a continuous space, which is much easier than the the discrete token space of GCG. Second, because optimization is much easier, rather than optimizing for a single target response, we can optimize for a corpus of harmful queries. Ideally, this leads to the image becoming a *universal jailbreak.*
 
-Formally, given a corpus of harmful text $Y = \{ y_i \}_{i = 1}^m$, we create the adversarial examples by maximizing the probability of generating this corpus given our adversarial image:
+Formally, given a corpus of harmful text $Y = \{ y_i \}_{i = 1}^m$, we create the adversarial example by maximizing the probability of generating this corpus given our adversarial image:
 $$
 x_{\text{adv}} := \underset{\hat{x}_{\text{adv} \in \mathcal{B}}}{\arg \min} \sum_{i = 1}^m - \log\big( p(y_i | \hat{x}_{\text{adv}}) \big).
 $$
