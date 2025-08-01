@@ -3,9 +3,9 @@ title: "A Note on Ethics"
 description: "A guide for ethical AI security research"
 ---
 
-Before starting the course, it is worth taking a second to pause to consider what ethical questions are at stake. Questions about ethics come up in almost every field of research, especially ones that involve human subjects. For AI research, we claim that these ethical questions are especially relevant. Because AI is becoming increasingly integrated into our everyday lives, everyone with internet access has become a sort of human subject in a huge number of ML experiments. In the future, AI models may pose a significant threat even to those who don't use them, making the breadth of our AI experiments ever-increasing.
+Before starting the course, it is worth taking a moment to consider what ethical questions are at stake. Questions about ethics come up in almost every field of research, especially ones that involve human subjects. For AI research, we claim that these ethical questions are especially relevant. Because AI is becoming increasingly integrated into our everyday lives, everyone with internet access has become a sort of human subject in a huge number of ML experiments. In the future, AI models may pose a significant threat even to those who don't use them, making the breadth of our AI experiments ever-increasing.
 
-This document does not take a dogmatic position on what qualifies as a "bad" or "good" action. Rather, this document should is a compilation of failure modes and best practices for doing ethical AI security research.
+This document does not take a dogmatic position on what qualifies as a "bad" or "good" action, nor should this document be taken as any form of legal advice. Rather, this document is a compilation of failure modes and best practices for doing ethical AI security research.
 
 # Risks From AI Security Research
 
@@ -25,7 +25,7 @@ When releasing data is legal (which is almost all cases), there are still ethica
 
 ## Model Risks
 
-Some AI security research is done on image classifiers which in general are safe to release. However, if you are fine-tuning a language model to remove safety filters or increase its ability to do harmful tasks, this can quickly become ethically problematic. These models may be able to cause harm in the world or could be be misused to generate harmful data. For state-of-the-art language models, _we do not recommend you do this kind of fine-tuning_.
+Some AI security research is done on image classifiers, which are generally safer to release other than in security-critical domains such as facial recognition. However, if you are fine-tuning a language model to remove safety filters or increase its ability to do harmful tasks, this can quickly become ethically problematic. These models may be able to cause harm in the world or could be misused to generate harmful data. For state-of-the-art language models, _we do not recommend you do this kind of fine-tuning_.
 
 ## Information Risks
 
@@ -71,7 +71,7 @@ moral framework to justify anything you would like.
 
 Researchers reasonably may want to pursue directions that they think are interesting or promising and ethical dilemmas can be an obstacle towards doing the work they want to do. It is important to disclose your own interests and attempt to remove them from decisions that may harm other people or the public.
 
-The full discription of "distinterested ethical analysis" from the original paper [@291190] is attached below for reference.
+The full description of "distinterested ethical analysis" from the original paper [@291190] is attached below for reference.
 
 > Decision-makers (researchers, program committees, others) should consider ethics before making decisions, rather than after. For certain moral dilemmas
 > [...], it is possible to pick an outcome and then find the ethical framework that justifies that
