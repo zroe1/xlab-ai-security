@@ -15,55 +15,16 @@ import pkg_resources
 from xlab.models import BlackBox
 
 def load_cifar10_test_samples(n, download=True, transform=None, data_dir='./data'):
-    """
-    Load the first n test set examples from CIFAR-10.
-    
-    This function provides a convenient way to load a subset of CIFAR-10 test data
-    for experimentation and educational purposes, particularly useful for adversarial
-    attacks and security research.
-    
-    Parameters:
-    -----------
-    n : int
-        Number of test samples to load. If n exceeds the test set size (10,000),
-        all available samples will be returned.
-    download : bool, default=True
-        Whether to download CIFAR-10 if not already present.
-    transform : torchvision.transforms, optional
-        Optional transform to apply to the images. If None, applies standard
-        transforms (ToTensor and Normalize) suitable for most models.
-    data_dir : str, default='./data'
-        Directory to store/load CIFAR-10 data.
-    
+    """Loads the first n test set examples from CIFAR-10.
+
+    Args:
+        n (int): Number of test samples to load.
+        download (bool): Whether to download CIFAR-10 if not already present.
+        transform (torchvision.transforms): Optional transform to apply to images.
+        data_dir (str): Directory to store/load CIFAR-10 data.
+
     Returns:
-    --------
-    images : torch.Tensor
-        Tensor of shape (n, 3, 32, 32) containing the image data.
-        Values are normalized to [0, 1] if using default transform.
-    labels : torch.Tensor
-        Tensor of shape (n,) containing the integer labels (0-9).
-    
-    Examples:
-    --------
-    >>> # Load first 100 test samples with default transforms
-    >>> images, labels = load_cifar10_test_samples(100)
-    >>> print(f"Images shape: {images.shape}")  # torch.Size([100, 3, 32, 32])
-    >>> print(f"Labels shape: {labels.shape}")  # torch.Size([100])
-    
-    >>> # Load with custom transforms
-    >>> from torchvision import transforms
-    >>> custom_transform = transforms.Compose([
-    ...     transforms.ToTensor(),
-    ...     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # [-1, 1] range
-    ... ])
-    >>> images, labels = load_cifar10_test_samples(50, transform=custom_transform)
-    
-    Notes:
-    ------
-    - CIFAR-10 test set contains 10,000 samples total
-    - Default transform normalizes to [0, 1] range using ToTensor()
-    - For adversarial attacks, you may want to use [-1, 1] normalization
-    - Use CIFAR10.itos to convert integer labels to class names
+        tuple: (images [n, 3, 32, 32], labels [n]) tensor pair.
     """
     # Set default transform if none provided
     if transform is None:
@@ -103,56 +64,16 @@ def load_cifar10_test_samples(n, download=True, transform=None, data_dir='./data
 
 
 def load_mnist_test_samples(n, download=True, transform=None, data_dir='./data'):
-    """
-    Load the first n test set examples from MNIST.
-    
-    This function provides a convenient way to load a subset of MNIST test data
-    for experimentation and educational purposes, particularly useful for adversarial
-    attacks and security research.
-    
-    Parameters:
-    -----------
-    n : int
-        Number of test samples to load. If n exceeds the test set size (10,000),
-        all available samples will be returned.
-    download : bool, default=True
-        Whether to download MNIST if not already present.
-    transform : torchvision.transforms, optional
-        Optional transform to apply to the images. If None, applies standard
-        transforms (ToTensor) suitable for most models.
-    data_dir : str, default='./data'
-        Directory to store/load MNIST data.
-    
+    """Loads the first n test set examples from MNIST.
+
+    Args:
+        n (int): Number of test samples to load.
+        download (bool): Whether to download MNIST if not already present.
+        transform (torchvision.transforms): Optional transform to apply to images.
+        data_dir (str): Directory to store/load MNIST data.
+
     Returns:
-    --------
-    images : torch.Tensor
-        Tensor of shape (n, 1, 28, 28) containing the image data.
-        Values are normalized to [0, 1] if using default transform.
-    labels : torch.Tensor
-        Tensor of shape (n,) containing the integer labels (0-9).
-    
-    Examples:
-    --------
-    >>> # Load first 100 test samples with default transforms
-    >>> images, labels = load_mnist_test_samples(100)
-    >>> print(f"Images shape: {images.shape}")  # torch.Size([100, 1, 28, 28])
-    >>> print(f"Labels shape: {labels.shape}")  # torch.Size([100])
-    
-    >>> # Load with custom transforms
-    >>> from torchvision import transforms
-    >>> custom_transform = transforms.Compose([
-    ...     transforms.ToTensor(),
-    ...     transforms.Normalize((0.5,), (0.5,))  # [-1, 1] range for grayscale
-    ... ])
-    >>> images, labels = load_mnist_test_samples(50, transform=custom_transform)
-    
-    Notes:
-    ------
-    - MNIST test set contains 10,000 samples total
-    - Images are 28x28 grayscale (1 channel)
-    - Default transform normalizes to [0, 1] range using ToTensor()
-    - For adversarial attacks, you may want to use [-1, 1] normalization
-    - Labels are digits 0-9
+        tuple: (images [n, 1, 28, 28], labels [n]) tensor pair.
     """
     # Set default transform if none provided
     if transform is None:
@@ -192,31 +113,16 @@ def load_mnist_test_samples(n, download=True, transform=None, data_dir='./data')
 
 
 def load_mnist_train_samples(n, download=True, transform=None, data_dir='./data'):
-    """
-    Load the first n training set examples from MNIST.
+    """Loads the first n training set examples from MNIST.
 
-    This function mirrors `load_mnist_test_samples` but pulls data from the
-    training split of the dataset (60,000 samples) instead of the test split.
-
-    Parameters:
-    -----------
-    n : int
-        Number of training samples to load. If n exceeds the train set size
-        (60,000), all available samples will be returned.
-    download : bool, default=True
-        Whether to download MNIST if not already present.
-    transform : torchvision.transforms, optional
-        Optional transform to apply to the images. If None, applies standard
-        transforms (ToTensor) suitable for most models.
-    data_dir : str, default='./data'
-        Directory to store/load MNIST data.
+    Args:
+        n (int): Number of training samples to load.
+        download (bool): Whether to download MNIST if not already present.
+        transform (torchvision.transforms): Optional transform to apply to images.
+        data_dir (str): Directory to store/load MNIST data.
 
     Returns:
-    --------
-    images : torch.Tensor
-        Tensor of shape (n, 1, 28, 28) containing the image data.
-    labels : torch.Tensor
-        Tensor of shape (n,) containing the integer labels (0-9).
+        tuple: (images [n, 1, 28, 28], labels [n]) tensor pair.
     """
 
     # Set default transform if none provided
@@ -266,29 +172,17 @@ def get_mnist_train_loader(
     transform=None,
     data_dir='./data',
 ):
-    """
-    Create a PyTorch ``DataLoader`` for the MNIST training set.
+    """Creates a PyTorch DataLoader for the MNIST training set.
 
-    Parameters
-    ----------
-    batch_size : int, default=64
-        Number of samples per batch to load.
-    shuffle : bool, default=True
-        Whether to shuffle the dataset each epoch.
-    download : bool, default=True
-        Download the dataset if it is not present locally.
-    transform : torchvision.transforms, optional
-        Transformations to apply to each image. If ``None``, a default
-        ``ToTensor`` transform is applied that scales pixel values to ``[0,1]``.
-    data_dir : str, default='./data'
-        Directory where the MNIST data is stored / will be downloaded to.
+    Args:
+        batch_size (int): Number of samples per batch to load.
+        shuffle (bool): Whether to shuffle the dataset each epoch.
+        download (bool): Download the dataset if not present locally.
+        transform (torchvision.transforms): Transformations to apply to each image.
+        data_dir (str): Directory where MNIST data is stored/downloaded.
 
-    Returns
-    -------
-    torch.utils.data.DataLoader
-        A DataLoader yielding batches of ``(images, labels)`` where ``images``
-        has shape ``(batch_size, 1, 28, 28)`` and ``labels`` has shape
-        ``(batch_size,)``.
+    Returns:
+        torch.utils.data.DataLoader: DataLoader for MNIST training data.
     """
 
     # Default transform
@@ -316,40 +210,34 @@ def get_mnist_train_loader(
 
 
 def add_noise(img, stdev=0.001, mean=0):
-    """
-    Helper function for PGD_generator
+    """Adds Gaussian noise to an image tensor.
 
-    Parameters:
-    -----------
-    img : Tensor
-        image Tensor to be predicted
+    Args:
+        img [*]: Image tensor to add noise to.
+        stdev (float): Standard deviation of Gaussian noise.
+        mean (float): Mean of Gaussian noise.
 
     Returns:
-    --------
-    noisy_img: Tensor
-        Added noise to input
+        [*]: Noisy image tensor with same shape as input.
     """
     noise = torch.randn_like(img) * stdev + mean
     return img + noise
 
 
 def PGD_generator(model, loss_fn, path, y, epsilon=1 / 1000, alpha=0.0005, num_iters=6):
-    """
-    Create adversarial image using PGD
+    """Creates adversarial image using PGD attack.
 
-    Parameters:
-    -----------
-    model : PyTorch model used for classification
-    loss_fn : Loss function
-    path: Image filepath
-    y: Image label
-    epsilon: Perturbation variable
-    Alpha: Perturbation variable
-    num_iters: Number of iterations
+    Args:
+        model (torch.nn.Module): PyTorch model for classification.
+        loss_fn (torch.nn.Module): Loss function for attack.
+        path (str): Filepath to input image.
+        y (torch.Tensor): Target label tensor.
+        epsilon (float): Maximum perturbation magnitude.
+        alpha (float): Step size for each iteration.
+        num_iters (int): Number of PGD iterations.
 
     Returns:
-    --------
-    adv_img: Adversarially perturbed image tensor
+        [1, 3, 32, 32]: Adversarially perturbed image tensor.
     """
     model.eval()
     x = process_image(path)
@@ -369,22 +257,14 @@ def PGD_generator(model, loss_fn, path, y, epsilon=1 / 1000, alpha=0.0005, num_i
 
 
 def prediction(model, img):
-    """
-    Return prediction tuple:
+    """Returns prediction class and confidence for an image.
 
-    Parameters:
-    -----------
-    model : PyTorch model used for classification
-    img : Tensor
-        image Tensor to be predicted
+    Args:
+        model (torch.nn.Module): PyTorch model for classification.
+        img [*]: Image tensor to predict.
 
     Returns:
-    --------
-    pred_class : torch.Tensor
-        The predicted class label
-    prob : torch.Tensor
-        The confidence of the model
-
+        tuple: (pred_class, confidence) tensor pair.
     """
     with torch.no_grad():  # Stops calculating gradients
         prediction = model(img)
@@ -394,49 +274,28 @@ def prediction(model, img):
 
 
 def show_image(img):
-    """
-    Display image tensor using plt
+    """Displays image tensor using matplotlib.
 
-    Parameters:
-    -----------
-    img : Tensor
-        image Tensor to be displayed
+    Args:
+        img [1, 3, H, W]: Image tensor to display.
+
+    Returns:
+        None: Displays image plot.
     """
     img = img.squeeze(0)
     plt.imshow(img.permute(1, 2, 0).detach().numpy())
 
 
 def show_grayscale_image(img, title=None, figsize=(3, 3)):
-    """
-    Display a grayscale image tensor (e.g., MNIST digits) using matplotlib.
-    
-    This function is specifically designed for displaying grayscale images like
-    MNIST digits with proper formatting and visualization.
-    
-    Parameters:
-    -----------
-    img : torch.Tensor
-        Grayscale image tensor. Can be either:
-        - Shape [1, 28, 28] (with channel dimension)  
-        - Shape [28, 28] (without channel dimension)
-        Values should be in range [0, 1].
-    title : str, optional
-        Title to display above the image.
-    figsize : tuple, default=(3, 3)
-        Figure size (width, height) in inches.
-    
-    Examples:
-    --------
-    >>> # Display single MNIST digit
-    >>> mnist_images, labels = load_mnist_test_samples(1)
-    >>> show_grayscale_image(mnist_images[0], title=f"Digit: {labels[0]}")
-    
-    >>> # Display with custom size
-    >>> show_grayscale_image(mnist_images[0], title="MNIST Sample", figsize=(2, 2))
-    
-    >>> # Works with [28, 28] tensors too
-    >>> digit_28x28 = mnist_images[0].squeeze(0)  # Remove channel dim
-    >>> show_grayscale_image(digit_28x28)
+    """Displays grayscale image tensor using matplotlib.
+
+    Args:
+        img [1, 28, 28] or [28, 28]: Grayscale image tensor.
+        title (str): Optional title for the image.
+        figsize (tuple): Figure size (width, height) in inches.
+
+    Returns:
+        None: Displays grayscale image plot.
     """
     # Convert to numpy and handle different input shapes
     if isinstance(img, torch.Tensor):
@@ -468,18 +327,13 @@ def show_grayscale_image(img, title=None, figsize=(3, 3)):
 
 
 def process_image(path):
-    """
-    Convert file path to scaled torch tensor
+    """Converts image file to scaled torch tensor.
 
-    Parameters:
-    -----------
-    path : str
-        Filepath for image
+    Args:
+        path (str): Filepath to image file.
 
     Returns:
-    --------
-    processedImg: Scaled and transformed image tensor
-
+        [1, 3, 32, 32]: Processed image tensor.
     """
     img = load_sample_image(path)
     transform = Compose([Resize((32, 32)), ToTensor()])
@@ -489,46 +343,14 @@ def process_image(path):
 
 
 def load_sample_image(image_name, return_path=False):
-    """
-    Load a sample image included with the xlab package.
-    
-    This function provides access to sample images bundled with the package,
-    useful for testing adversarial attacks and other image processing tasks.
-    
-    Parameters:
-    -----------
-    image_name : str
-        Name of the image file to load. Available images:
-        - 'cat.jpg': Sample cat image for testing
-        - 'car.jpg': Sample car image for testing  
-        - 'frog.jpg': Sample frog image for testing
-    return_path : bool, default=False
-        If True, returns the file path instead of loading the image.
-        Useful if you need the path for other functions.
-    
+    """Loads a sample image included with the xlab package.
+
+    Args:
+        image_name (str): Name of image file (e.g., 'cat.jpg').
+        return_path (bool): If True, returns file path instead of PIL Image.
+
     Returns:
-    --------
-    image : PIL.Image or str
-        If return_path=False: PIL Image object
-        If return_path=True: String path to the image file
-    
-    Examples:
-    --------
-    >>> # Load cat image as PIL Image
-    >>> cat_img = load_sample_image('cat.jpg')
-    >>> print(type(cat_img))  # <class 'PIL.Image.Image'>
-    
-    >>> # Get path to image file
-    >>> cat_path = load_sample_image('cat.jpg', return_path=True)
-    >>> print(cat_path)  # /path/to/package/data/cat.jpg
-    
-    >>> # Use with other functions
-    >>> cat_tensor = process_image(load_sample_image('cat.jpg', return_path=True))
-    
-    Raises:
-    -------
-    FileNotFoundError
-        If the specified image file doesn't exist in the package.
+        PIL.Image or str: Loaded PIL Image or path string.
     """
     try:
         # Get the path to the data directory in the package
@@ -604,25 +426,19 @@ def plot_tensors(
     figsize=None,
     **kwargs,
 ):
-    """
-    Custom imshow for multiple tensors: negative=navy, zero=white, positive=maroon
+    """Plots multiple tensors with custom colormap (navy-white-maroon).
 
-    Parameters:
-    -----------
-    tensors : list of array-like
-        List of 2D tensors to display
-    ncols : int, default=3
-        Number of columns in the grid
-    colorbar : bool, default=True
-        Whether to show colorbars
-    log_scale : bool, default=False
-        Whether to use symmetric log scale for colorbar
-    titles : list of str, optional
-        Custom titles for each tensor. If None, uses "Tensor 1", "Tensor 2", etc.
-    figsize : tuple, optional
-        Figure size (width, height)
-    **kwargs : dict
-        Additional arguments passed to imshow
+    Args:
+        tensors (list): List of 2D tensors to display.
+        ncols (int): Number of columns in the grid.
+        colorbar (bool): Whether to show colorbars.
+        log_scale (bool): Whether to use symmetric log scale.
+        titles (list): Custom titles for each tensor.
+        figsize (tuple): Figure size (width, height).
+        **kwargs: Additional arguments passed to imshow.
+
+    Returns:
+        tuple: (fig, images) matplotlib objects.
     """
 
     # Convert to list if single tensor passed
@@ -715,32 +531,19 @@ def plot_tensors(
 
 
 def plot_2d(x, y, x_range=None, y_range=None, title=None, figsize=(8, 6), **kwargs):
-    """
-    Plot 2D data with maroon color scheme.
+    """Plots 2D data with maroon color scheme.
 
-    Parameters:
-    -----------
-    x : array-like
-        X coordinates/values
-    y : array-like
-        Y coordinates/values
-    x_range : tuple, optional
-        X-axis range as (min, max). If None, uses data range.
-    y_range : tuple, optional
-        Y-axis range as (min, max). If None, uses data range.
-    title : str, optional
-        Plot title. If None, no title is set.
-    figsize : tuple, default=(8, 6)
-        Figure size (width, height)
-    **kwargs : dict
-        Additional arguments passed to plot function
+    Args:
+        x (array-like): X coordinates/values.
+        y (array-like): Y coordinates/values.
+        x_range (tuple): X-axis range as (min, max).
+        y_range (tuple): Y-axis range as (min, max).
+        title (str): Plot title.
+        figsize (tuple): Figure size (width, height).
+        **kwargs: Additional arguments passed to plot function.
 
     Returns:
-    --------
-    fig : matplotlib.figure.Figure
-        The figure object
-    ax : matplotlib.axes.Axes
-        The axes object
+        tuple: (fig, ax) matplotlib objects.
     """
 
     # Convert to numpy arrays
@@ -784,21 +587,11 @@ def plot_2d(x, y, x_range=None, y_range=None, title=None, figsize=(8, 6), **kwar
 
 
 class BlackBoxModelWrapper:
-    """
-    A wrapper for black box models that hides implementation details.
-    
-    This class downloads and loads a pre-trained model from HuggingFace Hub
-    and provides a simple interface for making predictions while keeping
-    the actual model hidden from casual inspection.
-    
-    Examples:
-    --------
-    >>> # Load MNIST black box model
-    >>> black_box = BlackBoxModelWrapper('mnist-black-box')
-    >>> 
-    >>> # Make predictions (expects MNIST format: 1x28x28)
-    >>> predictions = black_box.predict(mnist_images)
-    >>> class_probs = black_box.predict_proba(mnist_images)
+    """Wraps pre-trained models while hiding implementation details.
+
+    Args:
+        model_type (str): Type of model to load (e.g., 'mnist-black-box').
+        device (str): Device to run model on ('cpu' or 'cuda').
     """
     
     def __init__(self, model_type='mnist-black-box', device='cpu'):
@@ -928,70 +721,26 @@ class BlackBoxModelWrapper:
 
 
 def load_black_box_model(model_type='mnist-black-box', device='cpu'):
-    """
-    Convenience function to load a black box model.
-    
-    This function provides a simple way to load and use pre-trained models
-    without exposing the underlying implementation details.
-    
-    Parameters:
-    -----------
-    model_type : str, default='mnist-black-box'
-        Type of model to load. Currently supports:
-        - 'mnist-black-box': Pre-trained MNIST classifier  
-    device : str, default='cpu'
-        Device to run the model on ('cpu' or 'cuda')
-    
+    """Loads a pre-trained black box model.
+
+    Args:
+        model_type (str): Type of model to load.
+        device (str): Device to run model on ('cpu' or 'cuda').
+
     Returns:
-    --------
-    model : BlackBoxModelWrapper
-        Wrapped model that can make predictions
-    
-    Examples:
-    --------
-    >>> # Load model and make predictions
-    >>> model = load_black_box_model('mnist-black-box')
-    >>> predictions = model.predict(mnist_data)
-    >>> probabilities = model.predict_proba(mnist_data) 
-    
-    >>> # Use as a function
-    >>> predictions = model(mnist_data)
+        BlackBoxModelWrapper: Wrapped model for making predictions.
     """
     return BlackBoxModelWrapper(model_type=model_type, device=device)
 
 
 def get_best_device():
-    """
-    Get the best available PyTorch device for the current system.
-    
-    This function automatically detects and returns the best available device
-    in order of preference: CUDA (NVIDIA GPU) > MPS (Apple Silicon) > CPU.
-    
+    """Gets the best available PyTorch device for the current system.
+
+    Args:
+        None
+
     Returns:
-    --------
-    device : torch.device
-        The best available device for PyTorch operations.
-        
-    Examples:
-    --------
-    >>> # Get best device and use it
-    >>> device = get_best_device()
-    >>> print(f"Using device: {device}")
-    >>> tensor = torch.randn(3, 3).to(device)
-    
-    >>> # Use with models
-    >>> model = MyModel().to(get_best_device())
-    
-    >>> # Use with black box model
-    >>> device_str = str(get_best_device())  # Convert to string
-    >>> model = load_black_box_model('mnist-black-box', device=device_str)
-    
-    Notes:
-    ------
-    - CUDA: For NVIDIA GPUs (fastest for most deep learning tasks)
-    - MPS: For Apple Silicon Macs (M1, M2, etc.)
-    - CPU: Fallback option, always available
-    - The function checks device availability, not just existence
+        torch.device: Best available device (CUDA > MPS > CPU).
     """
     # Check for CUDA (NVIDIA GPU)
     if torch.cuda.is_available():
@@ -1018,36 +767,18 @@ def evaluate_mnist_accuracy(
     transform: "transforms.Compose | None" = None,
     data_dir: str = './data',
 ) -> float:
-    """Evaluate a PyTorch model's accuracy on the MNIST *test* split.
+    """Evaluates a PyTorch model's accuracy on the MNIST test split.
 
-    Parameters
-    ----------
-    model : torch.nn.Module
-        The model to evaluate. It will be switched to ``eval`` mode for the
-        duration of this function.
-    batch_size : int, default=256
-        Number of samples per batch when iterating over the dataset.  Larger
-        batches speed up evaluation at the cost of higher memory usage.
-    device : torch.device | str | None, optional
-        Device on which to run the evaluation.  If ``None`` (default), the
-        ``get_best_device`` helper is used to automatically choose the fastest
-        available device (CUDA ➜ MPS ➜ CPU).  A string such as ``'cuda'`` or
-        ``'mps'`` is also accepted.
-    download : bool, default=True
-        Whether to download the MNIST dataset if it is not already present in
-        ``data_dir``.
-    transform : torchvision.transforms.Compose, optional
-        Optional transform applied to each image.  If ``None`` (default),
-        applies ``transforms.ToTensor()`` which converts images to the
-        ``[0,1]`` range expected by most MNIST models.
-    data_dir : str, default='./data'
-        Directory where the MNIST data is stored / will be downloaded to.
+    Args:
+        model (torch.nn.Module): Model to evaluate.
+        batch_size (int): Number of samples per batch.
+        device (torch.device): Device for evaluation.
+        download (bool): Whether to download MNIST if not present.
+        transform (transforms.Compose): Optional transform for images.
+        data_dir (str): Directory for MNIST data storage.
 
-    Returns
-    -------
-    float
-        The model's classification accuracy on the MNIST test set in the range
-        ``[0, 1]`` (e.g. ``0.985`` for 98.5 % accuracy).
+    Returns:
+        float: Classification accuracy in range [0, 1].
     """
 
     # ---------------------------------------------------------------------
@@ -1109,6 +840,16 @@ def evaluate_mnist_accuracy(
 
 
 def f_6(logits, target, k=0.1):
+    """Computes C&W attack loss function f_6.
+
+    Args:
+        logits [num_classes]: Model output logits.
+        target (int): Target class index.
+        k (float): Confidence parameter.
+
+    Returns:
+        torch.Tensor: Computed f_6 loss value.
+    """
     i_neq_t = torch.argmax(logits)
     if i_neq_t == target:
         i_neq_t = torch.argmax(torch.cat([logits[:target], logits[target + 1 :]]))
@@ -1116,6 +857,20 @@ def f_6(logits, target, k=0.1):
 
 
 def CW_targeted_l2(img, model, c, target, k=0.1, l2_limit=0.5, num_iters=100):
+    """Generates targeted adversarial example using C&W L2 attack.
+
+    Args:
+        img [*]: Input image tensor.
+        model (torch.nn.Module): Target model.
+        c (float): Attack strength parameter.
+        target (int): Target class for misclassification.
+        k (float): Confidence parameter.
+        l2_limit (float): Maximum L2 perturbation magnitude.
+        num_iters (int): Number of optimization iterations.
+
+    Returns:
+        [*]: Adversarial example tensor with same shape as input.
+    """
     device = next(model.parameters()).device
     print(f"Using device: {device} for testing...")
 
@@ -1172,44 +927,24 @@ def plot_dual_2d(
     log_x=False,
     **kwargs,
 ):
-    """
-    Plot two lines in 2D with separate y-axes for different ranges.
+    """Plots two lines with separate y-axes for different ranges.
 
-    Parameters:
-    -----------
-    x : array-like
-        X coordinates/values (shared by both lines)
-    y1 : array-like
-        Y coordinates/values for first line (left y-axis)
-    y2 : array-like
-        Y coordinates/values for second line (right y-axis)
-    y1_label : str, optional
-        Label for the first line
-    y2_label : str, optional
-        Label for the second line
-    x_label : str, default='X'
-        Label for x-axis
-    y1_axis_label : str, default='Y1'
-        Label for left y-axis
-    y2_axis_label : str, default='Y2'
-        Label for right y-axis
-    title : str, optional
-        Plot title. If None, no title is set.
-    figsize : tuple, default=(8, 6)
-        Figure size (width, height)
-    log_x : bool, default=False
-        Whether to use logarithmic scale for x-axis
-    **kwargs : dict
-        Additional arguments passed to plot functions
+    Args:
+        x (array-like): X coordinates shared by both lines.
+        y1 (array-like): Y coordinates for first line (left y-axis).
+        y2 (array-like): Y coordinates for second line (right y-axis).
+        y1_label (str): Label for the first line.
+        y2_label (str): Label for the second line.
+        x_label (str): Label for x-axis.
+        y1_axis_label (str): Label for left y-axis.
+        y2_axis_label (str): Label for right y-axis.
+        title (str): Plot title.
+        figsize (tuple): Figure size (width, height).
+        log_x (bool): Whether to use logarithmic scale for x-axis.
+        **kwargs: Additional arguments passed to plot functions.
 
     Returns:
-    --------
-    fig : matplotlib.figure.Figure
-        The figure object
-    ax1 : matplotlib.axes.Axes
-        The left y-axis object
-    ax2 : matplotlib.axes.Axes
-        The right y-axis object
+        tuple: (fig, ax1, ax2) matplotlib objects.
     """
 
     # Convert to numpy arrays
@@ -1278,17 +1013,15 @@ def plot_dual_2d(
     return fig, ax1, ax2
 
 def clip(x, x_original, epsilon):
-    """
-    Clips adversarial perturbations to stay within epsilon-ball of original
-    image and ensures valid pixel values between 0 and 1.
+    """Clips adversarial perturbations to stay within epsilon-ball.
 
     Args:
-        x (Tensor): perturbed image tensor to be clipped
-        x_original (Tensor): original unperturbed image tensor
-        epsilon (float): maximum allowed perturbation magnitude
+        x [*]: Perturbed image tensor to be clipped.
+        x_original [*]: Original unperturbed image tensor.
+        epsilon (float): Maximum allowed perturbation magnitude.
 
-    Returns [1, 3, 32, 32]: clipped image tensor with perturbations bounded
-        by epsilon and pixel values clamped to [0, 1] range
+    Returns:
+        [*]: Clipped image tensor with bounded perturbations.
     """
     
     x_final = None
@@ -1317,42 +1050,22 @@ def PGD(
     clamp_min: float = 0.0,
     clamp_max: float = 1.0,
 ) -> torch.Tensor:
-    """Generate adversarial examples via the **Projected Gradient Descent** (PGD) method.
+    """Generates adversarial examples via Projected Gradient Descent.
 
-    This implementation works out-of-the-box for MNIST but makes **no dataset-specific
-    assumptions** about input shape or channel count and therefore can be applied to
-    any image-classification model.
+    Args:
+        model (torch.nn.Module): Target model to attack.
+        loss_fn (torch.nn.Module): Loss function for gradient computation.
+        x [batch, C, H, W] or [C, H, W]: Input images to perturb.
+        y [batch] or scalar: Ground-truth labels.
+        epsilon (float): Maximum L-infinity perturbation magnitude.
+        alpha (float): Step size for each PGD iteration.
+        num_iters (int): Number of gradient ascent steps.
+        random_start (bool): Whether to start from random point in epsilon-ball.
+        clamp_min (float): Minimum allowed pixel value.
+        clamp_max (float): Maximum allowed pixel value.
 
-    Parameters
-    ----------
-    model : torch.nn.Module
-        The target model to attack. It will be temporarily put into ``eval`` mode.
-    loss_fn : torch.nn.Module
-        Loss function used to compute gradients (e.g. ``nn.CrossEntropyLoss``).
-    x : torch.Tensor
-        Input image(s) to perturb. Shape should be ``(N, C, H, W)`` or
-        ``(C, H, W)`` for a single image.
-    y : torch.Tensor
-        Ground-truth labels corresponding to ``x``.  If ``x`` is a single image,
-        ``y`` can be a scalar tensor.
-    epsilon : float, default=8/255
-        Maximum *L-infinity* perturbation magnitude.
-    alpha : float, default=0.01
-        Step size for each PGD iteration.
-    num_iters : int, default=6
-        Number of gradient ascent steps.
-    random_start : bool, default=True
-        If ``True``, starts from a random point within the epsilon-ball around
-        the original image (recommended).
-    clamp_min : float, default=0.0
-        Minimum allowed pixel value after each projection.
-    clamp_max : float, default=1.0
-        Maximum allowed pixel value after each projection.
-
-    Returns
-    -------
-    torch.Tensor
-        Adversarially perturbed version of ``x`` with the same shape.
+    Returns:
+        [*]: Adversarially perturbed images with same shape as input.
     """
 
     # Ensure batch dimension
@@ -1407,7 +1120,18 @@ def PGD(
     return x
 
 def tiny_llama_inference(model, tokenizer, message, max_tokens=200, temperature=0.2):
-    """Generate response token by token with live printing"""
+    """Generates response from TinyLlama model token by token.
+
+    Args:
+        model (torch.nn.Module): TinyLlama model for text generation.
+        tokenizer: Tokenizer for the model.
+        message (str): Input message for the model.
+        max_tokens (int): Maximum number of tokens to generate.
+        temperature (float): Sampling temperature for generation.
+
+    Returns:
+        str: Generated response text.
+    """
     # Format prompt for TinyLlama
     prompt = f"<|user|>\n{message}<|endoftext|>\n<|assistant|>\n"
     
@@ -1454,30 +1178,19 @@ def plot_msj_results(
     show_markers=True,
     **kwargs,
 ):
-    """
-    Plot Many-Shot Jailbreaking (MSJ) attack results.
-    
-    Parameters:
-    -----------
-    results_dict : dict
-        Dictionary where keys are number of in-context examples and 
-        values are number of successful attacks. Example: {1: 0, 2: 1, 4: 3, 8: 4}
-    title : str, default="Many-Shot Jailbreaking Results"
-        Plot title.
-    xlabel : str, default="Number of In-Context Examples" 
-        X-axis label.
-    ylabel : str, default="Number of Successful Attacks"
-        Y-axis label.
-    figsize : tuple, default=(8, 6)
-        Figure size.
-    show_markers : bool, default=True
-        Whether to show markers at data points.
-    **kwargs : dict
-        Additional plot styling arguments.
-        
+    """Plots Many-Shot Jailbreaking attack results.
+
+    Args:
+        results_dict (dict): Dictionary mapping examples count to attack success count.
+        title (str): Plot title.
+        xlabel (str): X-axis label.
+        ylabel (str): Y-axis label.
+        figsize (tuple): Figure size.
+        show_markers (bool): Whether to show markers at data points.
+        **kwargs: Additional plot styling arguments.
+
     Returns:
-    --------
-    fig, ax : matplotlib figure and axes objects
+        tuple: (fig, ax) matplotlib objects.
     """
     
     # Input validation
