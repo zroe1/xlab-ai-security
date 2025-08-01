@@ -1443,3 +1443,97 @@ def tiny_llama_inference(model, tokenizer, message, max_tokens=200, temperature=
                 break
 
     return tokenizer.decode(generated_tokens, skip_special_tokens=True)
+
+
+def plot_msj_results(
+    results_dict,
+    title="Many-Shot Jailbreaking Results",
+    xlabel="Number of In-Context Examples",
+    ylabel="Number of Successful Attacks",
+    figsize=(8, 6),
+    show_markers=True,
+    **kwargs,
+):
+    """
+    Plot Many-Shot Jailbreaking (MSJ) attack results.
+    
+    Parameters:
+    -----------
+    results_dict : dict
+        Dictionary where keys are number of in-context examples and 
+        values are number of successful attacks. Example: {1: 0, 2: 1, 4: 3, 8: 4}
+    title : str, default="Many-Shot Jailbreaking Results"
+        Plot title.
+    xlabel : str, default="Number of In-Context Examples" 
+        X-axis label.
+    ylabel : str, default="Number of Successful Attacks"
+        Y-axis label.
+    figsize : tuple, default=(8, 6)
+        Figure size.
+    show_markers : bool, default=True
+        Whether to show markers at data points.
+    **kwargs : dict
+        Additional plot styling arguments.
+        
+    Returns:
+    --------
+    fig, ax : matplotlib figure and axes objects
+    """
+    
+    # Input validation
+    if not isinstance(results_dict, dict):
+        raise TypeError("results_dict must be a dictionary")
+    
+    if len(results_dict) == 0:
+        raise ValueError("results_dict cannot be empty")
+    
+    # Convert to lists and sort by number of examples
+    try:
+        # Sort by keys (number of examples) to ensure proper line plotting
+        sorted_items = sorted(results_dict.items())
+        x_values = [item[0] for item in sorted_items]
+        y_values = [item[1] for item in sorted_items]
+    except TypeError as e:
+        raise TypeError("Dictionary keys and values must be numeric") from e
+    
+    # Validate that we have numeric data
+    if not all(isinstance(x, (int, float)) for x in x_values):
+        raise TypeError("All dictionary keys must be numeric (number of examples)")
+    if not all(isinstance(y, (int, float)) for y in y_values):
+        raise TypeError("All dictionary values must be numeric (attack counts)")
+    
+    # Set up plot defaults with maroon color scheme
+    defaults = {
+        "color": "maroon", 
+        "linewidth": 2,
+        "markersize": 8,
+        "marker": "o" if show_markers else None
+    }
+    defaults.update(kwargs)
+    
+    # Create figure and axis
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Plot the data
+    line = ax.plot(x_values, y_values, **defaults)
+    
+    # Customize the plot
+    ax.set_xlabel(xlabel, fontsize=12)
+    ax.set_ylabel(ylabel, fontsize=12)
+    ax.set_title(title, fontsize=14)
+    
+    # Add grid for better readability
+    ax.grid(True, alpha=0.3)
+    
+    # Ensure y-axis starts at 0 for better visualization
+    ax.set_ylim(bottom=0)
+    
+    # Set x-axis to show integer ticks if all x values are integers
+    if all(isinstance(x, int) for x in x_values):
+        ax.set_xticks(x_values)
+    
+    plt.tight_layout()
+    return fig, ax
+
+
+
