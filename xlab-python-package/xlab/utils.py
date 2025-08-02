@@ -13,6 +13,7 @@ from PIL import Image
 import os
 import pkg_resources
 from xlab.models import BlackBox
+from openai import OpenAI
 
 def load_cifar10_test_samples(n, download=True, transform=None, data_dir='./data'):
     """Loads the first n test set examples from CIFAR-10.
@@ -1249,4 +1250,44 @@ def plot_msj_results(
     return fig, ax
 
 
+ACCEPTABLE_MODELS = ['x-ai/grok-3-mini-beta', "google/gemini-2.5-flash", "openai/gpt-4.1-mini"]
+
+class Model:
+    def __init__(self, model_name: str, local: bool, sysprompt: str, api_key):
+        assert model_name in ACCEPTABLE_MODELS
+
+        # if model_name == "grok":
+        #     self.model_name = "x-ai/grok-3-mini-beta"
+        # if model_name == "gemini":
+        #     self.model_name = "google/gemini-2.5-flash"
+        # if model_name == "gpt":
+        #     self.model_name = "openai/gpt-4.1-mini"
+
+        self.model_name = model_name
+        
+        if local:
+            raise NotImplementedError()
+        else:
+            # self.api_key = get_openrouter_key()
+            self.api_key = api_key
+            self.conversation_history = [{"role": "system", "content": sysprompt}]
+            self.client = OpenAI(
+                base_url="https://openrouter.ai/api/v1", api_key=self.api_key
+            )
+
+    def response(self, prompt: str) -> int:
+        # input = f"Here is the reponse you will be judging: {response}"
+        # str_score = self.get_response(input)
+
+
+        self.conversation_history.append({"role": "user", "content": prompt})
+        completion = self.client.chat.completions.create(
+            model=self.model_name, messages=self.conversation_history
+        )
+        return completion.choices[0].message.content
+
+def get_single_response(model, prompt, sys_prompt, api_key):
+    gemini = Model(model, local=False, sysprompt=sys_prompt, api_key=api_key)
+    model_answer = gemini.response(prompt)
+    return model_answer
 
