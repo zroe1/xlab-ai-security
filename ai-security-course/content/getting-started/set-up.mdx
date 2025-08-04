@@ -3,9 +3,59 @@ title: "Setting Up Environment"
 description: "Setting up a secure AI development environment"
 ---
 
-In general, our course requires fairly basic requirements: [PyTorch](https://pytorch.org/), [Matplotlib](https://matplotlib.org/), etc. One less conventional package you will need to install is our own [xlab-security](https://pypi.org/project/xlab-security/) package which you will use for utility functions and running tests.
+Some excercises in this course will have somewhat extensive compute requirements which means you will have to think about how you will want to run your code. The simplest approach is to run your code locally (i.e., on your own computer). If that ends up being too slow, we describe how to use Google Colab or RunPod for this course below.
 
-Please note that if you plan on running our code primarily on Google Colab, you won't have to install anything manually. It is still recommended that you read this document.
+Please note that if you plan on running our code primarily on Google Colab, you won't have to install anything manually. If you are running locally, you will have to install a few basic requirements: [PyTorch](https://pytorch.org/), [Matplotlib](https://matplotlib.org/), etc. If you are running on RunPod, you will find that many of the basic requirements listed on this page are already installed. One less conventional package you will need to install is our own [xlab-security](https://pypi.org/project/xlab-security/) package which you will use for utility functions and running tests.
+
+## Running Coding Exercises
+
+Different stages of this course will require different compute requirements. For example, in some sections, you will be calling APIs which take up nearly zero computational resources on your own machine. In others, you will have to run an LLM with 1.6B parameters (which is ~3.29G of data). For users who cannot run models this large on their own computers (we expect this to be most students) we explain how you can run our exercises for free or for very low cost using either Google Colab or Lambda Labs.
+
+### Option #1: Local
+
+For every notebook, we will have a link to our GitHub where you can download a notebook to run the code exercises locally on your computer. For some students, this will be the most familiar and convenient setup. For others, it may be hard to configure or slow to run.
+
+Being able to ML code locally is an important research skill. By running code locally, you will gain experience managing python packages and optimizing for less than ideal hardware. Therefore, we encourage all students to run code locally when possible. We will indicate on the website which sections we expect to be not feasible to run locally, but we encourage this to be your default option.
+
+For managing python packages locally, we recommend using a virtual environment. For our own internal development, we use [uv](https://docs.astral.sh/uv/).
+
+### Option #2: Colab
+
+Colab has both a paid and free option. We have tested all notebooks on the free version so you shouldn’t have to sign up for Colab premium.
+
+In order to get the advantages of Colab you will have to pay careful attention to the runtime you connect to. At the top right corner you should find a dropdown with an option to “Change runtime type.” You are free to play around with the different options, but as long as you select a machine that is not “cpu” you should be fine.
+
+<img
+  src="/colab.png"
+  alt="Colab runtime type dropdown"
+  style={{ width: "35%", display: "block", margin: "0 auto" }}
+/>
+
+### Option #3: Runpod
+
+Runpod is a paid service for cloud computing. There are many powerful machines you can rent out for less than 5 dollars an hour. If you want even fast compute (even though this shouldn’t be necessary) or if you want to use the code you write in this course to play around with larger models, we highly recommend using Runpod.
+
+To run your exercises using SSH, follow [Runpod's documentation](https://docs.runpod.io/pods/configuration/use-ssh) (or see [here](https://docs.runpod.io/pods/configuration/connect-to-ide) if you prefer using SSH with VSCode or Cursor). If you'd prefer using JupyterLab to run your code (which is perhaps the most beginner-friendly method), see [here](https://docs.runpod.io/pods/connect-to-a-pod#jupyterlab-connection).
+
+Because setting up SSH forwarding (e.g. to `git commit` from your remote connection) is a bit difficult, we provide some additional steps to do this below:
+
+1. Make sure your public key is added to the Runpod public keys in the settings.
+2. Start your desired Runpod instance (_ensure it is a secure cloud pod, which are TCP enabled by default_) and ensure to confirm SSH terminal access before deploying.
+3. Copy the command to connect via SSH _using exposed TCP_.
+4. Add the comand to your `~/.ssh/config` file. For example, you'd turn `ssh root@123.456.789 -p 1234 -i ~/.ssh/id_ed25519` into
+
+```
+Host runpod
+  HostName 123.456.789
+  Port 1234
+  User root
+  IdentityFile ~/.ssh/id_ed25519
+  ForwardAgent yes
+```
+
+5. Add your github SSH key to your ssh agent: `ssh-add ~/.ssh/<GITHUB_PRIVATE_KEY>`.
+6. Run `ssh runpod`.
+7. Confirm that you can access github on the Runpod instance: `ssh -T git@github.com`.
 
 ## Installing xlab-security
 
