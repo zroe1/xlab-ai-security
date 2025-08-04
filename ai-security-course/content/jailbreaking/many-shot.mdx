@@ -9,7 +9,7 @@ This section explores the evolution of in-context jailbreaks [@brown2020language
 
 When OpenAI tested GPT-2 [@radford2019language], they discovered that the model could do things like answer questions, even though it wasn't explicitly trained to do trivia. This is quite profound. While the transformer architecture was originally proposed for language translation, GPT-2 showed you can train a single transformer model to accomplish a variety of tasks. Importantly, switching tasks did not require additional training. The user could simply type a new prompt and the model would learn to change the way it answers "in-context."
 
-In [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165)[@brown2020languagemodelsfewshotlearners], OpenAI introduced GPT-3. With the new scale, they were able to show that larger models were better at this kind of in-context learning. When GPT-3 is given no example of how to complete a task in its prompt (zero-shot), it performs significantly worse than when it is given one example (one-shot) or a few examples (few-shot). In the figure below, they run an experiment across 42 different benchmarks and find that smaller models improve much less from in-context examples than larger ones.
+In [Language Models are Few-Shot Learners](https://arxiv.org/abs/2005.14165) [@brown2020languagemodelsfewshotlearners], OpenAI introduced GPT-3. With the new scale, they were able to show that larger models were better at this kind of in-context learning. When GPT-3 is given no example of how to complete a task in its prompt (zero-shot), it performs significantly worse than when it is given one example (one-shot) or a few examples (few-shot). In the figure below, they run an experiment across 42 different benchmarks and find that smaller models improve much less from in-context examples than larger ones.
 
 <img
   src="/images/in-context.png"
@@ -59,7 +59,7 @@ Finally, the authors try to compose MSJ with GCG [@zouUniversalTransferableAdver
 
 ### Scaling In-Context Examples
 
-Perhaps the most interesting finding from [@anil2024manyshot] is that the in-context jailbreak scales with the number of in-context examples. This "many-shot" approach is provably more effective than jailbreaks with fewer examples. In the plot to the left, the attack success rate of MSJ can be over 60% given enough high-quality examples. In the plot to the right, the authors measure the NLL of a harmful response rather than just the success rate. They find that the effectiveness of MSJ increases with the number of in-context examples for a variety of different model sizes.
+Perhaps the most interesting finding from @anil2024manyshot is that the in-context jailbreak scales with the number of in-context examples. This "many-shot" approach is provably more effective than jailbreaks with fewer examples. In the plot to the left, the attack success rate of MSJ can be over 60% given enough high-quality examples. In the plot to the right, the authors measure the NLL of a harmful response rather than just the success rate. They find that the effectiveness of MSJ increases with the number of in-context examples for a variety of different model sizes.
 
 <img
   src="/images/many-shot-scaling.png"
@@ -74,7 +74,7 @@ Perhaps the most interesting finding from [@anil2024manyshot] is that the in-con
 
 ### Quality of outputs
 
-In addition to yielding a high attack success rate, there is some early evidence that MSJ produces outputs that are higher in quality than other attacks. [@nikolić2025jailbreaktaxusefuljailbreak] shows that MSJ jailbreaks may preserve the capabilities of the base model much better than GCG, PAIR and TAP according to some measurements. In other words, this shows that MSJ, when successful, produces higher quality harmful content when compared to other popular methods.
+In addition to yielding a high attack success rate, there is some early evidence that MSJ produces outputs that are higher in quality than other attacks. @nikolić2025jailbreaktaxusefuljailbreak shows that MSJ jailbreaks may preserve the capabilities of the base model much better than GCG, PAIR and TAP according to some measurements. In other words, this shows that MSJ, when successful, produces higher quality harmful content when compared to other popular methods.
 
 ### Installation
 
