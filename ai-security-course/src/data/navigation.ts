@@ -239,7 +239,7 @@ export const navigationItems: NavigationItem[] = [
           },
           {
             id: "3.5.6",
-            title: "Representation Engineering & Circuit Breakers",
+            title: "Circuit Breakers",
             href: "/jailbreaking/circuit-breakers",
             type: "link",
           },
