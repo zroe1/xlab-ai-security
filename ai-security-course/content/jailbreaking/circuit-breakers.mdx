@@ -3,6 +3,16 @@ title: "Circuit Breakers"
 description: "Defending by Rerouting Representation"
 ---
 
+In the last section we looked at Constitutional Classifiers [@sharmaConstitutionalClassifiersDefending2025], a state-of-the-art defense that's *external* to the language model itself. Now, we'll look at circuit breakers, a defense applied to the model itself.
+
+## Representation Engineering
+At the core of the circuit breakers defense is Representation Enginering (RepE) [@zouRepresentationEngineeringTopDown2023]. The original RepE paper is quite lengthy, so we will not cover it extensively here, however we will provide a brief motivation for RepE. 
+
+A popular approach for understanding neural networks (NNs) is Mechanistic Interpretability (MI), which views NNs as a collection of neurons and circuits—mechanisms. We might think of MI as a bottom-up approach, starting with the most atomic units of neural networks and building up circuits from there. RepE takes the opposite approach, opting instead to focus on top-down *representations* in NNs, abstracting away the lower-level details. For example, a researcher interested in MI might focus on how specific neurons or attention heads contribute to model behavior, while a researcher interested in RepE might look for representations of truthfulness or deceitfulness in models.
+
+## Circuit Breakers
+The nucleus of the motivation for circuit breakers [zouImprovingAlignmentRobustness2024] is the idea that we can *short-circuit harmful representations* in the model to prevent harmful outputs. In other words, if we detect a model "expressing" harmful representations, circuit breakers should scramble or otherwise reroute these harmful representations (hence the name of the defense: Representation Rerouting, or RR).
+
 
 
 ## References
