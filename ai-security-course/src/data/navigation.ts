@@ -32,12 +32,6 @@ export const navigationItems: NavigationItem[] = [
       { id: "1.3", title: "Setting Up Environment", href: "/getting-started/set-up", type: "link" },
       {
         id: "1.4",
-        title: "Running Coding Exercises",
-        href: "/getting-started/running-coding-exercises",
-        type: "link",
-      },
-      {
-        id: "1.5",
         title: "A Note on Ethics",
         href: "/getting-started/ethics",
         type: "link",
