@@ -1,7 +1,8 @@
 import pytest
 import json
 import os
-from unittest.mock import patch, mock_open
+import tempfile
+from unittest.mock import patch
 
 class TestTarget:
     func = None
@@ -63,28 +64,17 @@ def test_custom_parameters(student_function, test_data_path):
     assert "<\\s>" not in result, "Result should not contain default end_of_text string"
 
 @pytest.mark.task1
-def test_num_shots_parameter(student_function):
+def test_num_shots_parameter(student_function, test_data_path):
     """Tests that num_shots parameter limits the number of examples correctly."""
-    sample_data = [
-        {"question": f"Question {i}", "response": f"Response {i}"}
-        for i in range(10)
-    ]
+    # Test with num_shots=3 using the real test file
+    result = student_function(test_data_path, num_shots=3)
     
-    # Mock the file reading and random.shuffle
-    with patch('builtins.open', mock_open(read_data=json.dumps(sample_data))):
-        with patch('random.shuffle') as mock_shuffle:
-            # Make shuffle a no-op to ensure predictable order
-            mock_shuffle.side_effect = lambda x: None
-            
-            # Test with num_shots=3
-            result = student_function("dummy_path.json", num_shots=3)
-            
-            # Count the number of question-response pairs
-            user_count = result.count("<|user|>")
-            assistant_count = result.count("<|assistant|>")
-            
-            assert user_count == 3, f"Expected 3 user prompts, got {user_count}"
-            assert assistant_count == 3, f"Expected 3 assistant responses, got {assistant_count}"
+    # Count the number of question-response pairs
+    user_count = result.count("<|user|>")
+    assistant_count = result.count("<|assistant|>")
+    
+    assert user_count == 3, f"Expected 3 user prompts, got {user_count}"
+    assert assistant_count == 3, f"Expected 3 assistant responses, got {assistant_count}"
 
 @pytest.mark.task1 
 def test_exact_format_structure(student_function):
@@ -96,14 +86,21 @@ def test_exact_format_structure(student_function):
         }
     ]
     
-    with patch('builtins.open', mock_open(read_data=json.dumps(sample_data))):
+    # Create a temporary file with our test data
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+        json.dump(sample_data, temp_file)
+        temp_path = temp_file.name
+    
+    try:
         with patch('random.shuffle') as mock_shuffle:
             mock_shuffle.side_effect = lambda x: None
             
-            result = student_function("dummy_path.json", num_shots=1)
+            result = student_function(temp_path, num_shots=1)
             
             expected = "<|user|>\nTest question?<\\s>\n<|assistant|>\nTest response.<\\s>\n"
             assert result == expected, f"Expected exact format:\n{repr(expected)}\nGot:\n{repr(result)}"
+    finally:
+        os.unlink(temp_path)
 
 @pytest.mark.task1
 def test_newline_handling(student_function):
@@ -115,16 +112,23 @@ def test_newline_handling(student_function):
         }
     ]
     
-    with patch('builtins.open', mock_open(read_data=json.dumps(sample_data))):
+    # Create a temporary file with our test data
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+        json.dump(sample_data, temp_file)
+        temp_path = temp_file.name
+    
+    try:
         with patch('random.shuffle') as mock_shuffle:
             mock_shuffle.side_effect = lambda x: None
             
-            result = student_function("dummy_path.json", num_shots=1)
+            result = student_function(temp_path, num_shots=1)
             
             # Check that the format structure is preserved even with newlines in content
             assert result.startswith("<|user|>\n"), "Should start with user tag and newline"
             assert "<\\s>\n<|assistant|>\n" in result, "Should have proper transition from user to assistant"
             assert result.endswith("<\\s>\n"), "Should end with end_of_text and newline"
+    finally:
+        os.unlink(temp_path)
 
 @pytest.mark.task1
 def test_multiple_shots_format(student_function):
@@ -135,11 +139,16 @@ def test_multiple_shots_format(student_function):
         {"question": "Q3", "response": "R3"}
     ]
     
-    with patch('builtins.open', mock_open(read_data=json.dumps(sample_data))):
+    # Create a temporary file with our test data
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+        json.dump(sample_data, temp_file)
+        temp_path = temp_file.name
+    
+    try:
         with patch('random.shuffle') as mock_shuffle:
             mock_shuffle.side_effect = lambda x: None
             
-            result = student_function("dummy_path.json", num_shots=3)
+            result = student_function(temp_path, num_shots=3)
             
             expected = (
                 "<|user|>\nQ1<\\s>\n<|assistant|>\nR1<\\s>\n"
@@ -148,18 +157,25 @@ def test_multiple_shots_format(student_function):
             )
             
             assert result == expected, f"Expected:\n{repr(expected)}\nGot:\n{repr(result)}"
+    finally:
+        os.unlink(temp_path)
 
 @pytest.mark.task1
 def test_empty_strings_parameters(student_function):
     """Tests behavior with empty string parameters."""
     sample_data = [{"question": "Test", "response": "Response"}]
     
-    with patch('builtins.open', mock_open(read_data=json.dumps(sample_data))):
+    # Create a temporary file with our test data
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+        json.dump(sample_data, temp_file)
+        temp_path = temp_file.name
+    
+    try:
         with patch('random.shuffle') as mock_shuffle:
             mock_shuffle.side_effect = lambda x: None
             
             result = student_function(
-                "dummy_path.json",
+                temp_path,
                 user_string="",
                 assistant_string="", 
                 end_of_text_string="",
@@ -168,31 +184,45 @@ def test_empty_strings_parameters(student_function):
             
             expected = "\nTest\n\nResponse\n"
             assert result == expected, f"Expected:\n{repr(expected)}\nGot:\n{repr(result)}"
+    finally:
+        os.unlink(temp_path)
 
 @pytest.mark.task1
 def test_zero_shots(student_function):
     """Tests behavior when num_shots is 0."""
     sample_data = [{"question": "Test", "response": "Response"}]
     
-    with patch('builtins.open', mock_open(read_data=json.dumps(sample_data))):
+    # Create a temporary file with our test data
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+        json.dump(sample_data, temp_file)
+        temp_path = temp_file.name
+    
+    try:
         with patch('random.shuffle') as mock_shuffle:
             mock_shuffle.side_effect = lambda x: None
             
-            result = student_function("dummy_path.json", num_shots=0)
+            result = student_function(temp_path, num_shots=0)
             
             assert result == "", "Should return empty string when num_shots=0"
+    finally:
+        os.unlink(temp_path)
 
 @pytest.mark.task1
 def test_special_characters_in_strings(student_function):
     """Tests that special characters in tag strings are handled correctly."""
     sample_data = [{"question": "Test", "response": "Response"}]
     
-    with patch('builtins.open', mock_open(read_data=json.dumps(sample_data))):
+    # Create a temporary file with our test data
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+        json.dump(sample_data, temp_file)
+        temp_path = temp_file.name
+    
+    try:
         with patch('random.shuffle') as mock_shuffle:
             mock_shuffle.side_effect = lambda x: None
             
             result = student_function(
-                "dummy_path.json",
+                temp_path,
                 user_string=">>USER<<",
                 assistant_string=">>BOT<<",
                 end_of_text_string="***END***",
@@ -201,6 +231,8 @@ def test_special_characters_in_strings(student_function):
             
             expected = ">>USER<<\nTest***END***\n>>BOT<<\nResponse***END***\n"
             assert result == expected, f"Expected:\n{repr(expected)}\nGot:\n{repr(result)}"
+    finally:
+        os.unlink(temp_path)
 
 def task1(student_func):
     """Runs all 'task1' tests against the provided student function."""
