@@ -112,13 +112,13 @@ where $\oplus$ denotes concatenation.
 
 ### The New Approach
 
-Instead of performing the normal GCG optimization, we define a new relaxed continuous set of the probability space $\mathcal{P} = \{ w \in \mathbb{R}^V | w[i] \geq 0, ||w||_1 = 1 \}$ and optimize for
+Instead of performing the normal GCG optimization, we define a new relaxed continuous set of the probability space $\mathcal{P} = \{ w \in \mathbb{R}^V | w[i] \geq 0, \lVert w \lVert_1 = 1 \}$ and optimize for
 
 $$
 \underset{\forall i, z_i \in \mathcal{P}}{\min} \sum_{k = 1}^m \text{CE} \big( \text{LLM}(x_{1:l} \oplus z_{1:n} \oplus y_{1:k - 1}), y_k  \big).
 $$
 
-Pause. What did we just do? Well, recall that we no longer want to optimize in the one-hot vector set $\mathcal{C}$ because it's quite slow. Instead, we turn each one-hot vector $e_i$ into a *probability vector* $w_i$, where each entry of $w_i$ is non-negative ($w_i[j] \geq 0$) and the sum of all entries in $w_i$ is one ($||w_i||_1 = 1$). Therefore, each vector in $\mathcal{P}$ is no longer one-hot but represents a probability distribution over all the tokens, making optimization much more tractable.
+Pause. What did we just do? Well, recall that we no longer want to optimize in the one-hot vector set $\mathcal{C}$ because it's quite slow. Instead, we turn each one-hot vector $e_i$ into a *probability vector* $w_i$, where each entry of $w_i$ is non-negative ($w_i[j] \geq 0$) and the sum of all entries in $w_i$ is one ($\lVert w_i \lVert_1 = 1$). Therefore, each vector in $\mathcal{P}$ is no longer one-hot but represents a probability distribution over all the tokens, making optimization much more tractable.
 
 The problem now is that we have a set of continuous vectors in $\mathbb{R}^V$ that we'll eventually need to turn back into one-hot vectors to input into the LLM. We don't want to simply project the optimized vectors $z_{1:n}$ from $\mathcal{P}$ to $\mathcal{C}$ at the end, as projecting from dense to sparse vectors will likely greatly increase the optimization loss due to the distance between the dense and sparse vectors. Instead, at each optimization step, we convert $z_{1:n}$ to be $S$-sparsity (meaning $S$ entries are nonzero), where
 
