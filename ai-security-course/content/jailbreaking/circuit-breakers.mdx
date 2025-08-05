@@ -11,7 +11,49 @@ At the core of the circuit breakers defense is Representation Enginering (RepE) 
 A popular approach for understanding neural networks (NNs) is Mechanistic Interpretability (MI), which views NNs as a collection of neurons and circuits—mechanisms. We might think of MI as a bottom-up approach, starting with the most atomic units of neural networks and building up circuits from there. RepE takes the opposite approach, opting instead to focus on top-down *representations* in NNs, abstracting away the lower-level details. For example, a researcher interested in MI might focus on how specific neurons or attention heads contribute to model behavior, while a researcher interested in RepE might look for representations of truthfulness or deceitfulness in models.
 
 ## Circuit Breakers
-The nucleus of the motivation for circuit breakers [zouImprovingAlignmentRobustness2024] is the idea that we can *short-circuit harmful representations* in the model to prevent harmful outputs. In other words, if we detect a model "expressing" harmful representations, circuit breakers should scramble or otherwise reroute these harmful representations (hence the name of the defense: Representation Rerouting, or RR).
+The nucleus of the motivation for circuit breakers [@zouImprovingAlignmentRobustness2024] is the idea that we can *short-circuit harmful representations* in the model to prevent harmful outputs. In other words, if we detect a model "expressing" harmful representations, circuit breakers should scramble or otherwise reroute these harmful representations (hence the name of the defense: Representation Rerouting, or RR). There are two main ingredients for doing this: the data and the loss. 
+
+### The Data
+We'll have two datasets: a circuit breaker set and a retain set. The retain set is quite straightforward, as it simply contains examples of model behavior we *don't* want the circuit breakers to trigger on. The authors do note, though, that if the model we're applying circuit breakers to already has refusal training, it's best to include examples of those refusals in the *retain* set to retain refusal  functionality. 
+
+In contrast, the circuit breaker set contains examples that yield harmful representations inside the model. Once again, though, if a model has safety training, we want the circuit breaker set to contain examples of the model answering harmful requests (as this is undesirable) without removing the model's refusal training. To do this, we put examples of the model providing harmful responses *without the corresponding user queries* in the circuit breaker set, ensuring that regardless of the type of jailbreak, the model learns to break the circuit without affecting its safety training.
+
+The authors also mention that while even a limited number of examples in each set can be sufficient, the defense generalizes best when the retain and circuit breaker sets align with the safe and undesirable domains.
+
+### The Loss
+Let us denote the harmful representation in the original model as $r_{\text{orig.}}$ and the harmful representation in the model with circuit breakers as $r_{\text{CB}}$. Our goal is to reroute $r_{\text{CB}}$ to be *not* $r_{\text{orig.}}$—but what's the best way to do this? Well, we could send $r_{\text{CB}}$ to some random direction, but it's actually better to send $r_{\text{CB}}$ to a direction *orthogonal* to $r_{\text{orig.}}$. We can do this using the cosine similarity between the two vectors:
+$$
+\texttt{cosine_sim}(r_{\text{orig.}}, \ r_{\text{CB}}) = \frac{r_{\text{orig.}} \cdot r_{\text{CB}}}{||r_{\text{orig.}}||_2 ||r_{\text{CB}}||_2}.
+$$
+We also apply a ReLU function to this objective to avoid optimizing below 0 (as cosine's range is $[-1, 1]$). The full algorithm can now be seen below.
+
+$$
+\begin{array}{l}
+\textbf{Algorithm: } \text{Low-Rank Representation Adaptation (LoRRA)} \\
+\hline
+\textbf{Input: } \text{circuit breaker dataset } D_\text{CB}, \text{ retain dataset } D_r, \text{ \# steps } T, \text{ hyperparam } \alpha \\[0.5em]
+\textbf{for } t = 1, \dots, T \textbf{ do} \\
+\quad x_{\text{CB}} \sim D_\text{CB}, \ x_\text{retain} \sim D_r \\
+\quad c_\text{RR} \leftarrow \alpha\left(1 - \frac{t}{2T}\right), \ c_\text{retain} \leftarrow \alpha \frac{t}{2T} \\
+\quad \mathcal{L}_\text{RR} \leftarrow \text{ReLU}\left(\text{cosine\_sim}(\text{rep}_\text{orig.}(x_\text{CB}), \ \text{rep}_\text{CB}(x_\text{CB}))\right) \\
+\quad \mathcal{L}_\text{retain} \leftarrow ||\text{rep}_\text{orig.}(x_\text{retain}) - \text{rep}_\text{CB}(x_\text{retain})||_2 \\
+\quad \mathcal{L} \leftarrow c_\text{RR} \mathcal{L}_\text{RR} + c_\text{retain} \mathcal{L}_\text{retain}\\
+\textbf{end for} \\
+\hline
+\end{array}
+$$
+
+<div align="center">
+  **Algorithm:** Low-Rank Representation Adaptation (LoRRA) with Representation Rerouting (RR) Loss [@zouImprovingAlignmentRobustness2024]
+</div>
+
+In the algorithm we first, sample batch elements from the cicuit breakers and retain sets, then define our coefficients $c_\text{CB}$ and $c_\text{r}$ (we'll get back to these in a bit). Next, we get our representation rerouting loss and our retain loss, the latter of which is simply the distance between the representations of the retained concept in the original and circuit-breaker model. Finally, we use combine our losses $\mathcal{L} = c_\text{CB} \cdot \mathcal{L}_\text{RR} + c_r \cdot \mathcal{L}_r$ to get the loss we'll use for optimization.
+
+Why do we define the schedules for $c_\text{RR}$ and $c_r$? At the start of training, we want to place more emphasis on the representation rerouting loss so the circuit breakers have better retention in the model. As the circuit breakers become more established, however, we can ease in the retain loss as well. We can see that if $\alpha = 1$, when $t = 1$, $c_\text{RR} = 1 - \frac{1}{2T}$ and $c_r = \frac{1}{2T}$, meaning the RR loss will dominate. Once $t = T$, $c_\text{RR} = c_r = \frac{1}{2}$, and the losses will be evenly balanced. The authors additionally note that they used LoRA tuning (as opposed to full fine-tuning) to improve the stability of the training.
+
+If you understand all the above, you understand circuit breakers!
+
+## Circuit Breakers in Practice
 
 
 
