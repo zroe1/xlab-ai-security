@@ -1120,7 +1120,7 @@ def PGD(
 
     return x
 
-def tiny_llama_inference(model, tokenizer, message, max_tokens=200, temperature=0.2):
+def tiny_llama_inference(model, tokenizer, prompt, max_tokens=200, temperature=0.2):
     """Generates response from TinyLlama model token by token.
 
     Args:
@@ -1134,7 +1134,7 @@ def tiny_llama_inference(model, tokenizer, message, max_tokens=200, temperature=
         str: Generated response text.
     """
     # Format prompt for TinyLlama
-    prompt = f"<|user|>\n{message}<|endoftext|>\n<|assistant|>\n"
+    # prompt = f"<|user|>\n{message}<|endoftext|>\n<|assistant|>\n"
     
     # Tokenize
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
