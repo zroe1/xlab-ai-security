@@ -237,6 +237,9 @@ def test_special_characters_in_strings(student_function):
 def task1(student_func):
     """Runs all 'task1' tests against the provided student function."""
     target.func = student_func
-    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task1"])
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", message="Module already imported so cannot be rewritten")
+        result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task1"])
     if result_code == pytest.ExitCode.OK:
         print("✅ All checks passed!")
