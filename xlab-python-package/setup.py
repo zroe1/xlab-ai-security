@@ -53,6 +53,7 @@ setup(
         "Pillow>=8.0.0",
         "hf_xet",
         "huggingface_hub>=0.15.0",
+        "openai>=1.0.0",
     ],
     extras_require={
         "dev": [
