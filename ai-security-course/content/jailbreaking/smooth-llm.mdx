@@ -7,6 +7,21 @@ description: "The Whole is Greater than the Sum of its Parts"
 SmoothLLM [@robeySmoothLLMDefendingLarge2024], similarly to SafeDecoding, is another defense technique built upon an interesting observation made by the authors. Specifically, they notice that perturbing just a small fraction of the characters in adversarial suffixes leads to a drastic drop in performance of the attack. For example, swapping only 10% of the characters in an adversarial suffix that usually yields a >95% ASR on Vicuna decreased the ASR to below 1%. Intuitively, this makes sense; the adversarial perturbations select specific tokens based on their ability to decrease the token-forcing loss, so perturbing the token sequence is likely to increase that loss. Is there any way we could leverage this insight to create a defense against adversarial suffix attacks?
 
 ## SmoothLLM
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/smoothllm_light.png"
+    darkSrc="/images/smoothllm_dark.png"
+    alt="SmoothLLM System"
+    style={{ align: "center", width: "100%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> SmoothLLM, modified from @robeySmoothLLMDefendingLarge2024
+</div>
+
+
 Of course this observation can motivate a defense! @robeySmoothLLMDefendingLarge2024 introduce SmoothLLM as a rather simple technique to mitigate the effectiveness of adversarial suffixes. Formally, say we have a prompt $P$, an $\texttt{LLM}$, a jailbreak indicator $\text{JB} : R \to \{0, 1\}$, and a perturbation percentage $q$.
 
 The first step is perturbing the prompt passed as input, using three strategies: inserting (adding new characters), swapping (replacing characters with new, random ones), and patching (replacing a consecutive characters with new ones). Each perturbation affects $q\%$ of the characters in the prompt (the *whole* prompt, not just the suffix; we don't know where the suffix begins). We denote this transformation as $\text{RandomPerturbation}$.
