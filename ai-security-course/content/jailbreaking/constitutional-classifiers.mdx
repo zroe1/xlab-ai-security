@@ -13,7 +13,7 @@ We've looked at a few defenses so far out of many that exist. Obviously, each de
 You might notice that it's quite difficult for a defense to meet each of these desiridata. Llama Guard [@inanLlamaGuardLLMbased] is too computationally expensive for deployment, SmoothLLM [@robeySmoothLLMDefendingLarge2024] is not flexible enough against prompt-level jailbreaks, and SafeDecoding [@xuSafeDecodingDefendingJailbreak2024a] also struggles with flexibility, as any new attack method must first be defended in the safety-hardened LLM before be used in SafeDecoding. Constitutional Classifiers were introduced to meet all three of these criteria.
 
 ## Constitutional Classifiers
-@sharmaConstitutionalClassifiersDefending2025 trained classifiers on contitution-guided synthetic data to protect and block jailbreaks. The constitution specifies permitted and restricted categories in natural language, helping with flexibility and preventing overrefusal (through the use of a "permitted" category). The synthetic training data comes from a number of sources, including a helpful-only model, a diversification system (translation, paraphrasing, new jailbreaking methods), and automated red-teaming.
+@sharmaConstitutionalClassifiersDefending2025 trained LLM-based classifiers (in their case, the line of Claude models) on constitution-guided synthetic data to protect and block jailbreaks. The constitution specifies permitted and restricted categories in natural language, providing flexibility (the authors note that the permitted category is important to limit overrefusal; their first iteration struggled with a very high false-positive rate). To generate the synthetic data, they first use a helpful-only model to create both harmful and harmless inputs and outputs. The authors then apply a diversification system (including translation, paraphrasing, and jailbreaking methods) and automated red-teaming.
 
 ### The Input Classifier
 The input classifier from @sharmaConstitutionalClassifiersDefending2025 is rather simple; its a fine-tuned language model whose primary purpose is to block inputs that attempt to bypass the output classifier. For example, the input classifier is trained to block attempt to establish a coded communication system through an input prompt.
@@ -43,9 +43,8 @@ One of the most interesting parts of this paper is actually Anthropic's process 
 
 The authors note, however, that the FPR of the classifiers used in competition was rather high. Were they able to be used in production? To test this, the team greatly expanded the harmless constitution, recalibrated the classifier thresholds, and expanded the training data augmentation. Again, there are many more details in the paper, but the authors found that these reworked classifiers substantially improved robustness, increased FPR by only 0.38%, and were coupled with a 23.7% inference overhead. They also found, as you might expect, that classifier robustness scales with model size and data quantity.
 
-## Takeaways
-**TODO:** what are some takeaways from CCs
-
+## Conclusion
+Constitutional classifiers represent one of the state-of-the-art approaches for improving the safety of LLMs, and do so in a flexible way. Interestingly, constitutional classifiers can be used in a safeguard pipeline, motivated by the [swiss cheese model](https://en.wikipedia.org/wiki/Swiss_cheese_model) of security. But what might a SOTA technique applied directly to the model look like? In the next section, perhaps we'll find out.
 
 ## References
 
