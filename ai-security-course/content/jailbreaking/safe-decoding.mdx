@@ -18,7 +18,21 @@ If we send a harmful query to a safe model, in the token distribution for $x_{n 
 
 As noted by @xuSafeDecodingDefendingJailbreak2024a, however, just because the probability of seeing safety tokens in the jailbreak scenario are low, they aren't zero. Token-forcing attacks like GCG work only because they cause the likelihood of seeing harmful tokens to be greater than of seeing safe tokens, *not* because they negate the possibility of generating safe tokens. Thus, if we create a decoding strategy that *increases* the probability of generating safe tokens and *decreases* the probability of generating harmful tokens, we can make our LLM more likely to produce safe responses.
 
-## Implementing the Insight
+## SafeDecoding
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/safedecoding.png"
+    darkSrc="/images/safedecoding.png"
+    alt="SafeDecoding Process"
+    style={{ align: "center", width: "100%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> The SafeDecoding Process; Figure 2 from @xuSafeDecodingDefendingJailbreak2024a
+</div>
+
 To implement this decoding strategy, we first create an "expert" safety fine-tuned version of our original model, which we'll use for its safer token distribution.
 
 Next, we forward our input tokens $x_{1:n}$ to the original and expert models, letting $\mathcal{V}_{n + 1}^k$ represent the top-$k$ probability-descending set of tokens for the original model's $n + 1$th token, with $\mathcal{V}_{n + 1}'^k$ representing the same for the expert model. Using these sets, we then construct a sample space $\mathcal{V}_{n + 1}^{(c)}$ as
