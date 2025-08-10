@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, ReactNode, useCallback } from "reac
 import Sidebar from "./Sidebar";
 import FontSelector from "./FontSelector";
 import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
+import { usePathname } from "next/navigation";
 
 interface TocItem {
   id: string;
@@ -19,12 +20,14 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
   const { theme, toggleTheme } = useTheme();
   const [showTOC, setShowTOC] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(280); // Default width
   const [isResizing, setIsResizing] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("");
 
   const appRef = useRef<HTMLDivElement>(null);
   const resizeHandleRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   // Track scroll position to highlight active TOC item
   useEffect(() => {
@@ -48,6 +51,38 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [tocItems]);
+
+  // Track viewport width for mobile behaviors
+  useEffect(() => {
+    const MOBILE_BREAKPOINT = 1024; // match CSS
+    const handleResize = () => {
+      const nowMobile = window.innerWidth <= MOBILE_BREAKPOINT;
+      setIsMobile(nowMobile);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Initialize/correct panel visibility when crossing breakpoint
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarCollapsed(true);
+      setShowTOC(false);
+    } else {
+      setSidebarCollapsed(false);
+      setShowTOC(true);
+    }
+  }, [isMobile]);
+
+  // Auto-collapse nav on route change for mobile
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarCollapsed(true);
+      setShowTOC(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   // Toggle sidebar visibility
   const toggleSidebar = () => {
@@ -131,7 +166,13 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
       {/* Sidebar with dynamic width */}
       <div
         className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}
-        style={{ width: sidebarCollapsed ? 0 : `${sidebarWidth}px` }}>
+        style={{ width: sidebarCollapsed ? 0 : `${sidebarWidth}px` }}
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          if (isMobile && target.closest && target.closest("a")) {
+            setSidebarCollapsed(true);
+          }
+        }}>
         <Sidebar />
       </div>
 
@@ -141,6 +182,17 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
         ref={resizeHandleRef}
         onMouseDown={startResizing}
         style={{ left: sidebarCollapsed ? "0px" : `${sidebarWidth}px` }}></div>
+
+      {/* Mobile backdrop for slide-in panels */}
+      {isMobile && (!sidebarCollapsed || showTOC) && (
+        <div
+          className="mobile-overlay"
+          onClick={() => {
+            if (!sidebarCollapsed) setSidebarCollapsed(true);
+            if (showTOC) setShowTOC(false);
+          }}
+        />
+      )}
 
       {/* Main Content Area */}
       <div className="main-content">
@@ -178,23 +230,6 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
           </button>
 
           <div className="header-actions">
-            {sidebarCollapsed && (
-              <button className="header-action" onClick={toggleSidebar} title="Open Navigation">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round">
-                  <line x1="3" y1="12" x2="21" y2="12"></line>
-                  <line x1="3" y1="6" x2="21" y2="6"></line>
-                  <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-              </button>
-            )}
             <div className="theme-toggle-wrapper">
               <button
                 className={`theme-toggle ${theme === "dark" ? "dark" : "light"}`}
@@ -316,7 +351,10 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
                 <li key={index}>
                   <a
                     href={`#${item.id}`}
-                    className={`toc-link ${activeSection === item.id ? "active" : ""}`}>
+                    className={`toc-link ${activeSection === item.id ? "active" : ""}`}
+                    onClick={() => {
+                      if (isMobile) setShowTOC(false);
+                    }}>
                     {item.text}
                   </a>
                 </li>

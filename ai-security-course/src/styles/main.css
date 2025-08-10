@@ -85,6 +85,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: transform 0.3s ease, width 0.3s ease;
 }
 
 .sidebar-header {
@@ -1869,5 +1870,92 @@ body[data-theme='dark'] .footer-bottom p {
   .footer-links {
     grid-template-columns: 1fr;
     gap: 25px;
+  }
+}
+
+/* Course layout responsive rules */
+@media (max-width: 1024px) {
+  /* Hide resize handle on mobile/tablet */
+  .resize-handle {
+    display: none;
+  }
+
+  /* Sidebar becomes off-canvas */
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 80vw !important;
+    max-width: 340px;
+    transform: translateX(-100%);
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+    z-index: 13; /* above overlay */
+  }
+
+  .sidebar:not(.collapsed) {
+    transform: translateX(0);
+    box-shadow: 8px 0 24px rgba(0,0,0,0.15);
+  }
+
+  /* Main header sticks to top; add safe area padding */
+  .main-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--white);
+  }
+
+  /* Content container uses tighter padding */
+  .content-container {
+    padding: 16px;
+  }
+
+  .content-wrapper {
+    max-width: 100%;
+  }
+
+  .page-title {
+    font-size: 1.4rem;
+  }
+
+  h1 { font-size: 1.15rem; }
+  h2 { font-size: 1.0rem; }
+  h3 { font-size: 0.95rem; }
+  p, ul, ol { font-size: 0.9rem; }
+
+  /* TOC becomes off-canvas from right */
+  .toc-sidebar {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 80vw;
+    max-width: 320px;
+    background: var(--white);
+    border-left: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    z-index: 14; /* above overlay and sidebar */
+    box-shadow: -8px 0 24px rgba(0,0,0,0.15);
+  }
+
+  /* Dim background when any panel is open */
+  .mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 11;
+  }
+
+  /* Tweak search input width inside narrow sidebar */
+  .search-input {
+    width: 100%;
+  }
+}
+
+/* Improve large desktop reading width */
+@media (min-width: 1280px) {
+  .content-wrapper {
+    max-width: 760px;
   }
 }
