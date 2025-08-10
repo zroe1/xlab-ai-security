@@ -16,7 +16,7 @@ A popular approach for understanding neural networks (NNs) is Mechanistic Interp
   <ThemeImage
     lightSrc="/images/circuit-breakers.png"
     darkSrc="/images/circuit-breakers.png"
-    alt="PAIR Algorithm"
+    alt="Circuit Breakers Visualization"
     style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
   />
 </p>
@@ -46,7 +46,8 @@ $$
 \begin{array}{l}
 \textbf{Algorithm: } \text{Low-Rank Representation Adaptation (LoRRA)} \\
 \hline
-\textbf{Input: } \text{circuit breaker dataset } D_\text{CB}, \text{ retain dataset } D_r, \text{ \# steps } T, \text{ hyperparam } \alpha \\[0.5em]
+\textbf{Input: } \text{circuit breaker dataset } D_\text{CB}, \text{ retain dataset } D_r \\
+\textbf{Input: } \text{number of steps } T, \text{ hyperparameter } \alpha \\[0.5em]
 \textbf{for } t = 1, \dots, T \textbf{ do} \\
 \quad x_{\text{CB}} \sim D_\text{CB}, \ x_\text{retain} \sim D_r \\
 \quad c_\text{RR} \leftarrow \alpha\left(1 - \frac{t}{2T}\right), \ c_\text{retain} \leftarrow \alpha \frac{t}{2T} \\
