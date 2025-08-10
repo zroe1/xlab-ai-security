@@ -139,6 +139,12 @@ export const navigationItems: NavigationItem[] = [
       },
       {
         id: "3.2",
+        title: "Introduction to LLMs",
+        href: "/jailbreaking/lmm-intro",
+        type: "link",
+      },
+      {
+        id: "3.3",
         title: "Token-Level Attacks",
         type: "folder",
         items: [
@@ -152,7 +158,7 @@ export const navigationItems: NavigationItem[] = [
         ],
       },
       {
-        id: "3.3",
+        id: "3.4",
         title: "Prompt-Level Attacks",
         type: "folder",
         items: [
@@ -166,30 +172,30 @@ export const navigationItems: NavigationItem[] = [
         ],
       },
       {
-        id: "3.4",
+        id: "3.5",
         title: "Novel Attack Vectors",
         type: "folder",
         items: [
           {
-            id: "3.4.1",
+            id: "3.5.1",
             title: "Visual Jailbreaks",
             href: "/jailbreaking/visual-jailbreaks",
             type: "link",
           },
           {
-            id: "3.4.2",
+            id: "3.5.2",
             title: "Many-Shot Jailbreaking",
             href: "/jailbreaking/many-shot",
             type: "link",
           },
           {
-            id: "3.4.3",
+            id: "3.5.3",
             title: "Attacking Safeguard Pipelines",
             href: "/jailbreaking/stack",
             type: "link",
           },
           {
-            id: "3.4.4",
+            id: "3.5.4",
             title: "Extras ",
             href: "/jailbreaking/extras",
             type: "link",
@@ -197,48 +203,48 @@ export const navigationItems: NavigationItem[] = [
         ],
       },
       {
-        id: "3.5",
+        id: "3.6",
         title: "Defenses",
         type: "folder",
         items: [
           {
-            id: "3.5.1",
+            id: "3.6.1",
             title: "Perplexity Filters & Baseline Defenses",
             href: "/jailbreaking/baseline-defenses",
             type: "link",
           },
           {
-            id: "3.5.2",
+            id: "3.6.2",
             title: "Llama Guard",
             href: "/jailbreaking/llama-guard",
             type: "link",
           },
           {
-            id: "3.5.3",
+            id: "3.6.3",
             title: "SafeDecoding",
             href: "/jailbreaking/safe-decoding",
             type: "link",
           },
           {
-            id: "3.5.4",
+            id: "3.6.4",
             title: "SmoothLLM",
             href: "/jailbreaking/smooth-llm",
             type: "link",
           },
           {
-            id: "3.5.5",
+            id: "3.6.5",
             title: "Constitutional Classifiers",
             href: "/jailbreaking/constitutional-classifiers",
             type: "link",
           },
           {
-            id: "3.5.6",
+            id: "3.6.6",
             title: "Circuit Breakers",
             href: "/jailbreaking/circuit-breakers",
             type: "link",
           },
           {
-            id: "3.5.7",
+            id: "3.6.7",
             title: "Deep Safety Alignment (pt. 1)",
             href: "/jailbreaking/deep-safety-alignment-1",
             type: "link",
