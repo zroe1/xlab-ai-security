@@ -7,12 +7,24 @@ While this course assumes some background in machine learning, we do not expect 
 
 ## What You Need to Know
 
-The transformer architecture is incredibly interesting and well-designed, but understanding it at a low level won't be necessary for our purposes. We want you to learn where the field is at, how attacks and defenses work, and what are the advantages and disadvantages of these approaches. To this end, you will need to understand how to pass input into a transformer, parse its output, and calculate loss.
+The transformer architecture was introduced in [@vaswani2023attentionneed] for language translation. Since then, this architecture, has been adapted for more general language modeling, and underpins almost all LLMs developed today.
+
+While the transformer architecture is incredibly interesting and well-designed, understanding it at a low level won't be necessary for our purposes. We want you to learn where the field is at, and how attacks and defenses work. To this end, you will need to understand how to pass input into a transformer, parse its output, and calculate loss, but not how to build one from scratch.
 
 We do not claim that having a lower level understanding of models cannot motivate better attacks or defenses. In fact, we are cautiously optimistic about approaches that leverage findings from [mechanistic interpretability](https://en.wikipedia.org/wiki/Mechanistic_interpretability) for robustness. These directions, however, remain speculative and are for the most part outside the scope of this course.
 
 ## Additional Resources
 
-The exercises we provide are merely to give you the background necessary to implement famous and pedagogically useful attacks and defenses in this course. If you are interested in exploring LLMs at a deeper level (which we encourage), below you can find a list of our favorite resources.
+The exercises we provide are merely to give you the background necessary to implement pedagogically useful attacks and defenses in this course. If you are interested in exploring LLMs at a deeper level (which we encourage), below you can find a list of our favorite resources.
 
-1. **For an explanation on LLM scaling:** We reccomend [this video](https://www.youtube.com/watch?v=5eqRuVp65eY) for explanation of LLM scaling laws [@kaplan2020scalinglawsneurallanguage]. The idea that you can increase performance of LLMs though this kind of scaling has motivated development of modern LLMs.
+1. **(Video):
+   [AI can't cross this line and we don't know why](https://www.youtube.com/watch?v=5eqRuVp65eY)\*\*** This video gives a beginer-freindly explanation of LLM scaling law [@kaplan2020scalinglawsneurallanguage] which has motivated development of modern LLMs.
+
+2. **(Video):
+   [Attention in transformers, step-by-step](https://www.youtube.com/watch?v=eMlx5fFNoYc)** This video explains "attention," the key insight of the transformer architecture.
+
+3. **(Tutorial): [ARENA: Transformers from scratch](https://arena-chapter1-transformer-interp.streamlit.app/[1.1]_Transformer_from_Scratch):** In this tutorial, you will build a transformer from scratch giving you foundational knowledge of every aspect of the architecture.
+
+<NextPageButton />
+
+## References
