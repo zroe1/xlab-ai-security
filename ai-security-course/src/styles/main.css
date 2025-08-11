@@ -1474,19 +1474,24 @@ body[data-theme='dark'] .research-type {
   
   .hero-buttons {
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
+    width: 100%;
   }
-  
-  .action-button {
-    width: 200px;
+
+  .hero-buttons .action-button {
+    width: 100%;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
     justify-content: center;
+    box-sizing: border-box; /* include borders in width */
   }
   
   .button-icon.xlab-icon,
   .button-icon.github-icon {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
   
   .research-grid {
