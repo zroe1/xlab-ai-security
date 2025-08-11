@@ -3,7 +3,7 @@ title: "Introduction to LLMs"
 description: "A brief background on the current paradigm of natural language processing"
 ---
 
-This section has a series of coding problems using PyTorch. To run the code locally, you can follow the installation instructions at the bottom of this page. As always, we highly recommend you read all the content on this page before starting the coding exercises.
+This section has a series of coding problems using PyTorch. As always, we highly recommend you read all the content on this page before starting the coding exercises.
 
 <ExerciseButtons
   githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/running_gpt_2.ipynb"
@@ -12,27 +12,76 @@ This section has a series of coding problems using PyTorch. To run the code loca
 
 ## Overview
 
-While this course assumes some background in machine learning, we do not expect all users to have hands-on experience with running, fine-tuning and jailbreaking LLMs. To fill this gap, we provide some basic exercises we developed along with a list of resources if you are interested in exploring further.
+While this course assumes some background in machine learning, we do not expect all users to have hands-on experience with running, fine-tuning, and jailbreaking LLMs. To fill this gap, this document provides basic background on LLMs, along with a list of resources for further exploration.
 
 ## What You Need to Know
 
-The transformer architecture was introduced in [@vaswani2023attentionneed] for language translation. Since then, this architecture, has been adapted for more general language modeling, and underpins almost all LLMs developed today.
+The transformer architecture was introduced in [@vaswani2023attentionneed] for language translation. Since then, this architecture has been adapted for more general language modeling and underpins almost all LLMs developed today.
 
-While the transformer architecture is incredibly interesting and well-designed, understanding it at a low level won't be necessary for our purposes. We want you to learn where the field is at, and how attacks and defenses work. To this end, you will need to understand how to pass input into a transformer, parse its output, and calculate loss, but not how to build one from scratch.
+While the transformer architecture is incredibly interesting and well-designed, understanding it at a low level won't be necessary for our purposes. We want you to learn where the field is at and how attacks and defenses work. To this end, you will need to understand how to pass input into a transformer, parse its output, and calculate loss, but not how to build one from scratch.
 
-We do not claim that having a lower level understanding of models cannot motivate better attacks or defenses. In fact, we are cautiously optimistic about approaches that leverage findings from [mechanistic interpretability](https://en.wikipedia.org/wiki/Mechanistic_interpretability) for robustness. These directions, however, remain speculative and are for the most part outside the scope of this course.
+We do not claim that having a lower-level understanding of models cannot motivate better attacks or defenses. In fact, we are cautiously optimistic about approaches that leverage findings from [mechanistic interpretability](https://en.wikipedia.org/wiki/Mechanistic_interpretability) for robustness. These directions, however, remain speculative and are for the most part outside the scope of this course.
+
+## Tokens
+
+You are likely already familiar with the fact that LLMs predict the next token given its input. But what is a token?
+
+What is or isn't a token depends on the model you are working with. In general, tokens are small chunks of text that appear frequently in the training data. They don't always correspond to full words. For example, the GPT-2 tokenizer you will be working with tokenizes the string "Hello there gpt-2!" as follows:
+
+```
+Input  >>> Hello there gpt-2!
+Tokens >>> ['Hello', ' there', ' g', 'pt', '-', '2', '!']
+```
+
+## Negative Log Likelihood
+
+Negative Log Likelihood (NLL) is the main metric used to train LLMs. At a high level, minimizing this loss should maximize the probability an LLM assigns to its training data. In the coding exercises, you will implement NLL loss on GPT-2 [@radford2019language]. To prepare you for these exercises, however, we will give a high-level overview of how this is done.
+
+When you pass a string of text to a language model, you will get an output assigning some negative or positive value to every token in the vocabulary. The vocabulary contains every possible token that GPT-2 is able to input or output. Then we take a softmax, which turns each of these positive or negative values into a value between 0 and 1. The equation below gives the softmax value for token $i$ in the output when there are $K$ items in the vocabulary.
+
+$$
+p_i = \frac{e^{z_i}}{\sum_{j=0}^{K-1}e^{z_j}}
+$$
+
+One helpful feature of this operation is that $\sum_{i=0}^{K-1}p_i = 1$. This means that we can treat the softmax outputs as a probability distribution, where each value represents the "likelihood" the model assigns to each potential token.
+
+A useful loss should maximize the likelihood of the correct token. The first step we take to accomplish this is computing the log of the likelihood of the correct token. The graph below shows the $\log(x)$ for $0<x<1$.
+
+<img
+  src="/images/log_likelihood.png"
+  alt="Log Likelihood Graph"
+  style={{ width: "70%", display: "block", margin: "0 auto" }}
+/>
+
+<div align="center">
+  **Fig. 1** <br></br> Log likelihood graph
+</div>
+
+Log likelihood gives us a value of about 0 when $x=1$ and a negative value when $0<x<1$. This is not a suitable loss because minimizing the log likelihood will give us fewer correct predictions rather than more correct predictions. However, if we take the _negative_ log likelihood, this gives us a loss function that makes sense: higher values are assigned to less correct predictions, and near-zero loss is given when the probability for the correct token is close to one.
+
+<img
+  src="/images/negative_log_likelihood.png"
+  alt="Negative log likelihood graph"
+  style={{ width: "70%", display: "block", margin: "0 auto" }}
+/>
+
+<div align="center">
+  **Fig. 2** <br></br> Negative log likelihood graph
+</div>
+
+Therefore, by _minimizing_ the negative log likelihood, you are _maximizing_ the probability assigned to the correct token. This is a foundational concept in NLP and machine learning in general, so it's worth taking a minute to wrap your head around this process.
 
 ## Additional Resources
 
-The exercises we provide are merely to give you the background necessary to implement pedagogically useful attacks and defenses in this course. If you are interested in exploring LLMs at a deeper level (which we encourage), below you can find a list of our favorite resources.
+The background and exercises we provide are merely to give you the background necessary to implement pedagogically useful attacks and defenses in this course. If you are interested in exploring LLMs at a deeper level (which we encourage), below you can find a list of our favorite resources.
 
 1. **(Video):
-   [AI can't cross this line and we don't know why](https://www.youtube.com/watch?v=5eqRuVp65eY)** This video gives a beginer-freindly explanation of LLM scaling law [@kaplan2020scalinglawsneurallanguage] which has motivated development of modern LLMs.
+   [AI can't cross this line and we don't know why](https://www.youtube.com/watch?v=5eqRuVp65eY)** This video gives a beginner-friendly explanation of LLM scaling laws [@kaplan2020scalinglawsneurallanguage], which have motivated the development of modern LLMs.
 
 2. **(Video):
    [Attention in transformers, step-by-step](https://www.youtube.com/watch?v=eMlx5fFNoYc)** This video explains "attention," the key insight of the transformer architecture.
 
-3. **(Tutorial): [ARENA: Transformers from scratch](https://arena-chapter1-transformer-interp.streamlit.app/[1.1]_Transformer_from_Scratch):** In this tutorial, you will build a transformer from scratch giving you foundational knowledge of every aspect of the architecture.
+3. **(Tutorial): [ARENA: Transformers from scratch](https://arena-chapter1-transformer-interp.streamlit.app/[1.1]_Transformer_from_Scratch):** In this tutorial, you will build a transformer from scratch, giving you foundational knowledge of every aspect of the architecture.
 
 <NextPageButton />
 
