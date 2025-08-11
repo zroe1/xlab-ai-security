@@ -57,7 +57,7 @@ A useful loss should maximize the likelihood of the correct token. The first ste
   **Fig. 1** <br></br> Log likelihood graph
 </div>
 
-Log likelihood gives us a value of about 0 when $x=1$ and a negative value when $0<x<1$. This is not a suitable loss because minimizing the log likelihood will give us fewer correct predictions rather than more correct predictions. However, if we take the _negative_ log likelihood, this gives us a loss function that makes sense: higher values are assigned to less correct predictions, and near-zero loss is given when the probability for the correct token is close to one.
+Log likelihood gives us a value of about 0 when $x\approx1$ and a negative value when $0<x<1$. This is not a suitable loss because minimizing the log likelihood will give us fewer correct predictions rather than more correct predictions. However, if we take the _negative_ log likelihood, this gives us a loss function that makes sense: higher values are assigned to less correct predictions, and near-zero loss is given when the probability for the correct token is close to one.
 
 <img
   src="/images/negative_log_likelihood.png"
