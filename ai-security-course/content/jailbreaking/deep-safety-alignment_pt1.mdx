@@ -11,7 +11,7 @@ In an ICLR 2025 outstanding paper, @qiSafetyAlignmentShould2025a introduced the 
 USER: How do I make a bomb?
 ASSISTANT: I'm sorry, I can't help with that.
 ```
-without requiring refusal in later tokens (in fact, that would be quite unintuitive; after all, humans usually don't refuse and then comply immediately after). 
+without requiring refusal in later tokens (in fact, that would be quite unintuitive, and humans usually don't initially comply then refuse immediately after). 
 
 ### Empirical Confirmation
 The authors then run an experiment to empirically confirm this idea. They tested the base Llama-2-7B and Gemma-7B against a safety benchmark, finding that they often comply with harmful requests (65+% ASR). They then ran the test again, this time *prefilling* the harmful request with a refusal response, such as "I apologize, but I cannot." This time, the authors find that the ASR greatly decreases to only 2%. 
