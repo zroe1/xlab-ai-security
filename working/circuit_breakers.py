@@ -1,6 +1,5 @@
 import torch
 import json
-import csv
 from typing import Dict
 import numpy as np
 from peft import LoraConfig, get_peft_model
@@ -15,7 +14,7 @@ from transformers import (
     TrainingArguments,
     default_data_collator,
 )
-from datsets import load_dataset
+from datasets import load_dataset
 from torch.utils.data import Dataset
 
 DEVICE = torch.device(
@@ -33,12 +32,8 @@ class CircuitBreakerDataset(Dataset):
         self,
         tokenizer: transformers.PreTrainedTokenizer,
         num_examples,
-        lorra_args,
-        model_name_or_path,
     ):
         super(CircuitBreakerDataset, self).__init__()
-
-        self.model_name_or_path = model_name_or_path.lower()
         self.max_length = 1024
 
         one_shot_template = (
@@ -90,11 +85,11 @@ class CircuitBreakerDataset(Dataset):
                 break
         self.orig_s_retain = orig_s
         random.shuffle(self.orig_s_retain)
-        print("orig_s_retain[0]", orig_s[0])
+        # print("orig_s_retain[0]", orig_s[0])
         print("Orig s length:", len(self.orig_s_retain))
 
         # ======================= Circuit Breaker ======================= #
-        with open("data/circuit_breakers_train.json") as file:
+        with open("working/data/cb_train.json") as file:
             dataset = json.load(file)
         circuit_breaker_orig = []
 
@@ -120,7 +115,7 @@ class CircuitBreakerDataset(Dataset):
 
         self.circuit_breaker_orig = circuit_breaker_orig
         random.shuffle(self.circuit_breaker_orig)
-        print("circuit_breaker_orig[0]", circuit_breaker_orig[0])
+        # print("circuit_breaker_orig[0]", circuit_breaker_orig[0])
         print("Short circuit length:", len(self.circuit_breaker_orig))
 
         self.tokenizer = tokenizer
@@ -158,25 +153,27 @@ class CircuitBreakerDataset(Dataset):
                 response_tokenized_circuit_breaker["input_ids"],
             ],
             dim=1,
-        )
+        ).squeeze(0)
         combined_attention_mask_circuit_breaker = torch.cat(
             [
                 tokenized_request_circuit_breaker["attention_mask"],
                 response_tokenized_circuit_breaker["attention_mask"],
             ],
             dim=1,
-        )
+        ).squeeze(0)
 
         # ========== Retain Inputs ===========
         tokenized_inputs_retain = self.tokenizer(
             orig_s_retain.replace("<SEPARATOR>", self.sep_token), **tokenize_kwargs
         )
+        # print(f"__getitem__ returning CB shape {combined_input_ids_circuit_breaker.shape}")
+        # print(f"__getitem__ returning retain shape {tokenized_inputs_retain['input_ids'].shape}")
 
         return dict(
             input_ids_circuit_breaker=combined_input_ids_circuit_breaker,
             attention_mask_circuit_breaker=combined_attention_mask_circuit_breaker,
-            input_ids=tokenized_inputs_retain["input_ids"],
-            attention_mask=tokenized_inputs_retain["attention_mask"],
+            input_ids=tokenized_inputs_retain["input_ids"].squeeze(0),
+            attention_mask=tokenized_inputs_retain["attention_mask"].squeeze(0),
         )
 
 
@@ -185,6 +182,8 @@ def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
     cb_mask = inputs.get("attention_mask_circuit_breaker")
     retain_ids = inputs.get("input_ids")
     retain_mask = inputs.get("attention_mask")
+    print(f"CB ids shape: {cb_ids.shape}")
+    print(f"Retain IDs shape: {retain_ids.shape}")
 
     cb_inputs = dict(input_ids=cb_ids, attention_mask=cb_mask, output_hidden_states=True)
     retain_inputs = dict(input_ids=retain_ids, attention_mask=retain_mask, output_hidden_states=True)
@@ -193,13 +192,14 @@ def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
     retain_coef = alpha * progress
     cb_coef = alpha * (1 - progress)
 
-    with model.disable_adapters():
+    with model.disable_adapter():
         model.eval()
         with torch.no_grad():
             if retain_coef > 0:
                 # outputs.hidden states = tuple of embeddings tokens + hidden states after each layer
                 # each tensor is (batch_size, seq_len, hidden_dim)
-                outputs = model(**retain_inputs)
+                print(retain_ids.shape)
+                outputs = model(**retain_inputs, return_dict=True)
                 # this gives us (num_layers, batch_size, seq_len, hidden_dim)
                 retain_states_rr = torch.stack(outputs.hidden_states).detach()
                 # unsqueeze(-1) so we can broadcast the attn mask onto the hidden states 
@@ -207,7 +207,7 @@ def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
                 retain_states_rr *= retain_attn_mask_layers
             if cb_coef > 0:
                 outputs = model(**cb_inputs)
-                cb_states_rr = torch.stack(outputs.hidden_states[i] for i in cb_layers)
+                cb_states_rr = torch.stack([outputs.hidden_states[i] for i in cb_layers])
 
     model.train()
     if retain_coef > 0:
@@ -223,20 +223,21 @@ def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
 
     if cb_coef > 0:
         outputs = model(**cb_inputs)
-        cb_states_orig = torch.stack(outputs.hidden_states[i] for i in cb_layers)
+        cb_states_orig = torch.stack([outputs.hidden_states[i] for i in cb_layers])
 
         # again, dim=-1 means we're taking the similarity over the hidden state 
         # vectors in each tensor
         # gives us (num_layers, batch_size, seq_len)
         similarity = torch.nn.functional.cosine_similarity(cb_states_orig, cb_states_rr, dim=-1)
 
-        cb_attn_mask_layers = cb_mask.repeat(len(outputs.hidden_states), 1, 1)
+        cb_attn_mask_layers = cb_mask.repeat(len(cb_layers), 1, 1)
         masked_sim = similarity * cb_attn_mask_layers
 
         # sum the ReLU, average over all the tokens
         cb_loss = torch.nn.functional.relu(masked_sim).sum() / cb_attn_mask_layers.sum()
 
     final_loss = cb_coef * cb_loss + retain_coef * retain_loss
+    exit()
     return final_loss
 
 
@@ -305,9 +306,16 @@ def main():
 
     model = get_peft_model(model, lora_config)
 
-    train_dataset = None
+    train_dataset = CircuitBreakerDataset(
+        tokenizer=tokenizer, 
+        num_examples=200, 
+    )
 
-    train_args = TrainingArguments(remove_unused_columns=False)
+    train_args = TrainingArguments(
+        remove_unused_columns=False,
+        per_device_train_batch_size=1,
+        gradient_accumulation_steps=4,
+    )
 
     class CBTrainer(Trainer):
         def __init__(
@@ -333,14 +341,17 @@ def main():
         def get_progress(self):
             return 0.5
 
-        def compute_loss(self, model, inputs):
-            return compute_loss(
+        def compute_loss(self, model, inputs, num_items_in_batch):
+            print("computing loss")
+            loss = compute_loss(
                 self,
                 model=model,
                 inputs=inputs,
                 cb_layers=self.cb_layers,
                 alpha=self.lorra_alpha,
             )
+            print("Loss computed")
+            return loss
 
         def evaluate(self):
             self.model.eval()
@@ -356,6 +367,7 @@ def main():
         lorra_alpha=lorra_alpha,
         cb_layers=cb_layers,
     )
+    print("running trainer")
     trainer.train()
 
 

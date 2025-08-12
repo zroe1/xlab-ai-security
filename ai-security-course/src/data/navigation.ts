@@ -246,7 +246,7 @@ export const navigationItems: NavigationItem[] = [
           {
             id: "3.6.7",
             title: "Deep Safety Alignment (pt. 1)",
-            href: "/jailbreaking/deep-safety-alignment-1",
+            href: "/jailbreaking/deep-safety-alignment_pt1",
             type: "link",
           },
         ],

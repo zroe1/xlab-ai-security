@@ -1,0 +1,29 @@
+---
+title: "Deep Safety Alignment (Part 1)"
+description: "From 'Safety Alignment Should be Made More Than Just a Few Tokens Deep'"
+---
+
+In the jailbreaking section, we've looked at numerous attacks and defenses for language models. Over the past few years, there's been a cat-and-mouse game of attacks and defenses, with the attacks generally prevailing (it is much easier to find one example that breaks a defense than to defend against all possible attacks). You might be wondering, though, why models seem to have so many failure modes, despite almost all models today having some sort of refusal training. 
+
+## Safety Alignment is Only a Few Tokens Deep
+- landmark paper, ICLR best paper 2025
+  - look into why safety alignment seems to shallow
+  - main reason: it's only affecting the first few tokens
+  - how to show? KL divergence between refusal-trained and base models
+    - drops off after first few tokens
+
+- this is why 
+  a) refusal training doesn't "eliminate" knowledge from the LLM,
+  b) why attacks like GCG work, because once they bypass the first few safety-aligned tokens, the model doesn't care, and 
+  c) why a lot of modern manual jailbreaks say to "refuse first, then comply"
+
+- What did the paper do about it?
+  - They refusal-trained a model using more complex refusals, such as some that partly comply over the first few tokens, then reject the query
+  - they found that this greatly improved the model's robustness to jailbreak attacks
+    - it obviously wasn't perfect, but such a simple thing working this well is (imo) a good sign
+    - and as highlighted by Ashwinee Panda in his presentation of the paper, an advantage of doing this is that this isn't a cat-and-mouse style defense
+      - the defense generalizes not just to prefilling attacks, but also GCG and a decoding attack
+      - link: https://iclr.cc/virtual/2025/oral/31915
+
+
+
