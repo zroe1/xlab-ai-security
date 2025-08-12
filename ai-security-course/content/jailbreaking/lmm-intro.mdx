@@ -37,27 +37,27 @@ Tokens >>> ['Hello', ' there', ' g', 'pt', '-', '2', '!']
 
 Negative Log Likelihood (NLL) is the main metric used to train LLMs. At a high level, minimizing this loss should maximize the probability an LLM assigns to its training data. In the coding exercises, you will implement NLL loss on GPT-2 [@radford2019language]. To prepare you for these exercises, however, we will give a high-level overview of how this is done.
 
-When you pass a string of text to a language model, you will get an output assigning some negative or positive value to every token in the vocabulary. The vocabulary contains every possible token that GPT-2 is able to input or output. Then we take a softmax, which turns each of these positive or negative values into a value between 0 and 1. The equation below gives the softmax value for token $i$ in the output when there are $K$ items in the vocabulary.
+When you pass a string of text to a language model, you will get an output assigning some negative or positive value to every token in the vocabulary; these pre-softmax values are called logits. The vocabulary contains every possible token that GPT-2 is able to input or output. Then we take a softmax, which turns each of these positive or negative values into a value between 0 and 1. The equation below gives the softmax value for token $i$ in the output when there are $K$ items in the vocabulary.
 
 $$
 p_i = \frac{e^{z_i}}{\sum_{j=0}^{K-1}e^{z_j}}
 $$
 
-One helpful feature of this operation is that $\sum_{i=0}^{K-1}p_i = 1$. This means that we can treat the softmax outputs as a probability distribution, where each value represents the "likelihood" the model assigns to each potential token.
+One helpful feature of this operation is that $\sum_{i=0}^{K-1}p_i = 1$. This means that we can treat the softmax outputs as a probability distribution, where each value represents the probability the model assigns to each potential token.
 
-A useful loss should maximize the likelihood of the correct token. The first step we take to accomplish this is computing the log of the likelihood of the correct token. The graph below shows the $\log(x)$ for $0<x<1$.
+A useful loss should maximize the probability of the correct token. The first step we take to accomplish this is computing the log of the probability of the correct token. The graph below shows the $\log(x)$ for $0<x<1$.
 
 <img
   src="/images/log_likelihood.png"
-  alt="Log Likelihood Graph"
+  alt="Log probability graph"
   style={{ width: "70%", display: "block", margin: "0 auto" }}
 />
 
 <div align="center">
-  **Fig. 1** <br></br> Log likelihood graph
+  **Fig. 1** <br></br> Log probability graph
 </div>
 
-Log likelihood gives us a value of about 0 when $x\approx1$ and a negative value when $0<x<1$. This is not a suitable loss because minimizing the log likelihood will give us fewer correct predictions rather than more correct predictions. However, if we take the _negative_ log likelihood, this gives us a loss function that makes sense: higher values are assigned to less correct predictions, and near-zero loss is given when the probability for the correct token is close to one.
+Log probability gives us a value of about 0 when $x\approx1$ and a negative value when $0<x<1$. This is not a suitable loss because minimizing the log probability will give us fewer correct predictions rather than more correct predictions. However, if we take the _negative_ log likelihood, this gives us a loss function that makes sense: higher values are assigned to less correct predictions, and near-zero loss is given when the probability for the correct token is close to one.
 
 <img
   src="/images/negative_log_likelihood.png"
@@ -70,6 +70,16 @@ Log likelihood gives us a value of about 0 when $x\approx1$ and a negative value
 </div>
 
 Therefore, by _minimizing_ the negative log likelihood, you are _maximizing_ the probability assigned to the correct token. This is a foundational concept in NLP and machine learning in general, so it's worth taking a minute to wrap your head around this process.
+
+You will also see this written as cross-entropy. If we denote the target at each step by a one-hot vector $q$ and the model's probabilities by $p$, the cross-entropy is
+
+$$
+H(q, p) = -\sum_{i=0}^{K-1} q_i \log p_i,
+$$
+
+which reduces to $-\log p_{\text{correct}}$ because $q$ is one-hot. In other words, for next-token prediction, negative log likelihood and cross-entropy are equivalent.
+
+In PyTorch, you can take the cross entropy through [this built-in function](https://docs.pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html#torch.nn.CrossEntropyLoss). If you do not change the default arguments, this should be equivalent to using the PyTorch function [LogSoftmax](https://docs.pytorch.org/docs/stable/generated/torch.nn.LogSoftmax.html#torch.nn.LogSoftmax) followed by [NLLLoss](https://docs.pytorch.org/docs/stable/generated/torch.nn.NLLLoss.html#torch.nn.NLLLoss).
 
 ## Additional Resources
 
