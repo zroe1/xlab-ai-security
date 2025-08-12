@@ -45,7 +45,7 @@ $$
 
 One helpful feature of this operation is that $\sum_{j = 1}^{V} p_j = 1$. This means that we can treat the softmax outputs as a probability distribution, where each value represents the probability the model assigns to each potential token.
 
-A useful loss should maximize the probability of the correct token. The first step we take to accomplish this is computing the log of the probability of the correct token. The graph below shows $\log x $ for $x \in (0, 1)$.
+A useful loss should maximize the probability of the correct token. The first step we take to accomplish this is computing the log of the probability of the correct token. The graph below shows $\log x $ for $0 < x < 1$.
 
 <img
   src="/images/log_likelihood.png"
