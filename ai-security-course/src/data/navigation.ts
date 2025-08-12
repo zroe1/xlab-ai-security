@@ -341,22 +341,34 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     id: "7",
-    title: "Resource and Future Directions",
+    title: "XLab AI Security Blog",
     items: [
       {
         id: "7.1",
+        title: "Intriguing Properties of gpt-oss Jailbreaks",
+        href: "/blog/gpt-oss-jailbreaks",
+        type: "link",
+      },
+    ],
+  },
+  {
+    id: "8",
+    title: "Resource and Future Directions",
+    items: [
+      {
+        id: "8.1",
         title: "Jobs and Internships in AI Security",
         href: "/resources/jobs",
         type: "link",
       },
       {
-        id: "7.2",
+        id: "8.2",
         title: "XLab Research",
         href: "/advanced/xlab-research",
         type: "link",
       },
       {
-        id: "7.3",
+        id: "8.3",
         title: "Related Research Directions",
         href: "/advanced/related-research",
         type: "link",
