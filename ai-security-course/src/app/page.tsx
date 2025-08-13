@@ -293,7 +293,7 @@ const LandingPageContent = () => {
               threats, developed by the University of Chicago&apos;s Existential Risk Laboratory.
             </p>
             <p className="footer-contact">
-              <a href="mailto:xlab@uchicago.edu">xlab@uchicago.edu</a>
+              <a href="mailto:team@xlabaisecurity.com">team@xlabaisecurity.com</a>
             </p>
           </div>
 
