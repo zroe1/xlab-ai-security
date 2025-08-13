@@ -147,11 +147,9 @@ Finally, there are bizarre instances where the model hallucinates an entirely ne
 
 ## Possible Defenses
 
-Defending against the specific jailbreak we presented in this post should be trivial. Monitoring CoT would work but would probably be overkill. Alternatively, model providers could remove special tokens from user prompts or flag extremely repetitive prompts as suspicious.
+Defending against this specific jailbreak in production should be largely trivial, with prompt sanitizing techniques that flag extreme repetition and remove special tokens likely being strong enough to prevent most attacks. We also note that no aspect of our attack was designed to be robust against defenses, so there are probably a number of other sensible things you could do. (This is not to say, though, that making gpt-oss unjailbreakable would be an easy feat.)
 
-No aspect of our attack was designed to be robust against defenses, so there are probably a number of other sensible things you could do. Patching the underlying issue, however, is quite difficult. Making gpt-oss-20b robust to all inputs could involve "solving" adversarial robustness or AI alignment entirely.
-
-One question to consider is whether we want safety guardrails to appear in CoT. Although this may make safety more interpretable (maybe), it turns safety guardrails into a latent space that can be manipulated in plain text. While model providers could prevent users from using special tokens or from overwriting CoT, we believe there are a number of ways an attacker could get around this.
+An additional topic to consider is the effect of exposing the model's CoT and directly addressing safety inside it. Our jailbreak strategy took advantage of the fact that gpt-oss's CoT incessantly references its policy, both by using it as a guide to craft our jailbreak and attempting to mimic safe CoT in an attempt to trick the model that our queries are safe. We don't have any explicit recommendations on this front, but believe it is worth raising that while exposing the CoT and teaching the model to evaluate safety inside it is helpful for interpretability, it ultimately can serve as a guide for future attacks.
 
 ## Ethics
 
