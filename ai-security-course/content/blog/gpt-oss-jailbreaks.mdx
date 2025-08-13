@@ -1,6 +1,6 @@
 ---
 title: "Intriguing Properties of gpt-oss Jailbreaks"
-description: "Blog post on red-teaming gpt-oss 20b"
+description: "Blog post on red-teaming gpt-oss-20b"
 ---
 
 _By Zephaniah Roe (zroe@uchicago.edu), Jack Sanderson (jacksanderson@uchicago.edu), Julian Huang (julianhuang@uchicago.edu), Piyush Garodia (pgarodia@uchicago.edu)_
@@ -15,15 +15,15 @@ We red-teamed gpt-oss-20b and found impressive robustness but exploitable chain-
 
 We probe gpt-oss using a jailbreak which rewrites the request, embeds it in a compliant-sounding CoT template, and repeats that template up to 1,500 times. Surprisingly, we find that more CoT repetitions do not always correspond to a higher attack success rates. Rather, there appears to be a specific area of the model’s context window which is most vulnerable to our attack.
 
-We also observe that gpt-oss 20b’s CoT structure is homogenous across our jailbreaking attempts, often referring to its “policy” and using a simple format. When gpt-oss 20b complies with a harmful prompt, _it sometimes hallucinates an entirely new policy_.
+We also observe that gpt-oss-20b’s CoT structure is homogenous across our jailbreaking attempts, often referring to its “policy” and using a simple format. When gpt-oss-20b complies with a harmful prompt, it sometimes hallucinates an entirely new policy.
 
 ## Introduction
 
 OpenAI’s new open source models are exceptionally aligned—at least in the way that makes them difficult to jailbreak. The models are so cautious that they have been met with some hostility from the open source community, where the sentiment is that the model is [too safe](https://www.reddit.com/r/LocalLLaMA/comments/1mj6uix/gptoss_is_not_just_safe_it_is_unusable/) to [be useful](https://huggingface.co/openai/gpt-oss-20b/discussions/48) or that the safety training [has hurt performance](https://www.reddit.com/r/LocalLLaMA/comments/1miodyp/gptoss_120b_and_20b_feel_kind_of_bad/) in all but a few benchmarking domains. As a team focused on AI security, these controversies pique our interest: how robust are the gpt-oss models really?
 
-After ~15 hours of red-teaming gpt-oss 20b, our view is that the model is exceptionally robust to black-box jailbreaks, even to manipulations directly targeting its CoT.
+After ~15 hours of red-teaming gpt-oss-20b, our view is that the model is exceptionally robust to black-box jailbreaks, even to manipulations directly targeting its CoT.
 
-To identify where gpt-oss 20b may fail, we developed a jailbreak designed to probe CoT vulnerabilities in the model. Because the attack is highly successful, we will not give the specific prompts or code needed for executing it. If you are a reputable reseracher, we may be willing to share our source code or data (our emails at the top).
+To identify where gpt-oss-20b may fail, we developed a jailbreak designed to probe CoT vulnerabilities in the model. Because the attack is highly successful, we will not give the specific prompts or code needed for executing it. If you are a reputable reseracher, we may be willing to share our source code or data (our emails at the top).
 
 ## Methodology
 
@@ -102,7 +102,7 @@ In many cases, the model appears to produce structured and detailed harmful info
 
 Some of the “pornographic” outputs are of higher quality than the above, but jailbreaking for this purpose remains difficult. We suspect that this kind of degradation is a consequence of aggressive and competent filtering of training data (see @obrien2025deepignorancefilteringpretraining for more details).
 
-We also see this kind of degradation for the hate speech category. For some queries, with >1,000 repeats we saw instances of the most taboo slurs, but in other cases, gpt-oss 20b will censor its own profanity when it complies (by giving the first letter and filling the rest of the word with asterisks or by giving less taboo insults).
+We also see this kind of degradation for the hate speech category. For some queries, with >1,000 repeats we saw instances of the most taboo slurs, but in other cases, gpt-oss-20b will censor its own profanity when it complies (by giving the first letter and filling the rest of the word with asterisks or by giving less taboo insults).
 
 ## Characteristics of CoT Refusals
 
@@ -150,13 +150,13 @@ Finally, there are bizarre instances where the model hallucinates an entirely ne
 
 Defending against the specific jailbreak we presented in this post should be trivial. Monitoring CoT would work but would probably be overkill. Alternatively, model providers could remove special tokens from user prompts or flag extremely repetitive prompts as suspicious.
 
-No aspect of our attack was designed to be robust against defenses, so there are probably a number of other sensible things you could do. Patching the underlying issue, however, is quite difficult. Making gpt-oss 20b robust to all inputs could involve "solving" adversarial robustness or AI alignment entirely.
+No aspect of our attack was designed to be robust against defenses, so there are probably a number of other sensible things you could do. Patching the underlying issue, however, is quite difficult. Making gpt-oss-20b robust to all inputs could involve "solving" adversarial robustness or AI alignment entirely.
 
-One question to consider is whether we want safety guardrails to appear in CoT. Although this may make safety more interpretable, it turns safety guardrails into a latent space that can be manipulated in plain text. While model providers could prevent users from using special tokens or from overwriting CoT, we believe there are a number of ways an attacker could get around this.
+One question to consider is whether we want safety guardrails to appear in CoT. Although this may make safety more interpretable (maybe), it turns safety guardrails into a latent space that can be manipulated in plain text. While model providers could prevent users from using special tokens or from overwriting CoT, we believe there are a number of ways an attacker could get around this.
 
 ## Ethics
 
-**Describing the Jailbreak:** Although we don't benchmark gpt-oss against other jailbreaks, we are confident that the attack described in the post is not state-of-the-art. The details we provide here would not give even a very skilled actor additional ability to cause harm using language models. We don't release the code or other specifics about the jailbreak out of an abundance of caution and for optics reasons.
+**Describing the Jailbreak:** Although we don't benchmark gpt-oss against other jailbreaks, we are confident that the attack described in the post is not state-of-the-art. Because much strong attacks have been published, the details we provide here would not give even a very skilled actor additional ability to cause harm using language models. We don't release the code or other specifics about the jailbreak out of an abundance of caution and for optics reasons.
 
 **The Dataset:** For very obvious reasons, we do not release the hundreds of pages of text we collected from gpt-oss's harmful outputs. We took care to make sure the outputs included in this post were not offensive and did not describe dangerous information.
 
