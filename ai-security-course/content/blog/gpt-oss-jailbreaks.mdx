@@ -15,7 +15,7 @@ We red-teamed gpt-oss-20b and found impressive robustness but exploitable chain-
 
 We probe gpt-oss using a jailbreak that rewrites the request, embeds it in a compliant-sounding CoT template, and repeats that template up to 1,500 times. Surprisingly, we find that more CoT repetitions do not always correspond to higher attack success rates. Rather, there appears to be a specific area of the model’s context window that is most vulnerable to our attack.
 
-We also observe that gpt-oss-20b’s CoT structure is homogeneous across our jailbreaking attempts, often referring to its “policy” and using a simple format. When gpt-oss-20b complies with a harmful prompt, it sometimes hallucinates an entirely new policy.
+We also observe that gpt-oss-20b’s CoT structure is homogeneous across failed jailbreaks, often referring to its “policy” and using a simple format. When gpt-oss-20b complies with a harmful prompt, it sometimes hallucinates an entirely new policy.
 
 ## Introduction
 
