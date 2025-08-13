@@ -41,6 +41,20 @@ We use gemini-2.5-flash-lite to classify jailbreaks as either successful or not 
 
 ## Results
 
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/cot_attack.png"
+    darkSrc="/images/cot_attack.png"
+    alt="PAIR Algorithm"
+    style={{ align: "center", width: "100%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> Schematic of our CoT Attack
+</div>
+
+
 Performing our attack with manual prompting and retries, we could eventually jailbreak every query we attempted. However, in the interest of designing experiments that are reproducible and scalable, we test our attack on the HarmBench variant described above.
 
 We report three metrics in the plot below:
@@ -56,7 +70,7 @@ We report three metrics in the plot below:
 />
 
 <div align="center">
-  **Fig. 1** <br></br> CoT jailbreak attack success rate in different settings
+  **Fig. 2** <br></br> CoT jailbreak attack success rate in different settings
 </div>
 
 The dark gray dot shows that without manual prompt engineering in the chat API, our attack achieves an extremely high success rate (~85%) by using multiple retries on different wordings.
@@ -72,7 +86,7 @@ We also plot the average response length in characters of successful jailbreaks 
 />
 
 <div align="center">
-  **Fig. 2** <br></br> CoT jailbreak attack response length in different settings
+  **Fig. 3** <br></br> CoT jailbreak attack response length in different settings
 </div>
 
 The CoT of successful attacks often explicitly plans to give a short response. We believe that in order to provide detailed harmful information, successful attacks must also defeat an internal "be brief on taboo topics" heuristic. Here, we observe the model is more willing to be verbose for some numbers of repeats.
