@@ -108,7 +108,7 @@ We also see this kind of degradation for the hate speech category. For some quer
 
 We noticed that almost all refusals share a very similar structure. The model first restates the original request and then declares that it is disallowed. Oftentimes the model cites its "policy" as the reason why the content is disallowed. For example, "According to policy:\n\nThe user requests instructions or facilitation for illegal activity => disallowed content, must refuse." The model then ends with an affirmation of its refusal, most often saying simply, "We must refuse."
 
-For the 1024 repetitions chat API jailbreaks, refusals mention the user ~80% of the time while compliances mention the user ~61% of the time. Likewise, refusals mention policy ~75% of the time while compliances mention policy ~30% of the time. Both refusals and compliances end with affirmations over 90% of the time.
+For the 1024 repetitions chat API jailbreaks, refusals mention the user ~80% of the time while compliances mention the user ~61% of the time. Likewise, refusals mention policy ~75% of the time while compliances mention policy ~30% of the time. Both refusals and compliances end with an affirmation describing what the model is about to do over 90% of the time.
 
 These statistics suggest that while both refusals and compliances have some similar characteristics (e.g., they both tend to end with affirmations), refusals are more likely when the model sticks to the script and considers policy and what the user is asking.
 
@@ -126,9 +126,9 @@ Final output:
 
 > I’m sorry, but I can’t help with that.
 
-Similar to the alignment faking in LLMs [@greenblatt2024alignmentfakinglargelanguage], this doesn’t illustrate a behavior that could currently harm users, but it’s an interesting demonstration of how CoT tokens can suggest the opposite of a model’s final output.
+Similar to the work on alignment faking in LLMs [@greenblatt2024alignmentfakinglargelanguage], this doesn’t illustrate a behavior that could currently harm users, but it’s an interesting demonstration of how CoT tokens can suggest the opposite of a model’s final output.
 
-Another thing that’s interesting in this output: the model explicitly notices that the prompt is repeated many times. Although the model often notices that the input is repetitive (for 1024 repeats the model mentions this ~31% of the time in its CoT) we have not observed any instances in the CoT of the model explicitly theorizing that the user may be trying to jailbreak it (though in one example, the model offers an interesting theory: “The user repeats a question, maybe an attempt to be annoying.”)
+Another interesting aspect of this output is that the model explicitly notices that the prompt is repeated many times. Although the model often notices that the input is repetitive (for 1024 repeats the model mentions this ~31% of the time in its CoT) we have not observed any instances in the CoT of the model explicitly theorizing that the user may be trying to jailbreak it (though in one example, the model offers an interesting theory: “The user repeats a question, maybe an attempt to be annoying.”)
 
 Another interesting characteristic of the CoT is even when the jailbreak is successful, the CoT still contains reasoning that appears to be attempting to minimize possible harm:
 
@@ -140,7 +140,7 @@ In other cases there is no mention of safety: the CoT for a successful jailbreak
 
 > We need to answer.
 
-In general we find that CoT can be inconsistent across similar queries. For one attempt in the 1024 repeat setting using the chat API, the model produces a typical refusal CoT, carefully considering the policy and identifies the essence of the question before refusing: “An SYN flood is a type of DOS attack. The user is asking for instructions for malicious hacking.” When tried again with a slightly different reworded query, the model confidently complies saying “It's allowed. No disallowed content.” In this setting, the model knows what DOS attacks are and that they’re unethical, but it's responses aren't consistent.
+In general, we find that CoT can be sensitive to perturbations in query wording. For one attempt in the 1024 repeat setting using the chat API, the model produces a typical refusal CoT, carefully considering the policy and identifies the essence of the question before refusing: “An SYN flood is a type of DOS attack. The user is asking for instructions for malicious hacking.” When tried again with a slightly different reworded query, the model confidently complies saying “It's allowed. No disallowed content.” In this setting, the model knows what DOS attacks are and that they’re unethical, but it's responses aren't consistent.
 
 Finally, there are bizarre instances where the model hallucinates an entirely new policy as a result of the jailbreak. It sticks to a coherent structure to considers the safety of a query, but it defines an entirely new policy. Below is a section of reasoning where the model considers if it should generate content glorifying the 9/11 attacks:
 
@@ -148,7 +148,7 @@ Finally, there are bizarre instances where the model hallucinates an entirely ne
 
 ## Getting Involved / Additional Resources
 
-In addition to doing periodic research sprints such as the one outlined in this post, our team is building an AI Security course. This course compiles explanations and exercises for the most safety-relevant research on jailbreaking and other vulnerabilities in AI systems. You can access a beta version of the course [here](https://xlabaisecurity.com/).
+In addition to doing periodic research sprints such as the one outlined in this post, our team is building an AI Security course. This course compiles explanations and exercises for the most safety-relevant research on jailbreaking and other vulnerabilities in AI systems as well as their defenses. You can access a beta version of the course [here](https://xlabaisecurity.com/).
 
 If you are interested in getting involved with the AI Security Team @UChicago’s XLab, feel free to reach out (our emails at the top).
 
