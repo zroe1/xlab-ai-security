@@ -305,13 +305,13 @@ const LandingPageContent = () => {
                   <Link href="/getting-started/welcome">Getting Started</Link>
                 </li>
                 <li>
-                  <Link href="/adversarial">Adversarial Examples</Link>
+                  <Link href="/adversarial/introduction">Adversarial Examples</Link>
                 </li>
                 <li>
-                  <Link href="/jailbreaking">Jailbreaking</Link>
+                  <Link href="/jailbreaking/introduction">Jailbreaking</Link>
                 </li>
                 <li>
-                  <Link href="/model-inference-attacks">Model Attacks</Link>
+                  <Link href="/blog/gpt-oss-jailbreaks">Blog</Link>
                 </li>
               </ul>
             </div>
@@ -320,32 +320,24 @@ const LandingPageContent = () => {
               <h4>About XLab</h4>
               <ul>
                 <li>
-                  <a href="https://xlab.uchicago.edu" target="_blank" rel="noopener noreferrer">
+                  <a
+                    href="https://xrisk.uchicago.edu/about/"
+                    target="_blank"
+                    rel="noopener noreferrer">
                     About XLab
                   </a>
                 </li>
                 <li>
                   <a
-                    href="https://xlab.uchicago.edu/research"
+                    href="https://xrisk.uchicago.edu/fellowship/"
                     target="_blank"
                     rel="noopener noreferrer">
-                    Our Past Research
+                    Summer Research Fellowship
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="https://xlab.uchicago.edu/team"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Team
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://xlab.uchicago.edu/contact"
-                    target="_blank"
-                    rel="noopener noreferrer">
-                    Contact
+                  <a href="https://nobelassembly.org/" target="_blank" rel="noopener noreferrer">
+                    Nobel Assembly
                   </a>
                 </li>
               </ul>
@@ -356,24 +348,19 @@ const LandingPageContent = () => {
               <ul>
                 <li>
                   <a
-                    href="https://github.com/zroe1/xlab-ai-security"
+                    href="https://join.slack.com/t/existentialri-kag4101/shared_invite/zt-39yk3m51i-A_55o2E2TOktKnCUZ1yS9g"
                     target="_blank"
                     rel="noopener noreferrer">
-                    Contribute
+                    Slack Community
                   </a>
                 </li>
                 <li>
-                  <a href="https://discord.gg" target="_blank" rel="noopener noreferrer">
-                    Discord
-                  </a>
-                </li>
-                <li>
-                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer">
+                  <a href="https://x.com/uchicagoxlab" target="_blank" rel="noopener noreferrer">
                     Twitter
                   </a>
                 </li>
                 <li>
-                  <a href="#about">About</a>
+                  <a href="https://github.com/zroe1/xlab-ai-security">GitHub</a>
                 </li>
               </ul>
             </div>
