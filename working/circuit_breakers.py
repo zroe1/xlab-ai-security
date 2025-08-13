@@ -182,8 +182,8 @@ def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
     cb_mask = inputs.get("attention_mask_circuit_breaker")
     retain_ids = inputs.get("input_ids")
     retain_mask = inputs.get("attention_mask")
-    print(f"CB ids shape: {cb_ids.shape}")
-    print(f"Retain IDs shape: {retain_ids.shape}")
+    # print(f"CB ids shape: {cb_ids.shape}")
+    # print(f"Retain IDs shape: {retain_ids.shape}")
 
     cb_inputs = dict(input_ids=cb_ids, attention_mask=cb_mask, output_hidden_states=True)
     retain_inputs = dict(input_ids=retain_ids, attention_mask=retain_mask, output_hidden_states=True)
@@ -212,14 +212,14 @@ def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
     model.train()
     if retain_coef > 0:
         outputs = model(**retain_inputs)
-        retain_states_orig = torch.stack(outputs.hidden_states).detach()
+        retain_states_orig = torch.stack(outputs.hidden_states)
         retain_states_orig *= retain_attn_mask_layers
 
         # the differences gives us (num_layers, batch_size, seq_len, hidden_dim)
         # we take the norm over hidden dim, giving us (num_layers, batch_size, seq_len)
         # think of this as we collapse all the difference vectors into a single norm
         # then we take the mean over all these norms (all layers, batches, and seq positions)
-        retain_loss = torch.linalg.vector_norm(retain_states_orig - retain_states_rr, ord=2, dim=-1).mean()
+        retain_loss = torch.linalg.vector_norm(retain_states_orig - retain_states_rr, ord=2, dim=-1).nanmean()
 
     if cb_coef > 0:
         outputs = model(**cb_inputs)
@@ -236,8 +236,10 @@ def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
         # sum the ReLU, average over all the tokens
         cb_loss = torch.nn.functional.relu(masked_sim).sum() / cb_attn_mask_layers.sum()
 
-    final_loss = cb_coef * cb_loss + retain_coef * retain_loss
-    exit()
+    if retain_coef == 0:
+        final_loss = cb_coef * cb_loss 
+    else:
+        final_loss = cb_coef * cb_loss + retain_coef * retain_loss
     return final_loss
 
 
@@ -315,6 +317,7 @@ def main():
         remove_unused_columns=False,
         per_device_train_batch_size=1,
         gradient_accumulation_steps=4,
+        max_steps=75,
     )
 
     class CBTrainer(Trainer):
@@ -339,10 +342,11 @@ def main():
             self.cb_layers = cb_layers
 
         def get_progress(self):
-            return 0.5
+            if self.state.max_steps > 0:
+                return self.state.global_step / self.state.max_steps
+            return 0
 
-        def compute_loss(self, model, inputs, num_items_in_batch):
-            print("computing loss")
+        def compute_loss(self, model, inputs, num_items_in_batch, return_outputs=False):
             loss = compute_loss(
                 self,
                 model=model,
@@ -350,8 +354,7 @@ def main():
                 cb_layers=self.cb_layers,
                 alpha=self.lorra_alpha,
             )
-            print("Loss computed")
-            return loss
+            return (loss, None) if return_outputs else loss
 
         def evaluate(self):
             self.model.eval()
@@ -370,6 +373,7 @@ def main():
     print("running trainer")
     trainer.train()
 
+    model.save_pretrained("lora_adapter")
 
 if __name__ == "__main__":
     main()
