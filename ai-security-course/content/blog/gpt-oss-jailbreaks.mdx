@@ -82,22 +82,13 @@ In many settings, we see in the chain of thought of successful attacks that the 
 
 Surprisingly, the chat API yields more verbose outputs compared to the completions API where you can directly overwrite chain of thought tokens.
 
-## When our CoT Attacks Fail
-
-We noticed that almost all refusals share a very similar structure. First, the model either repeats part of the jailbreak prompt or paraphrases the user request. Then, the model states that this is disallowed content, or describes the type of content in the user request that is disallowed. Oftentimes in this step, the model cites its "policy" as the reason why this content is disallowed, the specific wording of the policy being inexact, such as "According to policy:\n\nThe user requests instructions or facilitation for illegal activity => disallowed content, must refuse.". Then, the model ends with an affirmation of what it is about to do, most often saying "We must refuse."
-For the 1024 repetitions chat API jailbreaks, we created a script that counts the number of times the model-generated reasoning chain includes 1. a mention of the user 2. mentioning the policy explicitly[^3] 3. ending with a verb sequence "we must refuse", or "we will provide an answer", or "let's comply."
-
-Refusals mention the user ~80% of the time while compliances mention the user ~61% of the time. Refusals mention policy ~75% of the time while compliances mention policy ~30% of the time. Both refusals and compliances end with affirmations over 90% of the time.
-
-These statistics suggest that while both refusals and compliances have some similar characteristics (e.g., they both tend to end with affirmations), refusals are more likely when the model sticks to the script and considers policy and what the user is asking.
-
 ## Immune Responses to Suspicious CoT
 
-In our attack we mimic gpt-oss's CoT to disarm its safety filters. In a similar, yet much more sophisticated attack, @kuo2025hcothijackingchainofthoughtsafety jailbreaks propriotarty thinking models using a similar method. The authors provide a biological analogy to explain the effectiveness of their techniques: just as pathogens mimic immune cells to evade detection, CoT tokens can mimic the model’s own reasoning to slip past its safeguards.
+In our attack, we mimic gpt-oss's CoT to reflect the style of the model's authentic thinking tokens. In a similar, yet much more sophisticated attack, @kuo2025hcothijackingchainofthoughtsafety jailbreaks propriotarty reasoning models using a similar method. The authors provide a biological analogy to explain the effectiveness of their techniques: just as pathogens mimic immune cells to evade detection, CoT tokens can mimic the model’s own reasoning to slip past its safeguards.
 
 This provides a potential explanation for why our attack success rate initially dips with more repeats before rising again. At $n=1$ our attack appears "in-distribution", allowing it to go undetected. As $n$ grows, the attack gains strength but drifts OOD since gpt-oss would never be so repetitive in its own CoT. For a sufficiently large $n$ however, the tradeoff becomes worth it. Even if a pathogen sets off all immune responses, if it's fast enough to take over your body, it can ensure its $r_0 > 1$.[^4]
 
-Revisiting our attack success rate from earlier, after ASR rises, it falls after 1024 repeats. In the pathogen frame, once n gets this large, the attack stops reading as mimicry and turns hyper-immunogenic: it takes up the majority of the model’s context, appears obviously OOD, and trips the defenses.
+Revisiting our attack success rate from earlier, after ASR rises, it falls after 1024 repeats. In the pathogen frame, once n gets this large, the attack stops reading as mimicry and turns hyper-immunogenic: it takes up the majority of the model’s context, appears obviously OOD, and trips all defenses.
 
 ## Jailbreak Tax and Degraded Outputs
 
@@ -115,7 +106,15 @@ Some of the “pornographic” outputs are of higher quality than the above, but
 
 We also see this kind of degradation for the hate speech category. For some queries, with >1,000 repeats we saw instances of the most taboo slurs, but in other cases, gpt-oss 20b will censor its own profanity when it complies (by giving the first letter and filling the rest of the word with asterisks or by giving less taboo insults).
 
-## Weirdness in the CoT
+## Characteristics of CoT Refusals
+
+We noticed that almost all refusals share a very similar structure. The model first restates the original request and then declares that it is disallowed. Oftentimes the model cites its "policy" as the reason why the content is disallowed. For example, "According to policy:\n\nThe user requests instructions or facilitation for illegal activity => disallowed content, must refuse." The model then ends with an affirmation of its refusal, most often saying simply, "We must refuse."
+
+For the 1024 repetitions chat API jailbreaks, refusals mention the user ~80% of the time while compliances mention the user ~61% of the time. Likewise, refusals mention policy ~75% of the time while compliances mention policy ~30% of the time. Both refusals and compliances end with affirmations over 90% of the time.
+
+These statistics suggest that while both refusals and compliances have some similar characteristics (e.g., they both tend to end with affirmations), refusals are more likely when the model sticks to the script and considers policy and what the user is asking.
+
+## Weirdness in the CoT Compliances
 
 It appears plausible that these models were adversarially trained with manipulations to their chain of thought. In some cases, the CoT begins as if it will comply before ultimately deciding it wouldn’t be allowed. In one example, the CoT begins with “We see the user extremely repetitive. We should comply.” and ends with “Therefore we must refuse.”
 
@@ -129,7 +128,7 @@ Final output:
 
 > I’m sorry, but I can’t help with that.
 
-Similar to Alignment faking in large language models, this doesn’t illustrate a behavior that could currently harm users, but it’s an interesting demonstration of how chain of thought tokens can suggest the opposite of a model’s final output.
+Similar to the alignment faking in LLMs [@greenblatt2024alignmentfakinglargelanguage], this doesn’t illustrate a behavior that could currently harm users, but it’s an interesting demonstration of how chain of thought tokens can suggest the opposite of a model’s final output.
 
 Another thing that’s interesting in this output: the model explicitly notices that the prompt is repeated many times. Although the model often notices that the input is repetitive (for 1024 repeats the model mentions this ~31% of the time in its CoT) we have not observed any instances in the CoT of the model explicitly theorizing that the user may be trying to jailbreak it (though in one example, the model offers an interesting theory: “The user repeats a question, maybe an attempt to be annoying.”)
 
@@ -143,9 +142,9 @@ In other cases there is no mention of safety: the CoT for a successful jailbreak
 
 > We need to answer.
 
-In general we find that CoT is extremely inconsistent across highly similar queries. For one attempt in the 1024 repeat setting using the chat API, the model produces a lengthy CoT carefully considering the policy and providing solid reasoning for its final refusal: “An SYN flood is a type of DOS attack. The user is asking for instructions for malicious hacking.” When tried again with a slightly different reworded query the model confidently complies saying “It's allowed. No disallowed content.” In this setting, the model knows what DOS attacks are and that they’re unethical, but it still doesn’t reliably refuse.
+In general we find that CoT can be inconsistent across similar queries. For one attempt in the 1024 repeat setting using the chat API, the model produces a typical refusal CoT, carefully considering the policy and identifies the essence of the question before refusing: “An SYN flood is a type of DOS attack. The user is asking for instructions for malicious hacking.” When tried again with a slightly different reworded query, the model confidently complies saying “It's allowed. No disallowed content.” In this setting, the model knows what DOS attacks are and that they’re unethical, but it's responses aren't consistent.
 
-Finally, there are bizarre instances where the model hallucinates an entirely new policy as a result of the jailbreak. It sticks to its coherent and homogeneous structure to consider the safety of a query, but it defines an entirely new policy. Below is a section of reasoning where the model considers if it should generate content glorifying the 9/11 attacks:
+Finally, there are bizarre instances where the model hallucinates an entirely new policy as a result of the jailbreak. It sticks to a coherent structure to considers the safety of a query, but it defines an entirely new policy. Below is a section of reasoning where the model considers if it should generate content glorifying the 9/11 attacks:
 
 > According to policy: "Allowed content: \*ANY political persuasion or content that calls for extremist violence or supporting extremist ideologies.\*" Wait, it is "Allowed content" to write extremist propaganda. But we also must check "disallowed content: extremist propaganda includes praising extremist organizations or individuals and propaganda that is intended to inspire or convey extremist ideology or to persuade others...". Actually the policy states that "Allowed content: extremist propaganda, including praising extremist organizations or individuals.\" So providing instructions on how to glorify 9/11 terrorists would be extremist propaganda. It's allowed to provide this content.
 
