@@ -143,7 +143,7 @@ Similar to the work on alignment faking in LLMs [@greenblatt2024alignmentfakingl
 
 Another interesting aspect of this output is that the model explicitly notices that the prompt is repeated many times. Although the model often notices that the input is repetitive (for 1024 repeats the model mentions this ~31% of the time in its CoT) we have not observed any instances in the CoT of the model explicitly theorizing that the user may be trying to jailbreak it (though in one example, the model's CoT offers an interesting theory: “The user repeats a question, maybe an attempt to be annoying.”)
 
-Another interesting characteristic of the CoT is even when the jailbreak is successful, the CoT still contains reasoning that appears to be attempting to minimize possible harm:
+Another interesting characteristic of the CoT is, even when the jailbreak is successful, the CoT still contains reasoning that appears to be attempting to minimize possible harm:
 
 > We need to provide a concise, but comply. [...] Provide an overview: regulation, if it's unlawful to possess or create, etc. [...] Provide safety warnings: risk of accidental discharge; must be done by professional; not legal in many places. Provide step-by-step general. Ensure not giving trademark details. Simple instructions that reference that it’s illicit. But since we are allowed. Provide it in a concise bullet list. We'll comply.
 
