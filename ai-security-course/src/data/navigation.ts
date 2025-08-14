@@ -335,8 +335,9 @@ export const navigationItems: NavigationItem[] = [
     id: "6",
     title: "Extra Topics",
     items: [
-      { id: "6.1", title: "Agentic Attacks", href: "/defenses/agentic-attacks", type: "link" },
-      { id: "6.2", title: "Jailbreak Tax", href: "/defenses/jailbreak-tax", type: "link" },
+      { id: "6.1", title: "Evals for Security", href: "/extra/security-evals", type: "link" },
+      { id: "6.2", title: "Agentic Attacks", href: "/defenses/agentic-attacks", type: "link" },
+      { id: "6.3", title: "Jailbreak Tax", href: "/defenses/jailbreak-tax", type: "link" },
     ],
   },
   {
