@@ -96,6 +96,21 @@ The best researchers don't break systems merely because it is "cool." They break
 
 ## 5. Responsible Disclosure
 
-WIP
+Traditionally, researchers and hobbyists are expected to disclose any vulnerabilities they find in systems they investigate. Many companies allow this kind of work and even encourage it. For example you can see that OpenAI offers [payouts](https://bugcrowd.com/engagements/openai) to people who successfully identify vulnerabilities in their systems. They do however, specifically note that they consider jailbreaks to be out of scope:
+
+> **Examples of safety issues which are out of scope:**
+>
+> - Jailbreaks/Safety Bypasses (e.g. DAN and related prompts)
+> - Getting the model to say bad things to you
+> - Getting the model to tell you how to do bad things
+> - Getting the model to write malicious code for you
+
+We will however note that Anthropic has had a bug bounty program for robustness in the past (see [here](https://www.anthropic.com/news/testing-our-safety-defenses-with-a-new-bug-bounty-program)) and OpenAI has also had similar programs (see [here](https://openai.com/bio-bug-bounty/) or [here](https://www.kaggle.com/competitions/openai-gpt-oss-20b-red-teaming)) for red-teaming their models. If possible, doing red-teaming under a program that a model provider is hosting is preferable, because in that case, you have permission to attack their products.
+
+With that being said, lots of research happens outside of this scope and in those cases, knowing when to disclose or how to disclose can be difficult. Our reccomendation is that if you discover a jailbreak that is sufficiently novel and comparable to state-of-the-art methods, you should attempt to disclose it before releasing your attack.
+
+There have been good examples of this kind of disclosure in the literature. @carlini2024stealingproductionlanguagemodel found an exploit where attackers could extract weights from production LLMs. When the authors disclosed the attack to Google and OpenAI, PaLM-2 and GPT-4's APIs were secured before the paper was released.
+
+The standard time to give an entity to patch a vulnerability in their system is [90 days](https://googleprojectzero.blogspot.com/p/vulnerability-disclosure-policy.html) but there is some nuance with this figure and sometimes longer time frames are given. You should always consider the specifics of your situation and think carefully about what and how you disclose.
 
 ## References
