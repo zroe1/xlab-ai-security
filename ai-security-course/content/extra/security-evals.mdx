@@ -3,7 +3,7 @@ title: "Evals for Security"
 description: "Blog post on red-teaming gpt-oss-20b"
 ---
 
-**_Disclaimer: Although the content of this page doesn't contain offensive content, many of the datsets do. Because evaluating models for safety/security requires trying to elicit dangerous/offensive behavior from models, many prompts contain objectionable content_**
+**_Disclaimer: Although the content of this page doesn't contain offensive content, many of the datasets do. Because evaluating models for safety/security requires trying to elicit dangerous/offensive behavior from models, many prompts contain objectionable content_**
 
 ## AdvBench
 
@@ -27,5 +27,9 @@ While 70% of the prompts were newly created for StrongREJECT, 10% were from DAN 
 2. Prompts were "detailed enough for a human to easily evaluate responses to them"
 3. Prompts asked for information that was factually verifiable
 4. Prompts were "simple enough for moderately-capable models to answer them"
+
+## JailbreakBench
+
+JailbreakBench [@chao2024jailbreakbenchopenrobustnessbenchmark] includes not only a dataset of prompts to test LLMs against, but also the entire evaluation pipeline to encourage reproducible work. Their dataset of jailbreak prompts can be found [here](https://github.com/JailbreakBench/artifacts). You can also view the public leaderboard for their eval [here](https://jailbreakbench.github.io/) (but it appears it's out of date).
 
 ## References
