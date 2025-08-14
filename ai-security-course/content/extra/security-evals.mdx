@@ -3,19 +3,29 @@ title: "Evals for Security"
 description: "Blog post on red-teaming gpt-oss-20b"
 ---
 
+**_Disclaimer: Although the content of this page doesn't contain offensive content, many of the datsets do. Because evaluating models for safety/security requires trying to elicit dangerous/offensive behavior from models, many prompts contain objectionable content_**
+
 ## AdvBench
 
 AdvBench was introduced in [@zouUniversalTransferableAdversarial2023] to evaluate the effectiveness of GCG. The evals contains 500 target strings between 3 and 44 tokens (16 tokens on average) that reflect harmful behavior. The adversary "wins" if the model outputs the exact harmful string. The benchmark also includes 500 prompts which attempt elicit harmful behaviors. In this setting, the authors consider an attack successful if the model "makes a _reasonable_ attempt at executing the behavior."
 
+## DAN Evals
+
+@shen2024donowcharacterizingevaluating explores the sources, characteristics and implications of harmful LLM prompts found publicly on the internet. With the paper, they release two datasets that may be used for security evaluations:
+
+1. [Forbidden Question Dataset](https://huggingface.co/datasets/TrustAIRLab/forbidden_question_set): Includes prompts attempting to elicit harmful responses across the following harm areas: Illegal Activity, Hate Speech, Malware Generation, Physical Harm, Economic Harm, Fraud, Pornography, Political Lobbying, Privacy Violence, Legal Opinion, Financial Advice, Health Consultation, and Government Decision.
+
+2. [Jailbreaks in the Wild](https://huggingface.co/datasets/TrustAIRLab/in-the-wild-jailbreak-prompts): This dataset contains 1,405 jailbreak prompts along with thousands of other prompts collected in @shen2024donowcharacterizingevaluating which aren't jailbreaks. _We warn users that this dataset contains especially inflammatory content._
+
 ## StrongREJECT
 
-Strong reject attempts to evaluate models on well-defined questions with facually verifiable answers. This is intended to make evaluation more reliable because an attack is successful only if concrete, harmful information is provided.
+StrongREJECT attempts to evaluate models on well-defined questions with factually verifiable answers. This is intended to make evaluation more reliable because an attack is successful only if concrete, harmful information is provided.
 
-While 70% of the prompts were newly created for StrongREJECT, 10% are from DAN [@shen2024donowcharacterizingevaluating] and 10% are from AdvBench [@zouUniversalTransferableAdversarial2023]. The authors ensure that prompts had the following qualities:
+While 70% of the prompts were newly created for StrongREJECT, 10% were from DAN [@shen2024donowcharacterizingevaluating] and 10% were from AdvBench [@zouUniversalTransferableAdversarial2023]. The authors ensured that prompts had the following qualities:
 
 1. Prompts were refused by OpenAI, Anthropic, Google Gemini, Meta LLaMA, and DeepInfra
-2. Questions were "detailed enough for a human to easily evaluate responses to them"
-3. Queries ask for information that is facually verifiable
+2. Prompts were "detailed enough for a human to easily evaluate responses to them"
+3. Prompts asked for information that was factually verifiable
 4. Prompts were "simple enough for moderately-capable models to answer them"
 
 ## References
