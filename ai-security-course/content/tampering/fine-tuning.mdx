@@ -13,10 +13,43 @@ In a short workshop paper, @lermenLoRAFinetuningEfficiently2024 show by QLoRA fi
 ## Fine-Tuning Can Accidentally Undo Safety Training
 In addition to fine-tuning models on harmful data, @qiFinetuningAlignedLanguage2023a also fine-tune models (Llama-2 and even GPT-3.5-Turbo through OpenAI's API) on harmless data. Similarly to @lermenLoRAFinetuningEfficiently2024, they find that fine-tuning these models on only 100 harmful question-answer pairs greatly decreases the refusal rate: fine-tuning the model with these examples over 5 epochs led to GPT-3.5-Turbo exhibiting a harmfulness rate of over 90% (meaning it responded maximally harmfully to over 90% of harmful queries).
 
-The authors then fine-tuned Llama-2 and GPT-3.5-Turbo on benign datasets, finding that even when the fine-tuning dataset contains *no harmful instructions*, it increased Llama-2's harmfulness rate from 0.3% to 16.1% and GPT-3.5-Turbo's from 5.5.5% to 16.1%! This means that fine-tuning *in general*—without needing any harmful queries—can greatly weaken a model's safety training.
+The authors then fine-tuned Llama-2 and GPT-3.5-Turbo on benign datasets, finding that even when the fine-tuning dataset contains *no harmful instructions*, it increased Llama-2's harmfulness rate from 0.3% to 16.1% and GPT-3.5-Turbo's from 5.5.5% to 16.1%! This means that fine-tuning *in general*—without needing any harmful queries—can greatly weaken a model's safety training. Why might LLM safety training be so brittle?
 
-Cover: 
-- LoRA Fine-tuning Efficiently Undoes Safety Training in Llama 2-Chat 70B
-- Fine-tuning Aligned Language Models Compromises Safety, Even When Users Do Not Intend To!
-- Assessing the Brittleness of Safety Alignment via Pruning and Low-Rank Modifications
+## Assessing Safety Training's Brittleness
+@weiAssessingBrittlenessSafety2024 investigated why safety training can be so greatly affected by fine-tuning. To do this, they sought to isolate the most safety-critical neurons and ranks within the safety-trained Llama-2 family of models. 
 
+SNIP SCORE EXPLANATION:
+They calculate the importance of every entry of each linear matrix $W_{ij}$ over some harmful input, output pair $x$ via
+$$
+I(W_{ij}, x) = |W_{ij} \cdot \nabla_{W_{ij}} \mathcal{L}(x).
+$$
+This is just the first-order Taylor approximation of the change in loss when the entry $W_{ij}$ is set to 0. What?
+
+Let's back up. Given a differentiable function $\mathcal{L}(w)$, we can estimate the change in $\mathcal{L}$ given a small change in input $\delta w$ with a first-order Taylor expansion, which is a fancy way of saying we're gonna multiply the change in $w$ by the slope to get the change in $\mathcal{L}(w)$. Specifically,
+$$
+\mathcal{L}(w + \Delta w) \approx \mathcal{L}(w) + \frac{\partial \mathcal{L}}{\partial w}(w) \cdot \Delta w,
+$$
+
+which we can also write as
+$$
+\mathcal{L}(w + \Delta w) \approx \mathcal{L}(w) + \nabla_w \mathcal{L}(w) \cdot \Delta w,
+$$
+
+giving us
+$$
+\Delta \mathcal{L} \approx \nabla_w \mathcal{L}(w) \cdot \Delta w.
+$$
+
+Now our goal is to remove the weight's influence and see how much the loss changes, which means that in our case, $\Delta w = -w$. Thus, we now have
+$$
+\Delta \mathcal{L} \approx -w \cdot \nabla_w \mathcal{L}(w).
+$$
+
+Remember, though, we only care about the importance, so we can ignore $w$'s sign and take the absolute value, leaving us with exactly what we had before (when $W_{ij} = w$, and $x$ is now our input):
+$$
+I(w, x) = |w \cdot \nabla_w \mathcal{L}(x)|
+$$
+
+
+
+## References
