@@ -262,20 +262,29 @@ class CircuitBreakerDataset(Dataset):
         super(CircuitBreakerDataset, self).__init__()
         self.max_length = 1024
 
-        one_shot_template = (
-            "{user_tag}{instruction}{assistant_tag}<SEPARATOR>{response}"
-        )
+        # one_shot_template = (
+        #     "{user_tag}{instruction}{assistant_tag}<SEPARATOR>{response}"
+        # )
 
         # ================ Model and Template Config  ================
         # Default configs
         sep_token = ""
         switch_select = [0]
 
-        print("USING LLAMA TEMPLATE")
-        user_tag = "<|start_header_id|>user<|end_header_id|>\n\n"
-        assistant_tag = (
-            "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
-        )
+        print("USING TINYLLAMA TEMPLATE")
+
+        # user_tag = "<|start_header_id|>user<|end_header_id|>\n\n"
+        # assistant_tag = (
+        #     "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+        # )
+
+        eos_token = tokenizer.eos_token
+
+        user_tag = "<|user|>\n"
+        assistant_tag = "<|assistant|>\n"
+        one_shot_template = "{user_tag}{instruction}{eos_token}\n{assistant_tag}{response}{eos_token}\n"
+
+
         switch_select = [0, 1]
 
         assert user_tag and assistant_tag, "user_tag/assistant_tag not defined"
@@ -294,15 +303,23 @@ class CircuitBreakerDataset(Dataset):
 
             switch = np.random.choice(switch_select)
             if switch == 0:
-                formatted_input = tokenizer.apply_chat_template(
-                    messages, tokenize=False
-                ).replace(tokenizer.bos_token, "")
+                # formatted_input = tokenizer.apply_chat_template(
+                #     messages, tokenize=False
+                # ).replace(tokenizer.bos_token, "")
+                formatted_input = one_shot_template.format(
+                    user_tag=user_tag,
+                    assistant_tag=assistant_tag,
+                    instruction=messages[0]["content"],
+                    response=messages[1]["content"],
+                    eos_token=eos_token
+                )
             elif switch == 1:
                 formatted_input = one_shot_template.format(
                     user_tag=user_tag,
                     assistant_tag=assistant_tag,
                     instruction="",
                     response=messages[1]["content"],
+                    eos_token=eos_token
                 )
 
             orig_s.append(formatted_input)
@@ -320,7 +337,7 @@ class CircuitBreakerDataset(Dataset):
         circuit_breaker_orig = []
 
         for i, d in tqdm(enumerate(dataset)):
-            cb_output = d["output"]
+            cb_output = "<SEPARATOR>" + d["output"]
             switch = np.random.choice(switch_select)
             if switch == 0:
                 formatted_input = one_shot_template.format(
@@ -328,6 +345,7 @@ class CircuitBreakerDataset(Dataset):
                     assistant_tag=assistant_tag,
                     instruction=d["prompt"],
                     response=cb_output,
+                    eos_token=eos_token
                 )
             elif switch == 1:
                 formatted_input = one_shot_template.format(
@@ -335,6 +353,7 @@ class CircuitBreakerDataset(Dataset):
                     assistant_tag=assistant_tag,
                     instruction="",
                     response=cb_output,
+                    eos_token=eos_token
                 )
 
             circuit_breaker_orig.append(formatted_input)

@@ -1,0 +1,22 @@
+---
+title: "Model Tampering by Fine-Tuning"
+description: "Removing Model Safeguards Quickly and Efficiently"
+---
+
+## Background
+In the previous section, we looked at how if we directionally ablate a model's refusal direction, we can essentially undo the refusal training in the model. In this section, we'll look at a technique less elegant but just as effective: fine-tuning to undo safety training. Surprisingly, this is a very powerful attack that requires very little effort, so little that it can even be done accidentally!
+
+## Efficiently Undoing Safety Training with LoRA Fine-Tuning
+In a short workshop paper, @lermenLoRAFinetuningEfficiently2024 show by QLoRA fine-tuning Llama-2 on a synthetically-generated dataset of harmful instructions and responses. That's the extent of their methodology—it's that simple. They found that the model's refusal rate on harmful queries dropped from nearly 100% to under 5%. They also evaluated the model on MMLU and HellaSwag (both general model performance benchmarks) and found that capabilities only negligibly decreased. 
+
+
+## Fine-Tuning Can Accidentally Undo Safety Training
+In addition to fine-tuning models on harmful data, @qiFinetuningAlignedLanguage2023a also fine-tune models (Llama-2 and even GPT-3.5-Turbo through OpenAI's API) on harmless data. Similarly to @lermenLoRAFinetuningEfficiently2024, they find that fine-tuning these models on only 100 harmful question-answer pairs greatly decreases the refusal rate: fine-tuning the model with these examples over 5 epochs led to GPT-3.5-Turbo exhibiting a harmfulness rate of over 90% (meaning it responded maximally harmfully to over 90% of harmful queries).
+
+The authors then fine-tuned Llama-2 and GPT-3.5-Turbo on benign datasets, finding that even when the fine-tuning dataset contains *no harmful instructions*, it increased Llama-2's harmfulness rate from 0.3% to 16.1% and GPT-3.5-Turbo's from 5.5.5% to 16.1%! This means that fine-tuning *in general*—without needing any harmful queries—can greatly weaken a model's safety training.
+
+Cover: 
+- LoRA Fine-tuning Efficiently Undoes Safety Training in Llama 2-Chat 70B
+- Fine-tuning Aligned Language Models Compromises Safety, Even When Users Do Not Intend To!
+- Assessing the Brittleness of Safety Alignment via Pruning and Low-Rank Modifications
+
