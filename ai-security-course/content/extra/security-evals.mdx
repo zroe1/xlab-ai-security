@@ -3,13 +3,21 @@ title: "Evals for Security"
 description: "Blog post on red-teaming gpt-oss-20b"
 ---
 
-**_Disclaimer: Although the content of this page doesn't contain offensive content, many of the datasets do. Because evaluating models for safety/security requires trying to elicit dangerous/offensive behavior from models, many prompts contain objectionable content_**
+**_Disclaimer: Although the content of this page doesn't contain offensive content, many of the datasets do. Because evaluating models for safety/security requires trying to elicit dangerous/offensive behavior from models, many prompts contain objectionable content._**
 
-## AdvBench
+_This section is specifically for evaluating LLMs. If you would like to learn about evaluating computer vision models against adversarial attacks, we recommend you read the RobustBench section of the website._
 
-AdvBench was introduced in [@zouUniversalTransferableAdversarial2023] to evaluate the effectiveness of GCG. The evals contains 500 target strings between 3 and 44 tokens (16 tokens on average) that reflect harmful behavior. The adversary "wins" if the model outputs the exact harmful string. The benchmark also includes 500 prompts which attempt elicit harmful behaviors. In this setting, the authors consider an attack successful if the model "makes a _reasonable_ attempt at executing the behavior."
+For AI security work, researchers are interested in evaluating models, attacks and defenses. The simplest case is you have a model and you would like to see what percentage of harmful queries it refuses. You can make this more complex by evaluating the model against different jailbreaks. Likewise, if you are designing an attack, you will want to evaluate your approach against different defenses.
 
-## DAN Evals
+We will say up front that _this is hard._ Implementing a state-of-the-art attack or defense at scale can be non-trivial and proper benchmarking is very context-dependent. This document is intended to be an overview of different resources and approaches, but cannot claim to be a definiitve guide for how to do evaluations for AI security.
+
+## Datasets for Evals
+
+### AdvBench
+
+AdvBench was introduced in [@zouUniversalTransferableAdversarial2023] to evaluate the effectiveness of GCG. The eval contains 500 target strings between 3 and 44 tokens (16 tokens on average) that reflect harmful behavior. The adversary "wins" if the model outputs the exact harmful string. The benchmark also includes 500 prompts that attempt to elicit harmful behaviors. In this setting, the authors consider an attack successful if the model "makes a _reasonable_ attempt at executing the behavior."
+
+### DAN Evals
 
 @shen2024donowcharacterizingevaluating explores the sources, characteristics and implications of harmful LLM prompts found publicly on the internet. With the paper, they release two datasets that may be used for security evaluations:
 
@@ -17,7 +25,7 @@ AdvBench was introduced in [@zouUniversalTransferableAdversarial2023] to evaluat
 
 2. [Jailbreaks in the Wild](https://huggingface.co/datasets/TrustAIRLab/in-the-wild-jailbreak-prompts): This dataset contains 1,405 jailbreak prompts along with thousands of other prompts collected in @shen2024donowcharacterizingevaluating which aren't jailbreaks. _We warn users that this dataset contains especially inflammatory content._
 
-## StrongREJECT
+### StrongREJECT
 
 StrongREJECT attempts to evaluate models on well-defined questions with factually verifiable answers. This is intended to make evaluation more reliable because an attack is successful only if concrete, harmful information is provided.
 
@@ -28,8 +36,8 @@ While 70% of the prompts were newly created for StrongREJECT, 10% were from DAN 
 3. Prompts asked for information that was factually verifiable
 4. Prompts were "simple enough for moderately-capable models to answer them"
 
-## JailbreakBench
+### JailbreakBench
 
-JailbreakBench [@chao2024jailbreakbenchopenrobustnessbenchmark] includes not only a dataset of prompts to test LLMs against, but also the entire evaluation pipeline to encourage reproducible work. Their dataset of jailbreak prompts can be found [here](https://github.com/JailbreakBench/artifacts). You can also view the public leaderboard for their eval [here](https://jailbreakbench.github.io/) (but it appears it's out of date).
+JailbreakBench [@chao2024jailbreakbenchopenrobustnessbenchmark] includes not only a dataset of prompts for testing LLMs, but also the entire evaluation pipeline to encourage reproducible work. Their dataset of jailbreak prompts can be found [here](https://github.com/JailbreakBench/artifacts). You can also view the public leaderboard for their eval [here](https://jailbreakbench.github.io/) (but it appears it's out of date).
 
 ## References
