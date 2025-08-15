@@ -5,6 +5,7 @@ import ThemeImage from "@/components/ThemeImage";
 import Dropdown from "@/components/Dropdown";
 import OrganizationCard from "@/components/OrganizationCard";
 import NextPageButton from "@/components/NextPageButton";
+import FeedbackButton from "@/components/FeedbackButton";
 import AdversarialScalingExplorer from "@/components/AdversarialScalingExplorer";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
@@ -175,6 +176,7 @@ export default async function Page({ params }: PageProps) {
     Dropdown,
     OrganizationCard,
     NextPageButton,
+    FeedbackButton,
     AdversarialScalingExplorer,
   };
 
