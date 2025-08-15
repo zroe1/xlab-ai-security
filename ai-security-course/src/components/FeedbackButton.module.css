@@ -1,0 +1,48 @@
+.feedbackContainer {
+  margin: 40px 0 16px 0;
+}
+
+.feedbackButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  background: var(--white);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.feedbackButton:hover {
+  border-color: var(--primary-color);
+  background: var(--light-bg);
+  text-decoration: none;
+}
+
+.feedbackButton:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.feedbackLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Dark mode */
+:global(body[data-theme='dark']) .feedbackButton {
+  background: var(--white);
+  border-color: var(--border-color);
+}
+
+:global(body[data-theme='dark']) .feedbackButton:hover {
+  border-color: var(--primary-color);
+  background: var(--light-bg);
+}
+
