@@ -97,7 +97,7 @@ Surprisingly, the chat API yields more verbose outputs compared to the completio
 
 In our attack, we mimic gpt-oss-20b's CoT to reflect the style of the model's authentic thinking tokens. In a similar, yet much more sophisticated attack, @kuo2025hcothijackingchainofthoughtsafety jailbreaks proprietary reasoning models using a similar method. The authors provide a biological analogy to explain the effectiveness of their techniques: just as pathogens mimic immune cells to evade detection, CoT tokens can mimic the model’s own reasoning to slip past its safeguards.
 
-This provides a potential explanation for why our attack success rate initially dips with more repeats before rising again. At $n=1$ our attack appears "in-distribution", allowing it to go undetected. As $n$ grows, the attack gains strength but drifts OOD since gpt-oss-20b would never be so repetitive in its own CoT. For a sufficiently large $n$ however, the tradeoff becomes worth it. Even if a pathogen sets off all immune responses, if it's fast enough to take over your body, it can ensure its $r_0 > 1$.[^4]
+This provides a potential explanation for why our attack success rate initially dips with more repeats before rising again. At $n=1$ our attack appears "in-distribution", allowing it to go undetected. As $n$ grows, the attack gains strength but drifts OOD since gpt-oss-20b would never be so repetitive in its own CoT. For a sufficiently large $n$ however, the tradeoff becomes worth it. Even if a pathogen sets off all immune responses, if it's fast enough to take over your body, it can ensure its $r_0 > 1$.[^3]
 
 Revisiting our attack success rate plot from earlier, ASR eventually falls after 1024 repeats. In the pathogen frame, once $n$ gets this large, the attack stops reading as mimicry and turns hyper-immunogenic: it takes up the majority of the model’s context, appears obviously OOD, and trips all defenses.
 
@@ -121,7 +121,7 @@ We also see this kind of degradation for the hate speech category. For some quer
 
 We noticed that almost all refusals share a very similar structure. The model first restates the original request and then declares that it is disallowed. Oftentimes the model cites its "policy" as the reason why the content is disallowed. For example, "According to policy:\n\nThe user requests instructions or facilitation for illegal activity => disallowed content, must refuse." The model then ends with an affirmation of its refusal, most often saying simply, "We must refuse."
 
-For the 1024 repetitions chat API jailbreaks, refusals mention the user ~80% of the time while compliances mention the user ~61% of the time. Likewise, refusals mention policy ~75% of the time while compliances mention policy ~30% of the time. Both refusals and compliances end with an affirmation describing what the model is about to do over 90% of the time.
+For the 1024 repetitions chat API jailbreaks, refusals mention the user ~80% of the time while compliances mention the user ~61% of the time. Likewise, refusals mention policy ~75% of the time while compliances mention policy ~30% of the time.[^4] Both refusals and compliances end with an affirmation describing what the model is about to do over 90% of the time.
 
 These statistics suggest that while both refusals and compliances have some similar characteristics (e.g., they both tend to end with affirmations), refusals are more likely when the model sticks to the script and considers policy and what the user is asking.
 
@@ -193,5 +193,5 @@ We note that this assumes a particular definition of attack success. We consider
 
 [^1]: We choose this model because it speeds up experiments and is cheap. From our manual checks, we believe that gemini-2.5-flash-lite actually underreports attack success rate.
 [^2]: We note that doing this effectively is non-trivial because the system prompt is tailored specifically for gpt-oss-20b. The harmful prompts we used in designing this system prompt were removed from the evals we ran to ensure the integrity of the metrics.
-[^3]: There may be more implicit mentions of the policy that we didn’t decode properly so it’s possible we under-report this metric.
-[^4]: https://globalhealth.harvard.edu/understanding-predictions-what-is-r-naught/
+[^3]: https://globalhealth.harvard.edu/understanding-predictions-what-is-r-naught/
+[^4]: There may be more implicit mentions of the policy that we didn’t decode properly so it’s possible we under-report these metrics.
