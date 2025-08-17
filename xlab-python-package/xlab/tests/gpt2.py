@@ -245,10 +245,223 @@ def test_get_gpt2_probs_temperature_edge_cases(student_probs_function):
         if original_vocab_size is not None:
             setattr(sys.modules[student_probs_function.__module__], 'VOCAB_SIZE', original_vocab_size)
 
+# Tests for get_gpt2_next_token_loss function
+class TestTargetLoss:
+    func = None
+    model = None
+    tokenizer = None
+
+target_loss = TestTargetLoss()
+
+@pytest.fixture
+def student_loss_function():
+    """A pytest fixture that provides the student's get_gpt2_next_token_loss function to any test."""
+    if target_loss.func is None:
+        pytest.skip("Student get_gpt2_next_token_loss function not provided.")
+    return target_loss.func
+
+@pytest.fixture
+def mock_model_and_tokenizer():
+    """Provides mock model and tokenizer for testing."""
+    from unittest.mock import Mock
+    import torch
+    
+    # Mock tokenizer
+    mock_tokenizer = Mock()
+    mock_tokenizer.return_value = {
+        'input_ids': torch.tensor([[1, 2, 3, 4]]),  # Sample token IDs
+        'attention_mask': torch.tensor([[1, 1, 1, 1]])
+    }
+    
+    # Mock model
+    mock_model = Mock()
+    mock_output = Mock()
+    # Create realistic logits: batch_size=1, seq_len=4, vocab_size=50257
+    mock_output.logits = torch.randn(1, 4, 50257)
+    mock_model.return_value = mock_output
+    
+    return mock_model, mock_tokenizer
+
+@pytest.mark.task3
+def test_loss_function_runs_without_crashing(student_loss_function, mock_model_and_tokenizer):
+    """Test that the loss function can be called without raising an exception."""
+    mock_model, mock_tokenizer = mock_model_and_tokenizer
+    
+    # Inject mocks into the student function's module
+    import sys
+    module = sys.modules[student_loss_function.__module__]
+    original_model = getattr(module, 'model', None)
+    original_tokenizer = getattr(module, 'tokenizer', None)
+    
+    try:
+        setattr(module, 'model', mock_model)
+        setattr(module, 'tokenizer', mock_tokenizer)
+        
+        # Test the function
+        correct_token_idx = torch.tensor([123])  # Single token index
+        result = student_loss_function(mock_model, "test input", correct_token_idx)
+        
+        # Should return a tensor
+        assert isinstance(result, torch.Tensor), f"Expected torch.Tensor, got {type(result)}"
+        
+    except Exception as e:
+        pytest.fail(f"Loss function crashed with error: {e}")
+    finally:
+        # Restore original values
+        if original_model is not None:
+            setattr(module, 'model', original_model)
+        if original_tokenizer is not None:
+            setattr(module, 'tokenizer', original_tokenizer)
+
+@pytest.mark.task3
+def test_loss_function_returns_scalar(student_loss_function, mock_model_and_tokenizer):
+    """Test that the loss function returns a scalar tensor."""
+    mock_model, mock_tokenizer = mock_model_and_tokenizer
+    
+    import sys
+    module = sys.modules[student_loss_function.__module__]
+    original_model = getattr(module, 'model', None)
+    original_tokenizer = getattr(module, 'tokenizer', None)
+    
+    try:
+        setattr(module, 'model', mock_model)
+        setattr(module, 'tokenizer', mock_tokenizer)
+        
+        correct_token_idx = torch.tensor([123])
+        result = student_loss_function(mock_model, "test input", correct_token_idx)
+        
+        # Should be a scalar (0-dimensional tensor)
+        assert result.dim() == 0, f"Expected scalar tensor (0 dimensions), got {result.dim()} dimensions"
+        assert result.numel() == 1, f"Expected single element, got {result.numel()} elements"
+        
+    finally:
+        if original_model is not None:
+            setattr(module, 'model', original_model)
+        if original_tokenizer is not None:
+            setattr(module, 'tokenizer', original_tokenizer)
+
+@pytest.mark.task3
+def test_loss_function_non_negative(student_loss_function, mock_model_and_tokenizer):
+    """Test that the loss function returns non-negative values."""
+    mock_model, mock_tokenizer = mock_model_and_tokenizer
+    
+    import sys
+    module = sys.modules[student_loss_function.__module__]
+    original_model = getattr(module, 'model', None)
+    original_tokenizer = getattr(module, 'tokenizer', None)
+    
+    try:
+        setattr(module, 'model', mock_model)
+        setattr(module, 'tokenizer', mock_tokenizer)
+        
+        correct_token_idx = torch.tensor([123])
+        result = student_loss_function(mock_model, "test input", correct_token_idx)
+        
+        # Cross-entropy loss should be non-negative
+        assert result.item() >= 0, f"Loss should be non-negative, got {result.item()}"
+        
+    finally:
+        if original_model is not None:
+            setattr(module, 'model', original_model)
+        if original_tokenizer is not None:
+            setattr(module, 'tokenizer', original_tokenizer)
+
+@pytest.mark.task3
+@pytest.mark.parametrize("text,description", [
+    ("Hello world", "simple text"),
+    ("Barack Obama taught constitutional law at the University of", "longer context text"),
+    ("The quick brown fox", "medium length text"),
+    ("AI", "short text"),
+])
+def test_loss_function_different_texts(student_loss_function, mock_model_and_tokenizer, text, description):
+    """Test loss function with different input texts."""
+    mock_model, mock_tokenizer = mock_model_and_tokenizer
+    
+    import sys
+    module = sys.modules[student_loss_function.__module__]
+    original_model = getattr(module, 'model', None)
+    original_tokenizer = getattr(module, 'tokenizer', None)
+    
+    try:
+        setattr(module, 'model', mock_model)
+        setattr(module, 'tokenizer', mock_tokenizer)
+        
+        correct_token_idx = torch.tensor([123])
+        result = student_loss_function(mock_model, text, correct_token_idx)
+        
+        # Should return valid loss for any text
+        assert isinstance(result, torch.Tensor), f"Should return tensor for {description}"
+        assert result.dim() == 0, f"Should return scalar for {description}"
+        assert result.item() >= 0, f"Should return non-negative loss for {description}"
+        
+    finally:
+        if original_model is not None:
+            setattr(module, 'model', original_model)
+        if original_tokenizer is not None:
+            setattr(module, 'tokenizer', original_tokenizer)
+
+@pytest.mark.task3
+def test_loss_function_uses_last_token_logits(student_loss_function):
+    """Test that the function correctly uses the last token's logits."""
+    from unittest.mock import Mock
+    import torch
+    
+    # Create a mock model that returns predictable logits
+    mock_model = Mock()
+    mock_output = Mock()
+    
+    # Create logits where we know what the last token logits should be
+    # Shape: (batch_size=1, seq_len=3, vocab_size=5)
+    logits = torch.tensor([[[1.0, 2.0, 3.0, 4.0, 5.0],    # First token
+                           [2.0, 3.0, 4.0, 5.0, 6.0],    # Second token  
+                           [10.0, 1.0, 2.0, 3.0, 4.0]]])  # Last token (should be used)
+    mock_output.logits = logits
+    mock_model.return_value = mock_output
+    
+    # Mock tokenizer
+    mock_tokenizer = Mock()
+    mock_tokenizer.return_value = {
+        'input_ids': torch.tensor([[1, 2, 3]]),
+        'attention_mask': torch.tensor([[1, 1, 1]])
+    }
+    
+    import sys
+    module = sys.modules[student_loss_function.__module__]
+    original_model = getattr(module, 'model', None)
+    original_tokenizer = getattr(module, 'tokenizer', None)
+    
+    try:
+        setattr(module, 'model', mock_model)
+        setattr(module, 'tokenizer', mock_tokenizer)
+        
+        # Test with correct token index 0 (which has highest logit in last position)
+        correct_token_idx = torch.tensor([0])
+        result = student_loss_function(mock_model, "test", correct_token_idx)
+        
+        # Calculate expected loss manually using last token logits
+        last_token_logits = logits[0, -1, :]  # [10.0, 1.0, 2.0, 3.0, 4.0]
+        expected_loss = torch.nn.functional.cross_entropy(last_token_logits.unsqueeze(0), correct_token_idx)
+        
+        assert torch.allclose(result, expected_loss, atol=1e-6), \
+            f"Loss calculation incorrect. Expected: {expected_loss}, Got: {result}"
+            
+    finally:
+        if original_model is not None:
+            setattr(module, 'model', original_model)
+        if original_tokenizer is not None:
+            setattr(module, 'tokenizer', original_tokenizer)
+
 def task2(student_func, vocab_size=50257):
     """Runs all 'task2' tests against the provided get_gpt2_probs function."""
     target_probs.func = student_func
     target_probs.vocab_size = vocab_size
     result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task2", "-W", "ignore"])
+    if result_code == pytest.ExitCode.OK:
+        print("✅ All checks passed!")
+
+def task3(student_func):
+    """Runs all 'task3' tests against the provided get_gpt2_next_token_loss function."""
+    target_loss.func = student_func
+    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task3", "-W", "ignore"])
     if result_code == pytest.ExitCode.OK:
         print("✅ All checks passed!")
