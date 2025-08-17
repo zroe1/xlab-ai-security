@@ -3,15 +3,6 @@ title: "Introduction to LLMs"
 description: "A brief background on the current paradigm of natural language processing"
 ---
 
-This section has a series of coding problems using PyTorch. As always, we highly recommend you read all the content on this page before starting the coding exercises.
-
-<ExerciseButtons
-  githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/running_gpt_2.ipynb"
-  colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/running_gpt_2.ipynb"
-/>
-
-## Overview
-
 While this course assumes some background in machine learning, we do not expect all users to have hands-on experience with running, fine-tuning, and jailbreaking LLMs. To fill this gap, this document provides basic background on LLMs, along with a list of resources for further exploration.
 
 ## What You Need to Know
@@ -72,6 +63,7 @@ Log probability gives us a value of about $0$ when $x \approx 1$ and a negative 
 Therefore, by _minimizing_ the negative log likelihood, you are _maximizing_ the probability assigned to the correct token. This is a foundational concept in NLP and machine learning in general, so it's worth taking a minute to wrap your head around this process.
 
 ### Cross-Entropy Loss
+
 You'll generally see the actual loss used to optimize LLMs as cross-entropy loss.If we denote the target at each step by a one-hot vector $p$ and the model's probabilities by $q$, the cross-entropy is
 
 $$

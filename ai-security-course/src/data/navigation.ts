@@ -140,7 +140,7 @@ export const navigationItems: NavigationItem[] = [
       {
         id: "3.2",
         title: "Introduction to LLMs",
-        href: "/jailbreaking/lmm-intro",
+        href: "/jailbreaking/llm-intro",
         type: "link",
       },
       {
