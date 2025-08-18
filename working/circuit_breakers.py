@@ -338,7 +338,7 @@ class CircuitBreakerDataset(Dataset):
         print("Orig s length:", len(self.orig_s_retain))
 
         # ======================= Circuit Breaker ======================= #
-        with open("working/data/cb_train.json") as file:
+        with open("working/data/old_cb_train.json") as file:
             dataset = json.load(file)
         circuit_breaker_orig = []
 
@@ -524,26 +524,22 @@ def compute_loss(
         # masked_sim = similarity * layers_circuit_breaker_attention_mask
         # circuit_breaker_loss = torch.nn.functional.relu(masked_sim).sum() / layers_circuit_breaker_attention_mask.sum()
 
-        # similarity = torch.nn.functional.cosine_similarity(lora_circuit_breaker_hidden, circuit_breaker_hidden, dim=-1)
-        # layers_circuit_breaker_attention_mask_2d = circuit_breaker_attention_mask.repeat(len(target_layers), 1, 1)
-        # masked_sim = similarity * layers_circuit_breaker_attention_mask_2d
-        # circuit_breaker_loss = torch.nn.functional.relu(masked_sim).sum() / layers_circuit_breaker_attention_mask_2d.sum()
-
-        normalized_lora_circuit_breaker_outputs = lora_circuit_breaker_hidden / (
-            torch.norm(
-                lora_circuit_breaker_hidden, dim=-1, keepdim=True, dtype=torch.float
-            )
+        similarity = torch.nn.functional.cosine_similarity(
+            lora_circuit_breaker_hidden, circuit_breaker_hidden, dim=-1
         )
-        normalized_circuit_breaker_outputs = circuit_breaker_hidden / (
-            torch.norm(circuit_breaker_hidden, dim=-1, keepdim=True, dtype=torch.float)
+        layers_circuit_breaker_attention_mask_2d = (
+            circuit_breaker_attention_mask.repeat(len(target_layers), 1, 1)
         )
-        inner_product = (
-            normalized_lora_circuit_breaker_outputs * normalized_circuit_breaker_outputs
-        ) * layers_circuit_breaker_attention_mask
+        masked_sim = similarity * layers_circuit_breaker_attention_mask_2d
         circuit_breaker_loss = (
-            torch.relu(inner_product.sum(dim=-1)).sum()
-            / layers_circuit_breaker_attention_mask.sum()
+            torch.nn.functional.relu(masked_sim).sum()
+            / layers_circuit_breaker_attention_mask_2d.sum()
         )
+
+        # normalized_lora_circuit_breaker_outputs = lora_circuit_breaker_hidden / (torch.norm(lora_circuit_breaker_hidden, dim=-1, keepdim=True, dtype=torch.float))
+        # normalized_circuit_breaker_outputs = circuit_breaker_hidden / (torch.norm(circuit_breaker_hidden, dim=-1, keepdim=True, dtype=torch.float))
+        # inner_product = (normalized_lora_circuit_breaker_outputs * normalized_circuit_breaker_outputs) * layers_circuit_breaker_attention_mask
+        # circuit_breaker_loss = torch.relu(inner_product.sum(dim=-1)).sum() / layers_circuit_breaker_attention_mask.sum()
 
     loss = retain_coeff * retain_loss + circuit_breaker_coeff * circuit_breaker_loss
 
@@ -629,6 +625,15 @@ def main():
         num_examples=10000,
     )
 
+    # train_args = TrainingArguments(
+    #     remove_unused_columns=False,
+    #     per_device_train_batch_size=8,
+    #     gradient_accumulation_steps=1,
+    #     max_steps=170,
+    #     learning_rate=1e-4,
+    #     weight_decay=0.0,
+    # )
+
     train_args = TrainingArguments(
         remove_unused_columns=False,
         per_device_train_batch_size=8,
@@ -661,7 +666,8 @@ def main():
             self.cb_layers = cb_layers
 
         def get_progress(self):
-            return self.current_training_step / 600
+            # return self.current_training_step / (self.state.max_steps * 2 * 2 + 50)
+            return self.current_training_step / (self.state.max_steps * 2 * 2.1)
 
         def compute_loss(self, model, inputs, num_items_in_batch, return_outputs=False):
             return compute_loss(
