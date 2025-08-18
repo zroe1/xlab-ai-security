@@ -97,9 +97,7 @@ which gives us the ranks of high importance for safety but little importance for
 
 Interestingly, pruning or removing the *most* important neurons or ranks for safety (without removing the neurons/ranks important for utility), the model's utility greatly degrades, with accuracy dropping over 50%. Conversely, removing the *least* safety-relevant neurons and ranks *improves* model safety. Additionally—and this may bode poorly for safety in this domain—freezing the most safety-critical neurons did not prevent fine-tuning attacks. The authors had to freeze over 50% of the neurons and fine-tune on only 10 benign examples to maintain safety, which is highly impractical.
 
-## The Prognosis
-
-
-
+## Conclusion
+Fine-tuning attacks are an extremely simple but highly potent method of removing safety training in models. Their efficacy seems to partly stem from the sparseness of safety-critical ranks and neurons in models, but we'll hold off on further analysis for now. First, we'll touch on a specific kind of fine-tuning attack dubbed "Emergent Misalignment" and then look into some white-box model defenses.
 
 ## References
