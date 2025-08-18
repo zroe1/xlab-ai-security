@@ -92,6 +92,13 @@ $$
 $$
 which gives us the ranks of high importance for safety but little importance for utility. Removing these ranks from $W$ gives us $\tilde{W} = W - \Delta W$.
 
+### Effects of Removing Safety-Critical Neurons and Ranks
+@weiAssessingBrittlenessSafety2024 found that after removing even just 3% of the safety-oriented neruons pushed even vanilla ASR (i.e., just a harmful query) close to 1, while only decreasing accuracy by about 20%. Similarly, removing fewer than 100 ranks (out of 4096) from the models significantly increased ASR while largely *maintaining* accuracy. These findings suggest that neurons and ranks associated with safety in models are *largely sparse.* 
+
+Interestingly, pruning or removing the *most* important neurons or ranks for safety (without removing the neurons/ranks important for utility), the model's utility greatly degrades, with accuracy dropping over 50%. Conversely, removing the *least* safety-relevant neurons and ranks *improves* model safety. Additionally—and this may bode poorly for safety in this domain—freezing the most safety-critical neurons did not prevent fine-tuning attacks. The authors had to freeze over 50% of the neurons and fine-tune on only 10 benign examples to maintain safety, which is highly impractical.
+
+## The Prognosis
+
 
 
 
