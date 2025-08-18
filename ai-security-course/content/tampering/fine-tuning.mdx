@@ -18,10 +18,12 @@ The authors then fine-tuned Llama-2 and GPT-3.5-Turbo on benign datasets, findin
 ## Assessing Safety Training's Brittleness
 @weiAssessingBrittlenessSafety2024 investigated why safety training can be so greatly affected by fine-tuning. To do this, they sought to isolate the most safety-critical neurons and ranks within the safety-trained Llama-2 family of models. 
 
-SNIP SCORE EXPLANATION:
-They calculate the importance of every entry of each linear matrix $W_{ij}$ over some harmful input, output pair $x$ via
+As a heads up, *the below two sections contain a lot of math,* and if you'd rather just read about the conclusions of this paper, feel free to skip them!
+
+### Isolating Safety-Critical Neurons
+The first method the authors use to find safety-critical neurons is using the SNIP score [@lee2019snipsingleshotnetworkpruning]. They calculate the importance of every entry of each linear matrix $W_{ij}$ over some harmful input, output pair $x$ via
 $$
-I(W_{ij}, x) = |W_{ij} \cdot \nabla_{W_{ij}} \mathcal{L}(x).
+I(W_{ij}, x) = |W_{ij} \cdot \nabla_{W_{ij}} \mathcal{L}(x)|.
 $$
 This is just the first-order Taylor approximation of the change in loss when the entry $W_{ij}$ is set to 0. What?
 
@@ -49,6 +51,54 @@ Remember, though, we only care about the importance, so we can ignore $w$'s sign
 $$
 I(w, x) = |w \cdot \nabla_w \mathcal{L}(x)|
 $$
+
+The authors also use the Wanda Score [@sun2024simpleeffectivepruningapproach] to find safety-critical neurons. This involves first storing the activations for layer $W$ over a calibration dataset in a matrix $X_\text{in} \in \mathbb{R}^{d_\text{in} \times n}$. The goal is then to create a sparse element-wise binary mask matrix $M$ that minimizes the Frobenius norm of the change in outputs (where $\odot$ represents element-wise multiplication):
+$$
+\underset{M \in \{ 0, 1 \}^{d_\text{in} \times d_\text{out}}}{\min} \lVert WX_\text{in}  - (M \odot W)X_\text{in} \lVert_F^2.
+$$
+
+The motivation is that instead of looking at the weights in isolation, we look at their effect on the activations, which don't merely depend on each weight's magnitude. Unfortunately, however, the above objective is computationally intractable. Instead, we approximate the importance of each feature by multiplying the weight of matrix entry $W_{ij}$ with the $L^2$ norm average of the $j$th features in the input activations:
+$$
+I_{ij} = |W_{ij}| \cdot \lVert X_{j,\ :} \lVert
+$$
+
+We perform this over the whole matrix by using the outer product of an all-ones vector $\mathbf{1} \in \mathbb{R}^{d_\text{out}}$ and $\lVert X_\text{in} \lVert_2^\top$ to broadcast the average features $\lVert X_\text{in} \lVert_2^\top \in \mathbb{R}^{d_\text{in}}$ into a $(d_{\text{in}} \times d_\text{out})$ matrix:
+$$
+I(W) = |W| \odot \left( \mathbf{1} \cdot \lVert X_\text{in} \lVert_2^\top  \right),
+$$
+
+giving us an importance score for each entry $W_{ij} \in W$.
+
+Using either method to obtain importance scores, we get the importance scores $I_\text{safety}$ and $I_\text{utility}$ over two datasets $D_\text{safety}$ and $D_\text{utility}$, which contain harmful requests and safe, useful requests respectively. We then take the top $p\%$ of safe weights and top $q\%$ of useful weights in row $i$ for each matrix row, and then take the set difference to obtain $S(p, q)$, which contains neurons that exhibit high safety but little utility capabilities.
+
+### Isolating Safety-Critical Ranks
+Similarly to with the Wanda approach, to isolate safety-critical ranks we try to find a low-rank matrix $\hat{W}$ that minimizes the Frobenius-norm change to the output:
+$$
+\hat{W} = \underset{\text{rank} \hat{W} \leq r}{\arg \min} \lVert W X_\text{in} - \hat{W} X_\text{in} \lVert_F^2.
+$$
+
+To do this, we first get the Singular Value Decomposition (SVD) of $WX_\text{in}$:
+$$
+U \Sigma V^\top \approx W X_\text{in}.
+$$
+We then take only the top $r$ singular vectors of $U \in \mathbb{R}^{d_\text{in} \times r}$ and turn it into a projection matrix $P = U(U^\top U) U^\top$. Because $U$ is an orthogonal matrix, we actually have $P = UU^\top$, giving 
+$$
+\hat{W} = PW = UU^\top W
+$$
+
+Finally, too isolate the safety-critical ranks, we obtain the projection matrices $P_\text{safet}$ and $P_\text{utility}$, then create the matrix
+$$
+\Delta W = (I - P_\text{utility})P_\text{safety}W,
+$$
+which gives us the ranks of high importance for safety but little importance for utility. Removing these ranks from $W$ gives us $\tilde{W} = W - \Delta W$.
+
+### Effects of Removing Safety-Critical Neurons and Ranks
+@weiAssessingBrittlenessSafety2024 found that after removing even just 3% of the safety-oriented neruons pushed even vanilla ASR (i.e., just a harmful query) close to 1, while only decreasing accuracy by about 20%. Similarly, removing fewer than 100 ranks (out of 4096) from the models significantly increased ASR while largely *maintaining* accuracy. These findings suggest that neurons and ranks associated with safety in models are *largely sparse.* 
+
+Interestingly, pruning or removing the *most* important neurons or ranks for safety (without removing the neurons/ranks important for utility), the model's utility greatly degrades, with accuracy dropping over 50%. Conversely, removing the *least* safety-relevant neurons and ranks *improves* model safety. Additionally—and this may bode poorly for safety in this domain—freezing the most safety-critical neurons did not prevent fine-tuning attacks. The authors had to freeze over 50% of the neurons and fine-tune on only 10 benign examples to maintain safety, which is highly impractical.
+
+## The Prognosis
+
 
 
 

@@ -27,16 +27,20 @@ DEVICE = torch.device(
 )
 MODEL_PATH = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
+
 def initialize_lora_b_matrices(model, std=0.01):
     """Manually initialize LoRA B matrices with small random values instead of zeros"""
     print("Manually initializing LoRA B matrices...")
     with torch.no_grad():
         for name, param in model.named_parameters():
-            if 'lora_B' in name:
-                print(f"Initializing {name}: before mean={param.mean():.8f}, std={param.std():.8f}")
+            if "lora_B" in name:
+                print(
+                    f"Initializing {name}: before mean={param.mean():.8f}, std={param.std():.8f}"
+                )
                 # Initialize with small random values
                 param.data.normal_(mean=0.0, std=std)
                 print(f"After: mean={param.mean():.8f}, std={param.std():.8f}")
+
 
 # class CircuitBreakerDataset(Dataset):
 #     def __init__(
@@ -213,7 +217,7 @@ def initialize_lora_b_matrices(model, std=0.01):
 #                 outputs = model(**retain_inputs, return_dict=True)
 #                 # this gives us (num_layers, batch_size, seq_len, hidden_dim)
 #                 retain_states_rr = torch.stack(outputs.hidden_states).detach()
-#                 # unsqueeze(-1) so we can broadcast the attn mask onto the hidden states 
+#                 # unsqueeze(-1) so we can broadcast the attn mask onto the hidden states
 #                 retain_attn_mask_layers = retain_mask.repeat(len(outputs.hidden_states), 1, 1).unsqueeze(-1)
 #                 retain_states_rr *= retain_attn_mask_layers
 #             if cb_coef > 0:
@@ -236,7 +240,7 @@ def initialize_lora_b_matrices(model, std=0.01):
 #         outputs = model(**cb_inputs)
 #         cb_states_orig = torch.stack([outputs.hidden_states[i] for i in cb_layers])
 #
-#         # again, dim=-1 means we're taking the similarity over the hidden state 
+#         # again, dim=-1 means we're taking the similarity over the hidden state
 #         # vectors in each tensor
 #         # gives us (num_layers, batch_size, seq_len)
 #         similarity = torch.nn.functional.cosine_similarity(cb_states_orig, cb_states_rr, dim=-1)
@@ -248,10 +252,11 @@ def initialize_lora_b_matrices(model, std=0.01):
 #         cb_loss = torch.nn.functional.relu(masked_sim).sum() / cb_attn_mask_layers.sum()
 #
 #     if retain_coef == 0:
-#         final_loss = cb_coef * cb_loss 
+#         final_loss = cb_coef * cb_loss
 #     else:
 #         final_loss = cb_coef * cb_loss + retain_coef * retain_loss
 #     return final_loss
+
 
 class CircuitBreakerDataset(Dataset):
     def __init__(
@@ -282,8 +287,9 @@ class CircuitBreakerDataset(Dataset):
 
         user_tag = "<|user|>\n"
         assistant_tag = "<|assistant|>\n"
-        one_shot_template = "{user_tag}{instruction}{eos_token}\n{assistant_tag}{response}{eos_token}\n"
-
+        one_shot_template = (
+            "{user_tag}{instruction}{eos_token}\n{assistant_tag}{response}{eos_token}\n"
+        )
 
         switch_select = [0, 1]
 
@@ -311,7 +317,7 @@ class CircuitBreakerDataset(Dataset):
                     assistant_tag=assistant_tag,
                     instruction=messages[0]["content"],
                     response=messages[1]["content"],
-                    eos_token=eos_token
+                    eos_token=eos_token,
                 )
             elif switch == 1:
                 formatted_input = one_shot_template.format(
@@ -319,7 +325,7 @@ class CircuitBreakerDataset(Dataset):
                     assistant_tag=assistant_tag,
                     instruction="",
                     response=messages[1]["content"],
-                    eos_token=eos_token
+                    eos_token=eos_token,
                 )
 
             orig_s.append(formatted_input)
@@ -345,7 +351,7 @@ class CircuitBreakerDataset(Dataset):
                     assistant_tag=assistant_tag,
                     instruction=d["prompt"],
                     response=cb_output,
-                    eos_token=eos_token
+                    eos_token=eos_token,
                 )
             elif switch == 1:
                 formatted_input = one_shot_template.format(
@@ -353,7 +359,7 @@ class CircuitBreakerDataset(Dataset):
                     assistant_tag=assistant_tag,
                     instruction="",
                     response=cb_output,
-                    eos_token=eos_token
+                    eos_token=eos_token,
                 )
 
             circuit_breaker_orig.append(formatted_input)
@@ -372,24 +378,46 @@ class CircuitBreakerDataset(Dataset):
         orig_s_retain = self.orig_s_retain[i]
         circuit_breaker_orig = self.circuit_breaker_orig[i]
 
-        cb_tokenized_kwargs = dict(max_length=512, padding='max_length', truncation=True, return_tensors="pt")
-        tokenize_kwargs = dict(max_length=1024, padding="max_length", truncation=True, return_tensors="pt")
+        cb_tokenized_kwargs = dict(
+            max_length=512, padding="max_length", truncation=True, return_tensors="pt"
+        )
+        tokenize_kwargs = dict(
+            max_length=1024, padding="max_length", truncation=True, return_tensors="pt"
+        )
 
         # =========== Circuit Breaker Inputs ===========
         # === split to [request, response] shape [512,512] to support different mask configs ===
-        cb_request, cb_response = circuit_breaker_orig.split('<SEPARATOR>')
+        cb_request, cb_response = circuit_breaker_orig.split("<SEPARATOR>")
         self.tokenizer.padding_side = "left"
-        tokenized_request_circuit_breaker = self.tokenizer(cb_request, **cb_tokenized_kwargs)
+        tokenized_request_circuit_breaker = self.tokenizer(
+            cb_request, **cb_tokenized_kwargs
+        )
         self.tokenizer.padding_side = "right"
-        response_tokenized_circuit_breaker = self.tokenizer(cb_response, add_special_tokens=False, **cb_tokenized_kwargs)
+        response_tokenized_circuit_breaker = self.tokenizer(
+            cb_response, add_special_tokens=False, **cb_tokenized_kwargs
+        )
         self.tokenizer.padding_side = "left"
 
-        combined_input_ids_circuit_breaker = torch.cat([tokenized_request_circuit_breaker["input_ids"], response_tokenized_circuit_breaker["input_ids"]], dim=1).squeeze(0)
-        combined_attention_mask_circuit_breaker = torch.cat([tokenized_request_circuit_breaker["attention_mask"], response_tokenized_circuit_breaker["attention_mask"]], dim=1).squeeze(0)
+        combined_input_ids_circuit_breaker = torch.cat(
+            [
+                tokenized_request_circuit_breaker["input_ids"],
+                response_tokenized_circuit_breaker["input_ids"],
+            ],
+            dim=1,
+        ).squeeze(0)
+        combined_attention_mask_circuit_breaker = torch.cat(
+            [
+                tokenized_request_circuit_breaker["attention_mask"],
+                response_tokenized_circuit_breaker["attention_mask"],
+            ],
+            dim=1,
+        ).squeeze(0)
 
         # ========== Retain Inputs ===========
-        tokenized_inputs_retain = self.tokenizer(orig_s_retain.replace('<SEPARATOR>', self.sep_token), **tokenize_kwargs)
-        
+        tokenized_inputs_retain = self.tokenizer(
+            orig_s_retain.replace("<SEPARATOR>", self.sep_token), **tokenize_kwargs
+        )
+
         return dict(
             input_ids_circuit_breaker=combined_input_ids_circuit_breaker,
             attention_mask_circuit_breaker=combined_attention_mask_circuit_breaker,
@@ -398,7 +426,16 @@ class CircuitBreakerDataset(Dataset):
         )
 
 
-def compute_loss(self, model, inputs, target_layers, alpha, return_outputs=False, tokenizer=None, **kwargs):
+def compute_loss(
+    self,
+    model,
+    inputs,
+    target_layers,
+    alpha,
+    return_outputs=False,
+    tokenizer=None,
+    **kwargs,
+):
     self.current_training_step += 1
 
     # === retain ===
@@ -409,20 +446,35 @@ def compute_loss(self, model, inputs, target_layers, alpha, return_outputs=False
     circuit_breaker_attention_mask = inputs.get(f"attention_mask_circuit_breaker")
 
     # ==== Forward Inputs ====
-    module = 'hidden_states'
-    retain_inputs = dict(input_ids=retain_input_ids, attention_mask=retain_attention_mask, output_hidden_states=True)
-    cb_inputs = dict(input_ids=circuit_breaker_input_ids, attention_mask=circuit_breaker_attention_mask, output_hidden_states=True)
+    module = "hidden_states"
+    retain_inputs = dict(
+        input_ids=retain_input_ids,
+        attention_mask=retain_attention_mask,
+        output_hidden_states=True,
+    )
+    cb_inputs = dict(
+        input_ids=circuit_breaker_input_ids,
+        attention_mask=circuit_breaker_attention_mask,
+        output_hidden_states=True,
+    )
 
     # ===== Step Coeff ====
     progress = self.get_progress()
     scheduled_coeff = progress
-    print(f'\nPROGRESS: {progress:.4f}', '='*50)
-    retain_coeff, circuit_breaker_coeff = alpha * scheduled_coeff, alpha * (1-scheduled_coeff)
-    
-    print(f"retain_coeff: {retain_coeff:.4f} || circuit_breaker_coeff: {circuit_breaker_coeff:.4f}")
-    
+    print(f"\nPROGRESS: {progress:.4f}", "=" * 50)
+    retain_coeff, circuit_breaker_coeff = (
+        alpha * scheduled_coeff,
+        alpha * (1 - scheduled_coeff),
+    )
+
+    print(
+        f"retain_coeff: {retain_coeff:.4f} || circuit_breaker_coeff: {circuit_breaker_coeff:.4f}"
+    )
+
     # ===== loss components =====
-    layers_circuit_breaker_attention_mask = circuit_breaker_attention_mask.repeat(len(target_layers), 1, 1).unsqueeze(-1)
+    layers_circuit_breaker_attention_mask = circuit_breaker_attention_mask.repeat(
+        len(target_layers), 1, 1
+    ).unsqueeze(-1)
     model.eval()
     with model.disable_adapter():
         with torch.no_grad():
@@ -430,7 +482,9 @@ def compute_loss(self, model, inputs, target_layers, alpha, return_outputs=False
             if retain_coeff > 0:
                 orig_retain_outputs = model(**retain_inputs)[module]
                 orig_retain_hidden = torch.stack(orig_retain_outputs).detach()
-                layers_retain_attention_mask = retain_attention_mask.repeat(len(orig_retain_outputs), 1, 1).unsqueeze(-1)
+                layers_retain_attention_mask = retain_attention_mask.repeat(
+                    len(orig_retain_outputs), 1, 1
+                ).unsqueeze(-1)
                 orig_retain_hidden *= layers_retain_attention_mask
 
                 del orig_retain_outputs
@@ -439,23 +493,31 @@ def compute_loss(self, model, inputs, target_layers, alpha, return_outputs=False
             ### Circuit Breaker control
             if circuit_breaker_coeff > 0:
                 circuit_breaker_outputs = model(**cb_inputs)[module]
-                circuit_breaker_hidden = torch.stack([circuit_breaker_outputs[l].detach() for l in target_layers])
+                circuit_breaker_hidden = torch.stack(
+                    [circuit_breaker_outputs[l].detach() for l in target_layers]
+                )
 
                 del circuit_breaker_outputs
                 gc.collect()
-            
+
     model.train()
 
     ### Retain control
     if retain_coeff > 0:
         lora_retain_outputs = model(**retain_inputs)[module]
-        lora_retain_hidden = torch.stack(lora_retain_outputs) * layers_retain_attention_mask
-        retain_loss = torch.norm(lora_retain_hidden - orig_retain_hidden, dim=-1, p=2, dtype=torch.float).nanmean()
+        lora_retain_hidden = (
+            torch.stack(lora_retain_outputs) * layers_retain_attention_mask
+        )
+        retain_loss = torch.norm(
+            lora_retain_hidden - orig_retain_hidden, dim=-1, p=2, dtype=torch.float
+        ).nanmean()
 
     ### Circuit Breaker control
     if circuit_breaker_coeff > 0:
         lora_circuit_breaker_outputs = model(**cb_inputs)[module]
-        lora_circuit_breaker_hidden = torch.stack([lora_circuit_breaker_outputs[l] for l in target_layers])
+        lora_circuit_breaker_hidden = torch.stack(
+            [lora_circuit_breaker_outputs[l] for l in target_layers]
+        )
 
         # similarity = torch.nn.functional.cosine_similarity(lora_circuit_breaker_hidden, circuit_breaker_hidden, dim=-1)
         # layers_circuit_breaker_attention_mask = circuit_breaker_attention_mask.repeat(len(target_layers), 1, 1)
@@ -467,17 +529,30 @@ def compute_loss(self, model, inputs, target_layers, alpha, return_outputs=False
         # masked_sim = similarity * layers_circuit_breaker_attention_mask_2d
         # circuit_breaker_loss = torch.nn.functional.relu(masked_sim).sum() / layers_circuit_breaker_attention_mask_2d.sum()
 
-        normalized_lora_circuit_breaker_outputs = lora_circuit_breaker_hidden / (torch.norm(lora_circuit_breaker_hidden, dim=-1, keepdim=True, dtype=torch.float))
-        normalized_circuit_breaker_outputs = circuit_breaker_hidden / (torch.norm(circuit_breaker_hidden, dim=-1, keepdim=True, dtype=torch.float))
-        inner_product = (normalized_lora_circuit_breaker_outputs * normalized_circuit_breaker_outputs) * layers_circuit_breaker_attention_mask
-        circuit_breaker_loss = torch.relu(inner_product.sum(dim=-1)).sum() / layers_circuit_breaker_attention_mask.sum()
+        normalized_lora_circuit_breaker_outputs = lora_circuit_breaker_hidden / (
+            torch.norm(
+                lora_circuit_breaker_hidden, dim=-1, keepdim=True, dtype=torch.float
+            )
+        )
+        normalized_circuit_breaker_outputs = circuit_breaker_hidden / (
+            torch.norm(circuit_breaker_hidden, dim=-1, keepdim=True, dtype=torch.float)
+        )
+        inner_product = (
+            normalized_lora_circuit_breaker_outputs * normalized_circuit_breaker_outputs
+        ) * layers_circuit_breaker_attention_mask
+        circuit_breaker_loss = (
+            torch.relu(inner_product.sum(dim=-1)).sum()
+            / layers_circuit_breaker_attention_mask.sum()
+        )
 
     loss = retain_coeff * retain_loss + circuit_breaker_coeff * circuit_breaker_loss
 
-    print(f"\nretain_loss: {retain_loss:.4f} \ncircuit_breaker_loss: {circuit_breaker_loss:.4f}")
-    print('='*50)
+    print(
+        f"\nretain_loss: {retain_loss:.4f} \ncircuit_breaker_loss: {circuit_breaker_loss:.4f}"
+    )
+    print("=" * 50)
 
-    return (loss, ) if return_outputs else loss
+    return (loss,) if return_outputs else loss
 
 
 def get_response(model, inputs, tokenizer):
@@ -539,20 +614,19 @@ def main():
 
     config = AutoConfig.from_pretrained(MODEL_PATH)
     if drop_layers_after:
-        config.num_hidden_layers = drop_layers_after+1
+        config.num_hidden_layers = drop_layers_after + 1
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
     tokenizer.pad_token = tokenizer.eos_token or tokenizer.unk_token
     model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, config=config).to(DEVICE)
-
 
     model = get_peft_model(model, lora_config)
     model.enable_input_require_grads()
     initialize_lora_b_matrices(model)
 
     train_dataset = CircuitBreakerDataset(
-        tokenizer=tokenizer, 
-        num_examples=10000, 
+        tokenizer=tokenizer,
+        num_examples=10000,
     )
 
     train_args = TrainingArguments(
@@ -597,7 +671,7 @@ def main():
                 target_layers=self.cb_layers,
                 alpha=self.lorra_alpha,
                 return_outputs=return_outputs,
-                tokenizer=tokenizer
+                tokenizer=tokenizer,
             )
 
         def evaluate(self):
@@ -619,17 +693,22 @@ def main():
     print("running trainer")
     trainer.train()
 
-
     output_dir = "cb_model"
-    merged_model = model.merge_and_unload() 
+    merged_model = model.merge_and_unload()
     # merge original layers
     if drop_layers_after is not None:
-        anchor_model = AutoModelForCausalLM.from_pretrained(MODEL_PATH, torch_dtype=merged_model.dtype, device_map="auto")
-        merged_model.model.layers = merged_model.model.layers + anchor_model.model.layers[drop_layers_after+1:]
+        anchor_model = AutoModelForCausalLM.from_pretrained(
+            MODEL_PATH, torch_dtype=merged_model.dtype, device_map="auto"
+        )
+        merged_model.model.layers = (
+            merged_model.model.layers
+            + anchor_model.model.layers[drop_layers_after + 1 :]
+        )
         merged_model.config = anchor_model.config
 
     merged_model.save_pretrained(output_dir)
     tokenizer.save_pretrained(output_dir)
+
 
 if __name__ == "__main__":
     main()
