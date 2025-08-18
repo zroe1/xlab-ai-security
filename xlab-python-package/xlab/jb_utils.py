@@ -1,12 +1,18 @@
+import random
 import dataclasses
 import requests
+import json
 from PIL import Image
 from io import BytesIO
 from enum import auto, Enum
 from typing import List, Any, Union
 
+import numpy as np
 import torch
+import transformers
+from tqdm import tqdm
 from transformers import PreTrainedTokenizer
+from datasets import load_dataset
 
 
 IMAGE_TOKEN_INDEX = -200
@@ -197,3 +203,187 @@ def load_image(image_file):
         image = Image.open(image_file).convert("RGB")
     return image
 
+
+
+# ========================== CIRCUIT BREAKER UTILS ==========================
+
+def initialize_lora_b_matrices(model, std=0.01):
+    """Manually initialize LoRA B matrices with small random values instead of zeros"""
+    print("Manually initializing LoRA B matrices...")
+    with torch.no_grad():
+        for name, param in model.named_parameters():
+            if "lora_B" in name:
+                print(
+                    f"Initializing {name}: before mean={param.mean():.8f}, std={param.std():.8f}"
+                )
+                # Initialize with small random values
+                param.data.normal_(mean=0.0, std=std)
+                print(f"After: mean={param.mean():.8f}, std={param.std():.8f}")
+
+def get_cb_response(model, query, tokenizer):
+    user_tag = "<|user|>\n"
+    assistant_tag = "<|assistant|>\n"
+    one_shot_template = "{user_tag}{instruction}{eos_token}\n{assistant_tag}"
+
+    formatted_input = one_shot_template.format(
+        user_tag=user_tag,
+        instruction=query,
+        assistant_tag=assistant_tag,
+        eos_token=tokenizer.eos_token
+    )
+
+    inputs = tokenizer(formatted_input, return_tensors="pt").to(model.device)
+    outputs = model.generate(**inputs, max_new_tokens=512)
+    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    return response
+
+class CircuitBreakerDataset(Dataset):
+    def __init__(
+        self,
+        tokenizer: transformers.PreTrainedTokenizer,
+        num_examples,
+    ):
+        super(CircuitBreakerDataset, self).__init__()
+        self.max_length = 1024
+
+        # Default configs
+        sep_token = ""
+        print("USING TINYLLAMA TEMPLATE")
+        eos_token = tokenizer.eos_token
+
+        user_tag = "<|user|>\n"
+        assistant_tag = "<|assistant|>\n"
+        one_shot_template = (
+            "{user_tag}{instruction}{eos_token}\n{assistant_tag}{response}{eos_token}\n"
+        )
+
+        switch_select = [0, 1]
+        assert user_tag and assistant_tag, "user_tag/assistant_tag not defined"
+
+        self.user_tag = user_tag
+        self.assistant_tag = assistant_tag
+        self.sep_token = sep_token
+
+        # ======================= Retain ======================= #
+        ds = load_dataset("HuggingFaceH4/ultrachat_200k", split="test_sft")
+        orig_s = []
+        for example in ds:
+            messages = example["messages"]
+            if len(messages) < 2:
+                continue
+
+            switch = np.random.choice(switch_select)
+            if switch == 0:
+                formatted_input = one_shot_template.format(
+                    user_tag=user_tag,
+                    assistant_tag=assistant_tag,
+                    instruction=messages[0]["content"],
+                    response=messages[1]["content"],
+                    eos_token=eos_token,
+                )
+            elif switch == 1:
+                formatted_input = one_shot_template.format(
+                    user_tag=user_tag,
+                    assistant_tag=assistant_tag,
+                    instruction="",
+                    response=messages[1]["content"],
+                    eos_token=eos_token,
+                )
+
+            orig_s.append(formatted_input)
+
+            if len(orig_s) > num_examples:
+                break
+        self.orig_s_retain = orig_s
+        random.shuffle(self.orig_s_retain)
+        # print("orig_s_retain[0]", orig_s[0])
+        print("Orig s length:", len(self.orig_s_retain))
+
+        # ======================= Circuit Breaker ======================= #
+        with open("working/data/old_cb_train.json") as file:
+            dataset = json.load(file)
+        circuit_breaker_orig = []
+
+        for i, d in tqdm(enumerate(dataset)):
+            cb_output = "<SEPARATOR>" + d["output"]
+            switch = np.random.choice(switch_select)
+            if switch == 0:
+                formatted_input = one_shot_template.format(
+                    user_tag=user_tag,
+                    assistant_tag=assistant_tag,
+                    instruction=d["prompt"],
+                    response=cb_output,
+                    eos_token=eos_token,
+                )
+            elif switch == 1:
+                formatted_input = one_shot_template.format(
+                    user_tag=user_tag,
+                    assistant_tag=assistant_tag,
+                    instruction="",
+                    response=cb_output,
+                    eos_token=eos_token,
+                )
+
+            circuit_breaker_orig.append(formatted_input)
+
+        self.circuit_breaker_orig = circuit_breaker_orig
+        random.shuffle(self.circuit_breaker_orig)
+        # print("circuit_breaker_orig[0]", circuit_breaker_orig[0])
+        print("Short circuit length:", len(self.circuit_breaker_orig))
+
+        self.tokenizer = tokenizer
+
+    def __len__(self):
+        return min(len(self.orig_s_retain), len(self.circuit_breaker_orig))
+
+    def __getitem__(self, i) -> Dict[str, torch.Tensor]:
+        orig_s_retain = self.orig_s_retain[i]
+        circuit_breaker_orig = self.circuit_breaker_orig[i]
+
+        cb_tokenized_kwargs = dict(
+            max_length=512, padding="max_length", truncation=True, return_tensors="pt"
+        )
+        tokenize_kwargs = dict(
+            max_length=1024, padding="max_length", truncation=True, return_tensors="pt"
+        )
+
+        # =========== Circuit Breaker Inputs ===========
+        # === split to [request, response] shape [512,512] to support different mask configs ===
+        cb_request, cb_response = circuit_breaker_orig.split("<SEPARATOR>")
+        self.tokenizer.padding_side = "left"
+        tokenized_request_circuit_breaker = self.tokenizer(
+            cb_request, **cb_tokenized_kwargs
+        )
+        self.tokenizer.padding_side = "right"
+        response_tokenized_circuit_breaker = self.tokenizer(
+            cb_response, add_special_tokens=False, **cb_tokenized_kwargs
+        )
+        self.tokenizer.padding_side = "left"
+
+        combined_input_ids_circuit_breaker = torch.cat(
+            [
+                tokenized_request_circuit_breaker["input_ids"],
+                response_tokenized_circuit_breaker["input_ids"],
+            ],
+            dim=1,
+        ).squeeze(0)
+        combined_attention_mask_circuit_breaker = torch.cat(
+            [
+                tokenized_request_circuit_breaker["attention_mask"],
+                response_tokenized_circuit_breaker["attention_mask"],
+            ],
+            dim=1,
+        ).squeeze(0)
+
+        # ========== Retain Inputs ===========
+        tokenized_inputs_retain = self.tokenizer(
+            orig_s_retain.replace("<SEPARATOR>", self.sep_token), **tokenize_kwargs
+        )
+
+        return dict(
+            input_ids_circuit_breaker=combined_input_ids_circuit_breaker,
+            attention_mask_circuit_breaker=combined_attention_mask_circuit_breaker,
+            input_ids=tokenized_inputs_retain["input_ids"].squeeze(0),
+            attention_mask=tokenized_inputs_retain["attention_mask"].squeeze(0),
+        )
