@@ -18,6 +18,8 @@ The authors then fine-tuned Llama-2 and GPT-3.5-Turbo on benign datasets, findin
 ## Assessing Safety Training's Brittleness
 @weiAssessingBrittlenessSafety2024 investigated why safety training can be so greatly affected by fine-tuning. To do this, they sought to isolate the most safety-critical neurons and ranks within the safety-trained Llama-2 family of models. 
 
+As a heads up, *the below two sections contain a lot of math,* and if you'd rather just read about the conclusions of this paper, feel free to skip them!
+
 ### Isolating Safety-Critical Neurons
 The first method the authors use to find safety-critical neurons is using the SNIP score [@lee2019snipsingleshotnetworkpruning]. They calculate the importance of every entry of each linear matrix $W_{ij}$ over some harmful input, output pair $x$ via
 $$
@@ -67,7 +69,7 @@ $$
 
 giving us an importance score for each entry $W_{ij} \in W$.
 
-
+Using either method to obtain importance scores, we get the importance scores $I_\text{safety}$ and $I_\text{utility}$ over two datasets $D_\text{safety}$ and $D_\text{utility}$, which contain harmful requests and safe, useful requests respectively. We then take the top $p\%$ of safe weights and top $q\%$ of useful weights in row $i$ for each matrix row, and then take the set difference to obtain $S(p, q)$, which contains neurons that exhibit high safety but little utility capabilities.
 
 ### Isolating Safety-Critical Ranks
 Similarly to with the Wanda approach, to isolate safety-critical ranks we try to find a low-rank matrix $\hat{W}$ that minimizes the Frobenius-norm change to the output:
@@ -83,6 +85,12 @@ We then take only the top $r$ singular vectors of $U \in \mathbb{R}^{d_\text{in}
 $$
 \hat{W} = PW = UU^\top W
 $$
+
+Finally, too isolate the safety-critical ranks, we obtain the projection matrices $P_\text{safet}$ and $P_\text{utility}$, then create the matrix
+$$
+\Delta W = (I - P_\text{utility})P_\text{safety}W,
+$$
+which gives us the ranks of high importance for safety but little importance for utility. Removing these ranks from $W$ gives us $\tilde{W} = W - \Delta W$.
 
 
 
