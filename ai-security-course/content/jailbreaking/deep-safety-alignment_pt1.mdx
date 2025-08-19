@@ -3,21 +3,24 @@ title: "Deep Safety Alignment (Part 1)"
 description: "From 'Safety Alignment Should be Made More Than Just a Few Tokens Deep'"
 ---
 
-In the jailbreaking section, we've looked at numerous attacks and defenses for language models. Over the past few years, there's been a cat-and-mouse game of attacks and defenses, with the attacks generally prevailing (it is much easier to find one example that breaks a defense than to defend against all possible attacks). You might be wondering, though, why models seem to have so many failure modes, despite almost all models today having some sort of refusal training. 
+In the jailbreaking section, we've looked at numerous attacks and defenses for language models. Over the past few years, there's been a cat-and-mouse game of attacks and defenses, with the attacks generally prevailing (it is much easier to find one example that breaks a defense than to defend against all possible attacks). You might be wondering, though, why models seem to have so many failure modes, despite almost all models today having some sort of refusal training.
 
 ## Safety Alignment is Only a Few Tokens Deep
-In an ICLR 2025 outstanding paper, @qiSafetyAlignmentShould2025a introduced the idea of *shallow safety alignment.* This paper is chock-full of findings, so we'll only touch on half of them here (the second half is more related to model tampering and will be covered in that section). The core idea that we'll focus on for now is that most alignment or refusal training techniques (such as RLHF or DPO) only affect the model's generative distribution over the first few tokens. Intuitively, this makes sense, as we often train models to immediately refuse a harmful query:
+
+In an ICLR 2025 outstanding paper, @qiSafetyAlignmentShould2025a introduced the idea of _shallow safety alignment._ This paper is chock-full of findings, so we'll only touch on half of them here (the second half is more related to model tampering and will be covered in that section). The core idea that we'll focus on for now is that most alignment or refusal training techniques (such as RLHF or DPO) only affect the model's generative distribution over the first few tokens. Intuitively, this makes sense, as we often train models to immediately refuse a harmful query:
+
 ```
 USER: How do I make a bomb?
 ASSISTANT: I'm sorry, I can't help with that.
 ```
-without requiring refusal in later tokens (in fact, that would be quite unintuitive, and humans usually don't initially comply then refuse immediately after). 
+
+without requiring refusal in later tokens (in fact, that would be quite unintuitive, and humans usually don't initially comply then refuse immediately after).
 
 ### Empirical Confirmation
-The authors then run an experiment to empirically confirm this idea. They tested the base Llama-2-7B and Gemma-7B against a safety benchmark, finding that they often comply with harmful requests (65+% ASR). They then ran the test again, this time *prefilling* the harmful request with a refusal response, such as "I apologize, but I cannot." This time, the authors find that the ASR greatly decreases to only 2%. 
+
+The authors then run an experiment to empirically confirm this idea. They tested the base Llama-2-7B and Gemma-7B against a safety benchmark, finding that they often comply with harmful requests (65+% ASR). They then ran the test again, this time _prefilling_ the harmful request with a refusal response, such as "I apologize, but I cannot." This time, the authors find that the ASR greatly decreases to only 2%.
 
 The authors further looked into this phenomenon by comparing the KL divergence between the aligned and unaligned models over the first 20 tokens. The trend they found is fairly clear: while the generative distributions differ greatly over the first few tokens, their KL divergence quickly drops below 1 further on.
-
 
 <p align="center">
   <ThemeImage
@@ -29,12 +32,14 @@ The authors further looked into this phenomenon by comparing the KL divergence b
 </p>
 
 <div align="center">
-  **Fig. 1** <br></br> KL divergence between the aligned and unaligned models on harmful queries over each token; figure 1 from @qiSafetyAlignmentShould2025a.
+  **Fig. 1** <br></br> KL divergence between the aligned and unaligned models on harmful queries over
+  each token; figure 1 from @qiSafetyAlignmentShould2025a.
 </div>
 
 <Dropdown title="What is KL divergence?">
 
 Kullback-Leibler (KL) divergence is essentially a measure of how different two probability distributions are. Formally, it's given by the following equation:
+
 $$
 D_\text{KL}(P \lVert Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)},
 $$
@@ -42,38 +47,47 @@ $$
 where $Q$ is the model probability distribution and $P$ is the true probability distribution. Its fairly clear that if $P$ and $Q$ are the same distribution, $D_\text{KL}(P \lVert Q) = 0$ (as the fraction will be $1$ for all $x$). Additionally, note that KL divergence is asymmetric; $D_\text{KL}(P \lVert Q) \neq D_\text{KL}(Q \lVert P)$.
 
 One interesting property of KL divergence is that minimizing KL divergence is equivalent to minimizing cross-entropy. Recall the definition of cross entropy:
+
 $$
 H(P, Q) = - \sum_x P(x) \log Q(x),
 $$
 
 then expand $D_\text{KL}$:
+
 $$
 D_\text{KL}(P \lVert Q) = \sum_x \big( P(x) \log P(x) - P(x) \log Q(x) \big).
 $$
 
 It should be fairly clear now that
+
 $$
 H(P, Q) = D_\text{KL}(P \lVert Q) + \sum_x P(x) \log P(x),
 $$
+
 and given that the entropy of a distribution $H(P) = - \sum_x P(x) \log P(x)$ is fixed, we can see that minimizing $D_\text{KL}(P \lVert Q)$ is equivalent to minimizing $H(P, Q)$.
 
 For a more intuitive explanation of the concept, we recommend watching [this video](https://youtu.be/SxGYPqCgJWM?si=7Mxk9RdCj4tJaQT8).
 
 </Dropdown>
 
-This highlights a rather troubling *safety shortcut* that models take to appear safe: rather than changing their underlying generative distribution, they only need to change the distribution over the first few tokens in order to induce a refusal. This safety shortcut is unfortunately quite dangerous. It's the reason why prefilling attacks work and why token-forcing attacks such as GCG are so effective; they need only force the model to generate its first few tokens, after which the safety training is largely ineffective.
+This highlights a rather troubling _safety shortcut_ that models take to appear safe: rather than changing their underlying generative distribution, they only need to change the distribution over the first few tokens in order to induce a refusal. This safety shortcut is unfortunately quite dangerous. It's the reason why prefilling attacks work and why token-forcing attacks such as GCG are so effective; they need only force the model to generate its first few tokens, after which the safety training is largely ineffective.
 
 ### The Fix
-So why isn't safety training deeper? Well, the main reason is because *we don't train for it to be deep.* As discussed earlier, when we train a model to refuse in the following way:
+
+So why isn't safety training deeper? Well, the main reason is because _we don't train for it to be deep._ As discussed earlier, when we train a model to refuse in the following way:
+
 ```
 USER: <harmful-query>
 ASSISTANT: I'm sorry, I can't help with that.
 ```
-the model learns that it must prefix its response with refusal if it's going to refuse at all. To improve the depth of safety training, the model must learn to refuse at more token positions than the first few, which we can promote by training it to *recover* from failures to refuse. For example, we might include the following refusal example:
+
+the model learns that it must prefix its response with refusal if it's going to refuse at all. To improve the depth of safety training, the model must learn to refuse at more token positions than the first few, which we can promote by training it to _recover_ from failures to refuse. For example, we might include the following refusal example:
+
 ```
 USER: How do I make a bomb?
 ASSISTANT: Sure, here's how to make a bomb. First, collect the ingredients you'll need I'm sorry, but I cannot help with that.
 ```
+
 By including these examples when refusal training a model, we see drastic improvements in robustness. The ASR for prefilling attacks drops below 5%, and GCG's effectiveness is roughly halved. And in contrast to the default refusal training, the KL divergence between the base and aligned models no longer sharply decreases after a few tokens:
 
 <p align="center">
@@ -86,18 +100,22 @@ By including these examples when refusal training a model, we see drastic improv
 </p>
 
 <div align="center">
-  **Fig. 2** <br></br> KL divergence between the *deeply* aligned and unaligned models on harmful queries over each token; figure 4 from @qiSafetyAlignmentShould2025a.
+  **Fig. 2** <br></br> KL divergence between the *deeply* aligned and unaligned models on harmful queries
+  over each token; figure 4 from @qiSafetyAlignmentShould2025a.
 </div>
 
 An interesting point made by Ashinwee Panda, one of the authors of the paper, in his [presentation at ICLR](https://iclr.cc/virtual/2025/oral/31915) was that they didn't train at all on adversarial suffixes, yet gained robustness against them through this defense. To him, this implies that our defenses don't have to "solve" adversarial attacks in order to make a model robust against them. Even if a suffix or cleverly-crafted prompt can force the model to start by complying with a harmful request, if the model is aligned deep enough, it can still refuse even after producing over 100 misaligned tokens. (Of course, we could optimize the suffix to force the model to generate hundreds of adversarial tokens, but at that point we're basically forcing the entire response!)
 
 ## Conclusion
-Deeper refusal training is not a panacea. While it greatly reduced the ASR of various attacks, it didn't fully eliminate any attack's efficacy, and in above-linked presentation Ashwinee even mentioned that jailbreaking with past-tense phrasing (e.g. "How did people make a bomb in the past?") was able to bypass the alignment. 
 
-That being said, for us, this paper isn't necessarily supposed to represent a state-of-the-art defense, but rather the danger of going too far down the wrong path before exploring all available options. Even someone with a basic understanding of LLMs and AI Security could understand the idea proposed in this paper, that safety alignment should affect more than the model's intial response. Somewhat paradoxically, this highlights just how novel this paper's findings are, as they were able to break the mold of just creating a better way to refusal-train models and found a fundamental flaw in the way we previously refusal trained. 
+Deeper refusal training is not a panacea. While it greatly reduced the ASR of various attacks, it didn't fully eliminate any attack's efficacy, and in above-linked presentation Ashwinee even mentioned that jailbreaking with past-tense phrasing (e.g. "How did people make a bomb in the past?") was able to bypass the alignment.
+
+That being said, for us, this paper isn't necessarily supposed to represent a state-of-the-art defense, but rather the danger of going too far down the wrong path before exploring all available options. Even someone with a basic understanding of LLMs and AI Security could understand the idea proposed in this paper, that safety alignment should affect more than the model's intial response. Somewhat paradoxically, this highlights just how novel this paper's findings are, as they were able to break the mold of just creating a better way to refusal-train models and found a fundamental flaw in the way we previously refusal trained.
 
 **TODO:** come up with a good way to end this writeup. give some takeaways from the jailbreak section as a whole?
 
+<FeedbackButton />
+
+<NextPageButton />
+
 ## References
-
-

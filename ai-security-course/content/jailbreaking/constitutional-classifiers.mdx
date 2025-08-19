@@ -4,6 +4,7 @@ description: "Defending against Universal Jailbreaks across Thousands of Hours o
 ---
 
 ## Motivation
+
 We've looked at a few defenses so far out of many that exist. Obviously, each defense has its benefits and drawbacks, but why choose Constitutional Classifiers [@sharmaConstitutionalClassifiersDefending2025]? The authors proposed three desiridatum for jailbreak defenses:
 
 1. **Robustness to universal jailbreaks.** Universal jailbreaks are a (possibly automated) prompting method that "reliably bypasses LLM safeguards on the vast majority of queries in a specific domain, leading the system to reveal highly-detailed and specific harmful information" [@sharmaConstitutionalClassifiersDefending2025]; in short, they are not good, and defenses should be robust to them.
@@ -13,38 +14,50 @@ We've looked at a few defenses so far out of many that exist. Obviously, each de
 You might notice that it's quite difficult for a defense to meet each of these desiridata. Llama Guard [@inanLlamaGuardLLMbased] is too computationally expensive for deployment, SmoothLLM [@robeySmoothLLMDefendingLarge2024] is not flexible enough against prompt-level jailbreaks, and SafeDecoding [@xuSafeDecodingDefendingJailbreak2024a] also struggles with flexibility, as any new attack method must first be defended in the safety-hardened LLM before be used in SafeDecoding. Constitutional Classifiers were introduced to meet all three of these criteria.
 
 ## Constitutional Classifiers
+
 @sharmaConstitutionalClassifiersDefending2025 trained LLM-based classifiers (in their case, the line of Claude models) on constitution-guided synthetic data to protect and block jailbreaks. The constitution specifies permitted and restricted categories in natural language, providing flexibility (the authors note that the permitted category is important to limit overrefusal; their first iteration struggled with a very high false-positive rate). To generate the synthetic data, they first use a helpful-only model to create both harmful and harmless inputs and outputs. The authors then apply a diversification system (including translation, paraphrasing, and jailbreaking methods) and automated red-teaming.
 
 ### The Input Classifier
+
 The input classifier from @sharmaConstitutionalClassifiersDefending2025 is rather simple; its a fine-tuned language model whose primary purpose is to block inputs that attempt to bypass the output classifier. For example, the input classifier is trained to block attempt to establish a coded communication system through an input prompt.
 
 ### The Ouput Classiifer
-The output classifier is a bit trickier, as the authors wanted to maintain output-streaming for low-latency applications (think of how the LLM-generated tokens appear one-by-one and not as a full block once completely generated). To do this, they fine-tune a language model to predict the harmfulness of a *full* sequence of $T$ tokens while only seeing a prefix of $\tilde{T} \leq T$ tokens. If the classifier's harmfulness score ever exceeds some threshold, token streaming is stopped.
+
+The output classifier is a bit trickier, as the authors wanted to maintain output-streaming for low-latency applications (think of how the LLM-generated tokens appear one-by-one and not as a full block once completely generated). To do this, they fine-tune a language model to predict the harmfulness of a _full_ sequence of $T$ tokens while only seeing a prefix of $\tilde{T} \leq T$ tokens. If the classifier's harmfulness score ever exceeds some threshold, token streaming is stopped.
 
 Formally, say we have a token sequence $t_{1:T}$ and a label $y$ denoting whether the sequence is harmful. Our goal is to optimize the following loss:
+
 $$
 \mathcal{L}(y, \ t_{1:T}) = \lambda \cdot \mathcal{L}_{\text{NTP}}(t_{1:T}) + \sum_{T' = 1}^T \mathcal{L}_{\text{BCE}} (y, \ p(y = 1 | t_{1:T'})),
 $$
+
 where $\mathcal{L}_{\text{NTP}}$ is the next-token prediction loss, $\lambda$ is a regularlization parameter, and $\mathcal{L}_{\text{BCE}}$ is binary cross-entropy loss. The NTP loss serves as a "regularization" loss, preventing the model from "overfitting" or memorizing the harmfulness prediction task and ensuring the classifier is robust and generalizable. This term is balanced with the BCE loss that encourages the model's output to match the harmfulness label of the training example.
 
 The paper them proposes two methods of predicting the harmfulness $p$ at each token position:
 
 1. **Directly using each value-head probability as the predictor for the full sequence.** That is, $p(y = 1 | t_{1:\tilde{T}}) = \sigma(z(t_{1:\tilde{T}}))$, where $z(t_{1:\tilde{T}})$ is the value head's logit and $\sigma$ is the sigmoid function. Each token here has its own gradient, making optimization rather straightforward.
-2. **Using the cumulative maximum value-head probability as the predictor for the full sequence**: $p(y = 1 | t_{1:\tilde{T}}) = \underset{\tau < \tilde{T}}{\max} \ \sigma(z(t_{1:\tau}))$. Why might this be better? With tokenwise harmfulness predictions, the model may learn to greatly increase the harmfulness at one token, then drop it a few tokens later. If the great increase of harmfulness crossed the threshold, however, there's no was to reduce the score a few tokens later once token streaming stops! Alternatively, using the max encourages the model only to increase its harmfulnes score when its confident in doing so, as the score is tied *only to the sequence's most problematic point.* The downside is that this approach is difficult to optimize, as gradients only flow through the token with the highest score.
+2. **Using the cumulative maximum value-head probability as the predictor for the full sequence**: $p(y = 1 | t_{1:\tilde{T}}) = \underset{\tau < \tilde{T}}{\max} \ \sigma(z(t_{1:\tau}))$. Why might this be better? With tokenwise harmfulness predictions, the model may learn to greatly increase the harmfulness at one token, then drop it a few tokens later. If the great increase of harmfulness crossed the threshold, however, there's no was to reduce the score a few tokens later once token streaming stops! Alternatively, using the max encourages the model only to increase its harmfulnes score when its confident in doing so, as the score is tied _only to the sequence's most problematic point._ The downside is that this approach is difficult to optimize, as gradients only flow through the token with the highest score.
 
 When presented with these two options, the authors rejected them both and made their own solution: a linear interpolation between option 1 and 2:
+
 $$
 p(y = 1 | t_{1:\tilde{T}}) = (1 - \omega) \cdot \sigma(z(t_{1:\tilde{T}})) + \omega \cdot \underset{\tau < \tilde{T}}{\max} \ \sigma(z(t_{1:\tau})),
 $$
+
 with $\omega$ as a weighting parameter that starts from $0$ and linearly increases to $1$ by three-quarters of the way through the training process. The idea here is that early in the classifier's training, it hasn't learned the task well, so $\omega \approx 0$ keeps the optimization stable. By the last quarter, however, the classifier has learned more and has more stable weights, so with $\omega = 1$ it can start to learn the more realistic but less stable cumulative maximum objective.
 
 ## The Experiment
+
 One of the most interesting parts of this paper is actually Anthropic's process of red-teaming their constitutional classifiers. We recommend you read the [original paper](https://arxiv.org/abs/2501.18837), but in short, Anthropic gave out over $95K through HackerOne to red-team the constitutional classifiers on 10 non-infohazardous chemical, biological, radiological, and nuclear (commonly abbreviated as CBRN) capabilities questions. Out of thousands of hours of jailbreaking attempts, not one successfully elicited the same amount of detail as provided by helpful-only models in even 5 out of the 10 questions. Essentially, there was no successful universal jailbreak.
 
 The authors note, however, that the FPR of the classifiers used in competition was rather high. Were they able to be used in production? To test this, the team greatly expanded the harmless constitution, recalibrated the classifier thresholds, and expanded the training data augmentation. Again, there are many more details in the paper, but the authors found that these reworked classifiers substantially improved robustness, increased FPR by only 0.38%, and were coupled with a 23.7% inference overhead. They also found, as you might expect, that classifier robustness scales with model size and data quantity.
 
 ## Conclusion
+
 Constitutional classifiers represent one of the state-of-the-art approaches for improving the safety of LLMs, and do so in a flexible way. Interestingly, constitutional classifiers can be used in a safeguard pipeline, motivated by the [swiss cheese model](https://en.wikipedia.org/wiki/Swiss_cheese_model) of security. But what might a SOTA technique applied directly to the model look like? In the next section, perhaps we'll find out.
 
-## References
+<FeedbackButton />
 
+<NextPageButton />
+
+## References
