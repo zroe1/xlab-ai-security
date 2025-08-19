@@ -4,19 +4,22 @@ description: "A novel model security technique"
 ---
 
 ## Background
+
 The past few defenses we've looked at have been relatively conceptually simple, with many just boiling down to simple filters (e.g. perplexity filters) or giving the input to LLMs (e.g. paraphrasing, Llama Guard). From this point, we'll start getting into more involved defenses, with the first one—SafeDecoding [@xuSafeDecodingDefendingJailbreak2024a]—utilizing a key insight about probabilistic token generation.
 
 ## The Key Insight
+
 Recall that when a model is predicting the $n$th token of its output, it doesn't just return a single token. Instead, it outputs a probability distribution over all the tokens in its vocabulary
+
 $$
 p_\theta(x_{n + 1} | x_{1:n}) = \text{softmax}(f(x_{n + 1} | x_{1:n})),
 $$
 
-where $\theta$ is our language model and $f$ represents the logits returned by $\theta$. There are many ways of sample the next token $x_n$ from this distribution, but the key idea is that it is a *distribution*, not just a single token. 
+where $\theta$ is our language model and $f$ represents the logits returned by $\theta$. There are many ways of sample the next token $x_n$ from this distribution, but the key idea is that it is a _distribution_, not just a single token.
 
 If we send a harmful query to a safe model, in the token distribution for $x_{n + 1}$ (the first generated token by the model), we'd expect to see "safe" tokens like "Sorry" and "Unfortunately" with high probabilities. On the other hand, if we send a harmful query with an adversarial suffix, we'd expect to see "harmful" tokens such as "Sure" or "Of course" with high probabilities.
 
-As noted by @xuSafeDecodingDefendingJailbreak2024a, however, just because the probability of seeing safety tokens in the jailbreak scenario are low, they aren't zero. Token-forcing attacks like GCG work only because they cause the likelihood of seeing harmful tokens to be greater than of seeing safe tokens, *not* because they negate the possibility of generating safe tokens. Thus, if we create a decoding strategy that *increases* the probability of generating safe tokens and *decreases* the probability of generating harmful tokens, we can make our LLM more likely to produce safe responses.
+As noted by @xuSafeDecodingDefendingJailbreak2024a, however, just because the probability of seeing safety tokens in the jailbreak scenario are low, they aren't zero. Token-forcing attacks like GCG work only because they cause the likelihood of seeing harmful tokens to be greater than of seeing safe tokens, _not_ because they negate the possibility of generating safe tokens. Thus, if we create a decoding strategy that _increases_ the probability of generating safe tokens and _decreases_ the probability of generating harmful tokens, we can make our LLM more likely to produce safe responses.
 
 ## SafeDecoding
 
@@ -36,6 +39,7 @@ As noted by @xuSafeDecodingDefendingJailbreak2024a, however, just because the pr
 To implement this decoding strategy, we first create an "expert" safety fine-tuned version of our original model, which we'll use for its safer token distribution.
 
 Next, we forward our input tokens $x_{1:n}$ to the original and expert models, letting $\mathcal{V}_{n + 1}^k$ represent the top-$k$ probability-descending set of tokens for the original model's $n + 1$th token, with $\mathcal{V}_{n + 1}'^k$ representing the same for the expert model. Using these sets, we then construct a sample space $\mathcal{V}_{n + 1}^{(c)}$ as
+
 $$
 \mathcal{V}_{n + 1}^{(c)} = \underset{k}{\arg \min} \text{ s.t. } |\mathcal{V}_{n + 1}^k \cap \mathcal{V}_{n + 1}'^k| \geq c.
 $$
@@ -43,15 +47,21 @@ $$
 Here, $c$ is a tunable parameter that controls the size of the sample space. The intuition behind between taking the intersection of these two sample spaces is that we get the benefits of the base model's higher-quality responses to benign inputs (due to its extensive pre-training corpus) and the safety of the expert model on harmful queries.
 
 Finally, letting $\theta$ and $\theta'$ respectively denote the original and expert models, we define a probability function over this intersection as
+
 $$
 P_{n + 1}(x_{n + 1} | x_{1:n}) = p_\theta(x_{n + 1} | x_{1:n}) + \alpha(p_{\theta'}(x_{n + 1} | x_{1:n}) - p_\theta(x_{n + 1} | x_{1:n})),
 $$
+
 normalizing the values so that $\sum_{x \in \mathcal{V}_{n + 1}^{(c)}} P_{n + 1}(x) = 1$. The most important element of the above equation is the difference $p_{\theta'}(x_{n + 1} | x_{1:n}) - p_\theta(x_{n + 1} | x_{1:n})$, which we'll define as $d$. If the query is benign, $d$ will be small as the original and expert models will liekly respond similarly; thus, the final token distribution won't stray far from the original $p_\theta(x_{n + 1} | x_{1:n})$. If, however, the query is harmful, $d$ will be large as the expert model will try to refuse the query. Consequently, the response will be updated greatly towards the safer tokens in $p_{\theta'}(x_{n + 1} | x_{1:n})$. We can control the extent of the update with the $\alpha$ hyperparameter.
 
 To lessen the computational overhead and prevent the model from overrefusing, the SafeDecoding algorithm is only applied to the first $m$ tokens of a response. The idea is that only influencing these first few tokens improves efficiency, is sufficient to guide the model's responses, and helps avoid overrefusal. The authors found that SafeDecoding outperforms many simple defenses, including perplexity filters, paraphrasing, and in-context safety demonstrations.
 
-
 ## Is it worth it?
+
 The obvious drawback of SafeDecoding is that it requires us to already have a safety-hardened model—why not just always use this model instead? The authors argue that these safe models are prone to overrefusal, and SafeDecoding can avoid this pitfall by only being applied to the first $m$ tokens. But is our effort better spent in making our safe model more selective? That's up for you to decide.
+
+<FeedbackButton />
+
+<NextPageButton />
 
 ## References
