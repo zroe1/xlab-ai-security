@@ -15,12 +15,26 @@ In addition to fine-tuning models on harmful data, @qiFinetuningAlignedLanguage2
 
 The authors then fine-tuned Llama-2 and GPT-3.5-Turbo on benign datasets, finding that even when the fine-tuning dataset contains *no harmful instructions*, it increased Llama-2's harmfulness rate from 0.3% to 16.1% and GPT-3.5-Turbo's from 5.5.5% to 16.1%! This means that fine-tuning *in general*—without needing any harmful queries—can greatly weaken a model's safety training. Why might LLM safety training be so brittle?
 
-## Assessing Safety Training's Brittleness
+## Why is safety training so brittle?
 @weiAssessingBrittlenessSafety2024 investigated why safety training can be so greatly affected by fine-tuning. To do this, they sought to isolate the most safety-critical neurons and ranks within the safety-trained Llama-2 family of models. 
 
 As a heads up, *the below two sections contain a lot of math,* and if you'd rather just read about the conclusions of this paper, feel free to skip them!
 
 ### Isolating Safety-Critical Neurons
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/neuron_extraction.png"
+    darkSrc="/images/neuron_extraction.png"
+    alt="Safety Neuron Extraction Technique"
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> Methodology for extracting safety-critical neurons; Figure 1 from @weiAssessingBrittlenessSafety2024
+</div>
+
 The first method the authors use to find safety-critical neurons is using the SNIP score [@lee2019snipsingleshotnetworkpruning]. They calculate the importance of every entry of each linear matrix $W_{ij}$ over some harmful input, output pair $x$ via
 $$
 I(W_{ij}, x) = |W_{ij} \cdot \nabla_{W_{ij}} \mathcal{L}(x)|.
@@ -72,6 +86,20 @@ giving us an importance score for each entry $W_{ij} \in W$.
 Using either method to obtain importance scores, we get the importance scores $I_\text{safety}$ and $I_\text{utility}$ over two datasets $D_\text{safety}$ and $D_\text{utility}$, which contain harmful requests and safe, useful requests respectively. We then take the top $p\%$ of safe weights and top $q\%$ of useful weights in row $i$ for each matrix row, and then take the set difference to obtain $S(p, q)$, which contains neurons that exhibit high safety but little utility capabilities.
 
 ### Isolating Safety-Critical Ranks
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/rank_extraction.png"
+    darkSrc="/images/rank_extraction.png"
+    alt="Safety Rank Extraction Technique"
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 2** <br></br> Methodology for extracting safety-critical ranks; Figure 1 from @weiAssessingBrittlenessSafety2024
+</div>
+
 Similarly to with the Wanda approach, to isolate safety-critical ranks we try to find a low-rank matrix $\hat{W}$ that minimizes the Frobenius-norm change to the output:
 $$
 \hat{W} = \underset{\text{rank} \hat{W} \leq r}{\arg \min} \lVert W X_\text{in} - \hat{W} X_\text{in} \lVert_F^2.
