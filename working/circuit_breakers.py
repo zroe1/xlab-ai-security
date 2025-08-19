@@ -9,6 +9,7 @@ from transformers import (
     TrainingArguments,
     default_data_collator,
 )
+
 DEVICE = torch.device(
     "cuda"
     if torch.cuda.is_available()
@@ -18,6 +19,7 @@ DEVICE = torch.device(
 )
 MODEL_PATH = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
+
 def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
     self.current_training_step += 1
 
@@ -26,8 +28,12 @@ def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
     retain_ids = inputs.get("input_ids")
     retain_mask = inputs.get("attention_mask")
 
-    cb_inputs = dict(input_ids=cb_ids, attention_mask=cb_mask, output_hidden_states=True)
-    retain_inputs = dict(input_ids=retain_ids, attention_mask=retain_mask, output_hidden_states=True)
+    cb_inputs = dict(
+        input_ids=cb_ids, attention_mask=cb_mask, output_hidden_states=True
+    )
+    retain_inputs = dict(
+        input_ids=retain_ids, attention_mask=retain_mask, output_hidden_states=True
+    )
 
     progress = self.get_progress()
     retain_coef = alpha * progress
@@ -42,34 +48,38 @@ def compute_loss(self, model, inputs, cb_layers, alpha, **kwargs):
                 print(retain_ids.shape)
                 outputs = model(**retain_inputs, return_dict=True)
                 # this gives us (num_layers, batch_size, seq_len, hidden_dim)
-                retain_states_rr = torch.stack(outputs.hidden_states).detach()
-                # unsqueeze(-1) so we can broadcast the attn mask onto the hidden states
-                retain_attn_mask_layers = retain_mask.repeat(len(outputs.hidden_states), 1, 1).unsqueeze(-1)
-                retain_states_rr *= retain_attn_mask_layers
+                retain_states_orig = torch.stack(outputs.hidden_states)
             if cb_coef > 0:
                 outputs = model(**cb_inputs)
-                cb_states_rr = torch.stack([outputs.hidden_states[i] for i in cb_layers])
+                cb_states_orig = torch.stack(
+                    [outputs.hidden_states[i] for i in cb_layers]
+                )
 
     model.train()
     if retain_coef > 0:
         outputs = model(**retain_inputs)
-        retain_states_orig = torch.stack(outputs.hidden_states)
-        retain_states_orig *= retain_attn_mask_layers
-
+        retain_states_rr = torch.stack(outputs.hidden_states)
         # the differences gives us (num_layers, batch_size, seq_len, hidden_dim)
         # we take the norm over hidden dim, giving us (num_layers, batch_size, seq_len)
         # think of this as we collapse all the difference vectors into a single norm
         # then we take the mean over all these norms (all layers, batches, and seq positions)
-        retain_loss = torch.linalg.vector_norm(retain_states_orig - retain_states_rr, ord=2, dim=-1).nanmean()
+        norm_diff = torch.linalg.vector_norm(
+            retain_states_rr - retain_states_orig, ord=2, dim=-1
+        )
+        retain_attn_mask_layers = retain_mask.repeat(len(outputs.hidden_states), 1, 1)
+        masked_norm_diff = norm_diff * retain_attn_mask_layers
+        retain_loss = masked_norm_diff.sum() / retain_attn_mask_layers.sum()
 
     if cb_coef > 0:
         outputs = model(**cb_inputs)
-        cb_states_orig = torch.stack([outputs.hidden_states[i] for i in cb_layers])
+        cb_states_rr = torch.stack([outputs.hidden_states[i] for i in cb_layers])
 
         # again, dim=-1 means we're taking the similarity over the hidden state
         # vectors in each tensor
         # gives us (num_layers, batch_size, seq_len)
-        similarity = torch.nn.functional.cosine_similarity(cb_states_orig, cb_states_rr, dim=-1)
+        similarity = torch.nn.functional.cosine_similarity(
+            cb_states_orig, cb_states_rr, dim=-1
+        )
 
         cb_attn_mask_layers = cb_mask.repeat(len(cb_layers), 1, 1)
         masked_sim = similarity * cb_attn_mask_layers
@@ -96,8 +106,8 @@ def main():
 
     # These are the layers we'll circuit break
     cb_layers = [7, 14]
-    # We also list all the layers that LoRA will look at, but we only transform 
-    # those above 
+    # We also list all the layers that LoRA will look at, but we only transform
+    # those above
     transform_layers = [i for i in range(max(cb_layers) + 1)]
     drop_layers_after = max(cb_layers)
 
@@ -141,10 +151,11 @@ def main():
         num_examples=10000,
     )
 
+    grad_accumulation_steps = 2
     train_args = TrainingArguments(
         remove_unused_columns=False,
         per_device_train_batch_size=8,
-        gradient_accumulation_steps=2,
+        gradient_accumulation_steps=grad_accumulation_steps,
         max_steps=150,
         learning_rate=1e-4,
         weight_decay=0.0,
@@ -173,7 +184,7 @@ def main():
             self.cb_layers = cb_layers
 
         def get_progress(self):
-            return self.current_training_step / (self.state.max_steps * 2 * 2.1)
+            return self.current_training_step / (self.state.max_steps * 2 * 3)
 
         def compute_loss(self, model, inputs, num_items_in_batch, return_outputs=False):
             return compute_loss(
