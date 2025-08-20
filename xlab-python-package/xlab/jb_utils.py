@@ -1,8 +1,8 @@
-import resources
 import random
 import dataclasses
 import requests
 import json
+from importlib import resources
 from PIL import Image
 from io import BytesIO
 from enum import auto, Enum
