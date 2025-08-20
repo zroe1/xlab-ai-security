@@ -1,3 +1,4 @@
+import resources
 import random
 import dataclasses
 import requests
@@ -301,7 +302,8 @@ class CircuitBreakerDataset(Dataset):
         print("Orig s length:", len(self.orig_s_retain))
 
         # ======================= Circuit Breaker ======================= #
-        with open("working/data/old_cb_train.json") as file:
+        cb_path = resources.files("xlab.data").joinpath("cb_train.json")
+        with open(cb_path) as file:
             dataset = json.load(file)
         circuit_breaker_orig = []
 
