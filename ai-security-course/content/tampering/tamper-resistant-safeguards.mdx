@@ -1,0 +1,135 @@
+---
+title: "Tamper-Resistant Safeguards"
+description: "Making Open-Weight LLMs Robust to Fine-Tuning Attacks"
+---
+
+## Background
+So far, we've seen a number of methods that remove safeguards from open-weight LLMs, many of which are quite easy to perform. Now, it's time that we give some defenses the spotlight. A number of approaches have been proposed in order to make models robust to these fine-tuning (and other) attacks, but we'll jump to a relatively recent one that combines a number of ideas in an attempt to make the most robust open-weight LLMs possible.
+
+## Setup
+The goal put forth by @tamirisaTamperResistantSafeguardsOpenWeight2025 in their paper "Tamper-Resistant Safeguards for Open-Weight LLMs" is to create an LLM with weights $\theta_G$ and safeguard $G$ that both has high capabilities and high safety, even after an attack that perturbs the model weights to $\theta_G'$. The paper targets two main criteria: weaponization knowledge restriction and harmful request refusal. In both of these domains, the authors use a forget set (corresponding to the unwanted behavior) and a retain set (helping maintain general capabilities). For weaponization, the authors use the WMDP benchmark [@li2024wmdpbenchmarkmeasuringreducing] as the forget set and MMLU [@hendrycks2021measuringmassivemultitasklanguage] as the retain set. For harmful request refusal, HarmBench [@mazeikaHarmBenchStandardizedEvaluation2024] serves as the forget set and MT-Bench [@zheng2023judgingllmasajudgemtbenchchatbot] is the retain set.
+
+## Tampering Attack Resistance (TAR)
+In order to properly motivate TAR, we'll actually first look at the algorithm in full, then piece together exactly what the algorithm is doing.
+
+$$
+\begin{array}{l}
+\text{\bf Algorithm: TAR: Tampering Attack Resistance} \\
+\hline
+\text{\bf Input: } \text{Initial LLM parameters } \theta, \text{ train-time adversary set } \mathcal{A}_{\text{train}}, \\ 
+\quad \texttt{capabilities\_metric} \text{ proxy dataset } \mathcal{D}_{\text{retain}}, \\
+\quad \texttt{safety\_metric} \text{ proxy dataset } \mathcal{D}_{\text{TR}}, \\ 
+\quad \text{outer steps } N, \text{ learning rate } \eta, \text{ number of sampled adversaries } K, \\
+\quad \text{tamper-resistance loss scale } \lambda_{\text{TR}}, \text{ retain loss scale } \lambda_{\text{retain}}, \\
+\quad h_{\theta}(\cdot) \text{ returns the residual stream hidden states for model parameters } \theta \\[0.5em]
+\theta_0 \leftarrow \text{Apply Initial Safeguard to } \theta \\
+\text{\bf for } i = 1 \text{ to } N \text{ \bf do } \\
+\quad g_{\text{TR}} \leftarrow 0 \quad \text{\# For accumulating tamper-resistance gradient} \\
+\quad \text{Sample } x_{\text{TR}} \sim \mathcal{D}_{\text{TR}} \\
+\quad \text{\bf for } k = 1 \text{ to } K \text{ \bf do } \\
+\quad \quad \text{Sample attack} \sim \mathcal{A}_{\text{train}} \\
+\quad \quad \text{\# Tamper-resistance loss} \\
+\quad \quad g_{\text{TR}} \leftarrow g_{\text{TR}} + \frac{1}{K} \nabla_{\theta_{i-1}} L_{\text{TR}}(\text{attack}(\theta_{i-1}), x_{\text{TR}}) \\
+\quad \text{\bf end for } \\
+\quad \text{Sample } x_r \sim \mathcal{D}_{\text{retain}} \\
+\quad \text{\# RepE retain loss} \\
+\quad g_{\text{retain}} \leftarrow \nabla_{\theta_{i-1}} L_{\text{LM}}(\theta_{i-1}, x_r) + \|h_{\theta_{i-1}}(x_r) - h_{\theta}(x_r)\|_2^2 \\
+\quad \text{\# Full tamper-resistance update} \\
+\quad \theta_i \leftarrow \theta_{i-1} - \eta (\lambda_{\text{TR}} \cdot g_{\text{TR}} + \lambda_{\text{retain}} \cdot g_{\text{retain}}) \\
+\text{\bf end for } \\
+\theta_G \leftarrow \theta_N \\
+\text{\bf return } \theta_G \\
+\hline
+\end{array}
+$$
+
+Recall that $\mathcal{D}_\text{retain}$ and $\mathcal{D}_\text{TR}$ represent the retain and forget datasets discussed above. Additionally, note that $\mathcal{A}_\text{train}$ is a set of tampering attacks applied during train time. As the first step in the algorithm, we apply some initial safeguard to the parameters $\theta$ to get $\theta_0$. This safeguard can range from circuit breakers to RLHF, and its primary purpose is so that our $\texttt{safety\_metric}$ pre-attack is sufficiently low. 
+
+### Meta-Learning
+After applying the initial safeguard, you may notice that the attack breaks down into an "inner" and "outer" loop. At a high level, the goal of the outer loop is to slowly make the model more tamper-resistant, while the goal of the inner loop is to adversarially tune the previous step's tamper-resistant model, which we then use to calculate some loss $\mathcal{L}_\text{TR}$. This inner-outer loop training paradigm is reminiscent of model-agnostic meta-learning (MAML) [@finn2017modelagnosticmetalearningfastadaptation]. In MAML, the goal is to create a model that can *very easily* be fine-tuned into different domains, but itself isn't fine-tuned for any specific domain (hence the "meta-learning"). There, the inner loop has the role of performing helpful (rather than adversarial) fine-tuning—the opposite of what we have here. As the TAR paper puts it:
+> In particular, traditional meta-learning techniques seek to obtain a model initialization that is close to optimality on multiple test distributions. In our setting, we seek to obtain an initialization that is far from optimality on multiple adversaries’ test distributions. [@tamirisaTamperResistantSafeguardsOpenWeight2025]
+
+### Calculating the Tamper-Resistance Gradient
+Getting lower-level, you'll notice that the inner loop accumulates a gradient over the tamper-resistance loss $\mathcal{L}_\text{TR}$ from $K$ different attacks. It is here that we run into our first nontrivial detail: given that it's quite difficult to differentiate the parameters $\theta_{i - 1}$ through the $\texttt{attack}$, *how* do we calculate this gradient? The answer is a straight-through estimator [@bengio2013estimatingpropagatinggradientsstochastic]: using the gradient of the loss with respect to the attacked parameters $\theta'_{i - 1}$ as a proxy for the gradient of the loww with respect to the original parameters $\theta_{i - 1}$. Essentially, for computational efficiency, we assume
+$$
+\nabla_{\theta_{i - 1}} \mathcal{L}_\text{TR} \big(\texttt{attack}(\theta_{i - 1}), \ x_\text{TR}\big) \approx \nabla_{\theta'_{i - 1}} \mathcal{L}_\text{TR} \big(\texttt{attack}(\theta_{i - 1}), \ x_\text{TR}\big),
+$$
+which lets us compound our gradients without any issue.
+
+### The Tamper-Resistance Loss
+By now we've been speaking a lot about our tamper-resistance loss, and it's high time we talked about it. Our goal is for the loss to be *high* when $\texttt{attack}(\theta_{i - 1})$ gives a correct response to $x_\text{TR}$, but *low* when $\texttt{attack}(\theta_{i - 1})$ gives an incorrect response to $x_\text{TR}$. How can we do this? 
+
+One straightforward approach is to maximize cross-entropy (CE) (or minimize negative-cross entropy), but the authors point out two problems with this method:
+1. Minimized negative CE might not converge.
+2. Empirically, minimizing negative CE can lead to the model taking a "shortcut", where it explodes the loss over the first few steps of fine-tuning, after which the loss quickly drops.
+We can see this in Figure 3 from the TAR paper:
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/TAR_a.png"
+    darkSrc="/images/TAR_a.png"
+    alt="Graph of negative cross-entropy tamper-resistance loss over training."
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> Graph of negative cross-entropy tamper-resistance loss over training; from Figure 3 in @tamirisaTamperResistantSafeguardsOpenWeight2025.
+</div>
+
+Notice that the TR loss (the blue line) never quite converges, and in the subgraphs (which show the fine-tuning entropy over 64 adversarial steps) the entropy is only especially high over the first few training steps. To fix this problem, the authors turn to using negative *entropy* instead. The results are much better:
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/TAR_b.png"
+    darkSrc="/images/TAR_b.png"
+    alt="Graph of negative entropy tamper-resistance loss over training."
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 2** <br></br> Graph of negative entropy tamper-resistance loss over training; from Figure 3 in @tamirisaTamperResistantSafeguardsOpenWeight2025.
+</div>
+
+With negative entropy, we see that the TR loss does converge, and the adversarial fine-tuning entropy remains high over all steps, as we'd hope for.
+
+<Dropdown title="Can I get some intuition for why negative entropy works better?">
+
+The likely reason for why entropy works better here than cross-entropy is because using cross-entropy creates a much more *narrow* defense than using entropy. Entropy measures the uniformity of a model's output probability distribution; low entropy means high certainty and a spiky distribution, whereas high entropy means low certainty and a flat distribution. Thus, by maximizing entropy, we're flattening the model's probability distribution. This is in contrast to maximizing cross-entropy, which only minimizes the probability that the model predicts the correct token (affecting other tokens much less). 
+
+It's a bit easier to understand the above paragraph with the math. Recall the definitions of cross entropy and entropy:
+$$
+\begin{aligned}
+H(P, Q) &= -\sum_x P(x) \log Q(x) \\
+H(Q) &= -\sum_x Q(x) \log Q(x)
+\end{aligned}
+$$
+Also recall that in cross entropy, $P(x)$ is a one-hot distribution where $P(x_\text{correct}) = 1$ and all other $P(x \neq x_\text{correct}) = 0$. This means that $\max H(P, Q) = \max \big\{ -\log Q(x_\text{correct}) \big\}$, which affects only the token $x_\text{correct}$. On the other hand, by maximizing entropy, we perform $\max H(Q) = \max \big\{ -\sum_x Q(x) \log Q(x) \big\}$, affecting *all* tokens.
+
+Why might a flatter distribution be better? Speculatively, there may be a few reasons. The first is that there can be multiple plausible adversarial tokens at any point, meaning when cross-entropy minimizes the correct token's probability, it may leave other plausible adversarial tokens with high probabilities. Entropy, on the other hand, would simply remove the model's certainty about any specific token to generate. The second—closely related—reason is that with high entropy and a flat distribution, the model will have to relearn how to be highly certain about *any* answer, whereas with high cross-entropy, the model needs only to relearn how to be certain about the *correct* answer.
+
+</Dropdown>
+
+### The Retain Loss
+Finally, the last important part of the algorithm is the retain loss:
+$$
+\mathcal{L}_\text{LM}(\theta_{i - 1}, \ x_r) + \lVert h_{\theta_{i - 1}}(x_r) - h_{\theta}(x_r) \lVert_2^2.
+$$
+
+The retain loss is quite simple and relates strongly to the retain loss in Circuit Breakers [@zouImprovingAlignmentRobustness2024]. The first term is simply the language modeling loss over some example $x_r$ from the retain dataset $\mathcal{D}_r$. The second term is the squared norm of the difference between the representations in our current parameters $\theta_{i - 1}$ and the base model $\theta$. The authors claim that empirically, keeping the hidden states from the current model close to the base model helps maintain high capabilities in the desired domain. 
+
+After attaining the retain loss, we can finally take a step in the direction of the tamper-resistance and retain gradients weighted by their respective coefficients, then repeat this process to get our final, tamper-resistant model.
+
+## Results
+For WMDP knowledge restriction, TAR outperforms existing knowledge restriction methods and maintains low accuracy on the forget set even after attacks. Unfortunately, it also comes with an on-average 10% decrease in performance on the retain set, again highlighting the robustness-utility tradeoff [@tsipras2019robustnessoddsaccuracy]. On HarmBench, TAR saw a roughly 10% *improvement* over refusal-trained Llama-3 after a fine-tuning attack (applied to both), and fortunately didn't see a big decrease on MT-Bench performance.
+
+The authors found that TAR was resistant to 24 out of 26 attacks, with the two that bypassed TAR involving parameter-efficient fine-tuning and out-of-train-distribution fine-tuning learning rates. They show in the appendix that you can "patch" these attacks, but these kind of patch-fixes are less preferable to an approach that gives generalized robustness.
+
+Another concern with TAR is if it makes *all* fine-tuning more difficult, rather than just *harmful* fine-tuning. The authors perform an experiment that shows that TAR models can be fine-tuned on benign economics data to improve performance on economics questions without recovering forget-set knowledge, but this doesn't get to the root of the issue. As put by [Daniel Paleka](https://newsletter.danielpaleka.com/i/148252513/tamper-resistant-safeguards-for-open-weight-llms):
+
+> How does the ease of finetuning on economics differ from models without tamper resistance? There could be defenses that make gradient-based finetuning hard, but the simplest way to get there is to make optimization hard in general, so we should always test if that is what is happening.
+
+Ultimately, however, TAR represents a large improvement toward creating models robust to adversarial fine-tuning. In the next section, we'll look at another approach to doing this, and afterwards we'll take a step back and question if this field is making the exact same mistakes that the adversarial ML community made a decade ago.
+
+## References
