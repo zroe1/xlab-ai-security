@@ -12,7 +12,7 @@ import torch
 import transformers
 from tqdm import tqdm
 from transformers import PreTrainedTokenizer
-from datasets import load_dataset
+from datasets import Dataset, load_dataset
 
 
 IMAGE_TOKEN_INDEX = -200
@@ -337,7 +337,7 @@ class CircuitBreakerDataset(Dataset):
     def __len__(self):
         return min(len(self.orig_s_retain), len(self.circuit_breaker_orig))
 
-    def __getitem__(self, i) -> Dict[str, torch.Tensor]:
+    def __getitem__(self, i) -> dict[str, torch.Tensor]:
         orig_s_retain = self.orig_s_retain[i]
         circuit_breaker_orig = self.circuit_breaker_orig[i]
 
