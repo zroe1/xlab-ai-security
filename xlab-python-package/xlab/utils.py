@@ -11,11 +11,12 @@ from torchvision.transforms import Compose, Resize, ToTensor
 from torchvision import datasets, transforms
 from PIL import Image
 import os
-import pkg_resources
+from importlib import resources
 from xlab.models import BlackBox
 from openai import OpenAI
 
-def load_cifar10_test_samples(n, download=True, transform=None, data_dir='./data'):
+
+def load_cifar10_test_samples(n, download=True, transform=None, data_dir="./data"):
     """Loads the first n test set examples from CIFAR-10.
 
     Args:
@@ -29,42 +30,44 @@ def load_cifar10_test_samples(n, download=True, transform=None, data_dir='./data
     """
     # Set default transform if none provided
     if transform is None:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            # Note: ToTensor() automatically normalizes PIL Images to [0, 1]
-        ])
-    
+        transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+                # Note: ToTensor() automatically normalizes PIL Images to [0, 1]
+            ]
+        )
+
     # Load CIFAR-10 test dataset
     test_dataset = datasets.CIFAR10(
         root=data_dir,
         train=False,  # Use test set
         download=download,
-        transform=transform
+        transform=transform,
     )
-    
+
     # Ensure n doesn't exceed dataset size
     n = min(n, len(test_dataset))
-    
+
     if n <= 0:
         raise ValueError("n must be a positive integer")
-    
+
     # Extract first n samples
     images = []
     labels = []
-    
+
     for i in range(n):
         image, label = test_dataset[i]
         images.append(image)
         labels.append(label)
-    
+
     # Stack into tensors
     images = torch.stack(images)
     labels = torch.tensor(labels, dtype=torch.long)
-    
+
     return images, labels
 
 
-def load_mnist_test_samples(n, download=True, transform=None, data_dir='./data'):
+def load_mnist_test_samples(n, download=True, transform=None, data_dir="./data"):
     """Loads the first n test set examples from MNIST.
 
     Args:
@@ -78,42 +81,44 @@ def load_mnist_test_samples(n, download=True, transform=None, data_dir='./data')
     """
     # Set default transform if none provided
     if transform is None:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            # Note: ToTensor() automatically normalizes PIL Images to [0, 1]
-        ])
-    
+        transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+                # Note: ToTensor() automatically normalizes PIL Images to [0, 1]
+            ]
+        )
+
     # Load MNIST test dataset
     test_dataset = datasets.MNIST(
         root=data_dir,
         train=False,  # Use test set
         download=download,
-        transform=transform
+        transform=transform,
     )
-    
+
     # Ensure n doesn't exceed dataset size
     n = min(n, len(test_dataset))
-    
+
     if n <= 0:
         raise ValueError("n must be a positive integer")
-    
+
     # Extract first n samples
     images = []
     labels = []
-    
+
     for i in range(n):
         image, label = test_dataset[i]
         images.append(image)
         labels.append(label)
-    
+
     # Stack into tensors
     images = torch.stack(images)
     labels = torch.tensor(labels, dtype=torch.long)
-    
+
     return images, labels
 
 
-def load_mnist_train_samples(n, download=True, transform=None, data_dir='./data'):
+def load_mnist_train_samples(n, download=True, transform=None, data_dir="./data"):
     """Loads the first n training set examples from MNIST.
 
     Args:
@@ -128,17 +133,19 @@ def load_mnist_train_samples(n, download=True, transform=None, data_dir='./data'
 
     # Set default transform if none provided
     if transform is None:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            # ToTensor() normalizes PIL Images to [0, 1]
-        ])
+        transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+                # ToTensor() normalizes PIL Images to [0, 1]
+            ]
+        )
 
     # Load MNIST training dataset
     train_dataset = datasets.MNIST(
         root=data_dir,
         train=True,  # Use training set
         download=download,
-        transform=transform
+        transform=transform,
     )
 
     # Ensure n doesn't exceed dataset size
@@ -162,16 +169,18 @@ def load_mnist_train_samples(n, download=True, transform=None, data_dir='./data'
 
     return images, labels
 
+
 # ---------------------------------------------------------------------------
 # DataLoader helper for MNIST (training split)
 # ---------------------------------------------------------------------------
+
 
 def get_mnist_train_loader(
     batch_size=64,
     shuffle=True,
     download=True,
     transform=None,
-    data_dir='./data',
+    data_dir="./data",
 ):
     """Creates a PyTorch DataLoader for the MNIST training set.
 
@@ -188,9 +197,11 @@ def get_mnist_train_loader(
 
     # Default transform
     if transform is None:
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-        ])
+        transform = transforms.Compose(
+            [
+                transforms.ToTensor(),
+            ]
+        )
 
     # Load the training dataset
     train_dataset = datasets.MNIST(
@@ -303,7 +314,7 @@ def show_grayscale_image(img, title=None, figsize=(3, 3)):
         img_np = img.detach().cpu().numpy()
     else:
         img_np = img
-    
+
     # Handle different tensor shapes
     if img_np.ndim == 3:  # [1, 28, 28] or [28, 28, 1]
         if img_np.shape[0] == 1:  # [1, 28, 28]
@@ -311,18 +322,22 @@ def show_grayscale_image(img, title=None, figsize=(3, 3)):
         elif img_np.shape[2] == 1:  # [28, 28, 1]
             img_np = img_np.squeeze(2)  # Remove last dimension
         else:
-            raise ValueError(f"Unexpected 3D tensor shape: {img_np.shape}. Expected [1, 28, 28] or [28, 28, 1]")
+            raise ValueError(
+                f"Unexpected 3D tensor shape: {img_np.shape}. Expected [1, 28, 28] or [28, 28, 1]"
+            )
     elif img_np.ndim != 2:  # Should be [28, 28]
-        raise ValueError(f"Expected 2D or 3D tensor, got {img_np.ndim}D with shape {img_np.shape}")
-    
+        raise ValueError(
+            f"Expected 2D or 3D tensor, got {img_np.ndim}D with shape {img_np.shape}"
+        )
+
     # Create the plot
     plt.figure(figsize=figsize)
-    plt.imshow(img_np, cmap='gray', vmin=0, vmax=1)
-    plt.axis('off')  # Remove axes for cleaner display
-    
+    plt.imshow(img_np, cmap="gray", vmin=0, vmax=1)
+    plt.axis("off")  # Remove axes for cleaner display
+
     if title is not None:
         plt.title(title, fontsize=12, pad=5)
-    
+
     plt.tight_layout()
     plt.show()
 
@@ -355,23 +370,21 @@ def load_sample_image(image_name, return_path=False):
     """
     try:
         # Get the path to the data directory in the package
-        data_path = pkg_resources.resource_filename('xlab', f'data/{image_name}')
-        
+        data_path = resources.files("xlab").joinpath("data", image_name)
+
         if not os.path.exists(data_path):
-            available_images = ['cat.jpg']
+            available_images = ["cat.jpg"]
             raise FileNotFoundError(
                 f"Image '{image_name}' not found. Available images: {available_images}"
             )
-        
+
         if return_path:
             return data_path
         else:
             return Image.open(data_path)
-            
+
     except Exception as e:
-        raise FileNotFoundError(
-            f"Could not load image '{image_name}': {str(e)}"
-        )
+        raise FileNotFoundError(f"Could not load image '{image_name}': {str(e)}")
 
 
 # Basic CNN for adversarial image generation
@@ -594,60 +607,62 @@ class BlackBoxModelWrapper:
         model_type (str): Type of model to load (e.g., 'mnist-black-box').
         device (str): Device to run model on ('cpu' or 'cuda').
     """
-    
-    def __init__(self, model_type='mnist-black-box', device='cpu'):
+
+    def __init__(self, model_type="mnist-black-box", device="cpu"):
         """
         Initialize the black box model wrapper.
-        
+
         Parameters:
         -----------
         model_type : str, default='mnist-black-box'
             Type of model to load. Currently supports:
             - 'mnist-black-box': Pre-trained MNIST classifier
-        device : str, default='cpu' 
+        device : str, default='cpu'
             Device to run the model on ('cpu' or 'cuda')
         """
         self._device = torch.device(device)
         self._model_type = model_type
         self._model = None
         self._is_loaded = False
-        
+
         # Load the model
         self._load_model()
-    
+
     def _load_model(self):
         """Internal method to download and load the model."""
         try:
-            if self._model_type == 'mnist-black-box':
+            if self._model_type == "mnist-black-box":
                 from huggingface_hub import hf_hub_download
-                
+
                 # Download the model file
                 model_path = hf_hub_download(
                     repo_id="uchicago-xlab-ai-security/mnist-ensemble",
-                    filename="mnist_black_box_mlp.pth"
+                    filename="mnist_black_box_mlp.pth",
                 )
-                
+
                 # Load the model
-                self._model = torch.load(model_path, map_location=self._device, weights_only=False)
+                self._model = torch.load(
+                    model_path, map_location=self._device, weights_only=False
+                )
                 self._model.eval()
                 self._is_loaded = True
-                
+
             else:
                 raise ValueError(f"Unknown model type: {self._model_type}")
-                
+
         except Exception as e:
             raise RuntimeError(f"Failed to load black box model: {str(e)}")
-    
+
     def predict(self, x):
         """
         Make predictions on input data.
-        
+
         Parameters:
         -----------
         x : torch.Tensor
             Input tensor. For MNIST models, should be shape (batch_size, 1, 28, 28)
             or (1, 28, 28) for single image.
-        
+
         Returns:
         --------
         predictions : torch.Tensor
@@ -655,73 +670,75 @@ class BlackBoxModelWrapper:
         """
         if not self._is_loaded:
             raise RuntimeError("Model not loaded")
-        
+
         # Ensure input is on correct device
         if x.device != self._device:
             x = x.to(self._device)
-        
+
         # Add batch dimension if needed
         if x.dim() == 3:  # (1, 28, 28)
             x = x.unsqueeze(0)  # (1, 1, 28, 28)
-        
+
         with torch.no_grad():
             logits = self._model(x)
             predictions = torch.argmax(logits, dim=1)
-        
+
         return predictions
-    
+
     def predict_proba(self, x):
         """
         Get prediction probabilities for input data.
-        
+
         Parameters:
         -----------
         x : torch.Tensor
             Input tensor. For MNIST models, should be shape (batch_size, 1, 28, 28)
             or (1, 28, 28) for single image.
-        
+
         Returns:
         --------
-        probabilities : torch.Tensor  
+        probabilities : torch.Tensor
             Class probabilities (softmax applied)
         """
         if not self._is_loaded:
             raise RuntimeError("Model not loaded")
-        
+
         # Ensure input is on correct device
         if x.device != self._device:
             x = x.to(self._device)
-        
+
         # Add batch dimension if needed
         if x.dim() == 3:  # (1, 28, 28)
             x = x.unsqueeze(0)  # (1, 1, 28, 28)
-        
+
         with torch.no_grad():
             logits = self._model(x)
             probabilities = torch.softmax(logits, dim=1)
-        
+
         return probabilities
-    
+
     def __call__(self, x):
         """Allow the wrapper to be called like a function."""
         return self.predict(x)
-    
+
     def __repr__(self):
         """Custom representation that doesn't reveal internal model details."""
-        return f"BlackBoxModelWrapper(type='{self._model_type}', device='{self._device}')"
-    
+        return (
+            f"BlackBoxModelWrapper(type='{self._model_type}', device='{self._device}')"
+        )
+
     @property
     def device(self):
         """Get the device the model is running on."""
         return self._device
-    
+
     @property
     def model_type(self):
         """Get the type of model loaded."""
         return self._model_type
 
 
-def load_black_box_model(model_type='mnist-black-box', device='cpu'):
+def load_black_box_model(model_type="mnist-black-box", device="cpu"):
     """Loads a pre-trained black box model.
 
     Args:
@@ -745,20 +762,21 @@ def get_best_device():
     """
     # Check for CUDA (NVIDIA GPU)
     if torch.cuda.is_available():
-        return torch.device('cuda')
-    
+        return torch.device("cuda")
+
     # Check for MPS (Apple Silicon)
-    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
-        return torch.device('mps')
-    
+    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        return torch.device("mps")
+
     # Fallback to CPU
     else:
-        return torch.device('cpu')
+        return torch.device("cpu")
 
 
 # ---------------------------------------------------------------------------
 # Model Evaluation Helper
 # ---------------------------------------------------------------------------
+
 
 def evaluate_mnist_accuracy(
     model: torch.nn.Module,
@@ -766,7 +784,7 @@ def evaluate_mnist_accuracy(
     device: "torch.device | str | None" = None,
     download: bool = True,
     transform: "transforms.Compose | None" = None,
-    data_dir: str = './data',
+    data_dir: str = "./data",
 ) -> float:
     """Evaluates a PyTorch model's accuracy on the MNIST test split.
 
@@ -1013,6 +1031,7 @@ def plot_dual_2d(
     plt.tight_layout()
     return fig, ax1, ax2
 
+
 def clip(x, x_original, epsilon):
     """Clips adversarial perturbations to stay within epsilon-ball.
 
@@ -1024,11 +1043,11 @@ def clip(x, x_original, epsilon):
     Returns:
         [*]: Clipped image tensor with bounded perturbations.
     """
-    
+
     x_final = None
 
     diff = x - x_original
-    
+
     # 1. Clip x epsilon distance away
     diff = torch.clamp(diff, -epsilon, epsilon)
     x_clipped = x_original + diff
@@ -1120,6 +1139,7 @@ def PGD(
 
     return x
 
+
 def tiny_llama_inference(model, tokenizer, prompt, max_tokens=200, temperature=0.2):
     """Generates response from TinyLlama model token by token.
 
@@ -1135,34 +1155,34 @@ def tiny_llama_inference(model, tokenizer, prompt, max_tokens=200, temperature=0
     """
     # Format prompt for TinyLlama
     # prompt = f"<|user|>\n{message}<|endoftext|>\n<|assistant|>\n"
-    
+
     # Tokenize
     inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-    input_ids = inputs['input_ids']
-    
+    input_ids = inputs["input_ids"]
+
     # Generate token by token
     generated_tokens = []
-    
+
     with torch.no_grad():
         for _ in range(max_tokens):
             # Get model outputs
             outputs = model(input_ids)
             logits = outputs.logits[:, -1, :]
             logits = logits / temperature
-            
+
             # Sample next token
             probs = torch.softmax(logits, dim=-1)
             next_token = torch.multinomial(probs, 1)
-            
+
             # Add to generated tokens
             generated_tokens.append(next_token[0].item())
-            
+
             # Decode all generated tokens to get proper spacing
             current_text = tokenizer.decode(generated_tokens, skip_special_tokens=True)
-            
+
             # Update input_ids
             input_ids = torch.cat([input_ids, next_token], dim=1)
-            
+
             # Check for end token
             if next_token[0].item() == tokenizer.eos_token_id:
                 break
@@ -1193,14 +1213,14 @@ def plot_msj_results(
     Returns:
         tuple: (fig, ax) matplotlib objects.
     """
-    
+
     # Input validation
     if not isinstance(results_dict, dict):
         raise TypeError("results_dict must be a dictionary")
-    
+
     if len(results_dict) == 0:
         raise ValueError("results_dict cannot be empty")
-    
+
     # Convert to lists and sort by number of examples
     try:
         # Sort by keys (number of examples) to ensure proper line plotting
@@ -1209,48 +1229,53 @@ def plot_msj_results(
         y_values = [item[1] for item in sorted_items]
     except TypeError as e:
         raise TypeError("Dictionary keys and values must be numeric") from e
-    
+
     # Validate that we have numeric data
     if not all(isinstance(x, (int, float)) for x in x_values):
         raise TypeError("All dictionary keys must be numeric (number of examples)")
     if not all(isinstance(y, (int, float)) for y in y_values):
         raise TypeError("All dictionary values must be numeric (attack counts)")
-    
+
     # Set up plot defaults with maroon color scheme
     defaults = {
-        "color": "maroon", 
+        "color": "maroon",
         "linewidth": 2,
         "markersize": 8,
-        "marker": "o" if show_markers else None
+        "marker": "o" if show_markers else None,
     }
     defaults.update(kwargs)
-    
+
     # Create figure and axis
     fig, ax = plt.subplots(figsize=figsize)
-    
+
     # Plot the data
     line = ax.plot(x_values, y_values, **defaults)
-    
+
     # Customize the plot
     ax.set_xlabel(xlabel, fontsize=12)
     ax.set_ylabel(ylabel, fontsize=12)
     ax.set_title(title, fontsize=14)
-    
+
     # Add grid for better readability
     ax.grid(True, alpha=0.3)
-    
+
     # Ensure y-axis starts at 0 for better visualization
     ax.set_ylim(bottom=0)
-    
+
     # Set x-axis to show integer ticks if all x values are integers
     if all(isinstance(x, int) for x in x_values):
         ax.set_xticks(x_values)
-    
+
     plt.tight_layout()
     return fig, ax
 
 
-ACCEPTABLE_MODELS = ['x-ai/grok-3-mini-beta', "google/gemini-2.5-flash", "openai/gpt-4.1-mini"]
+ACCEPTABLE_MODELS = [
+    "x-ai/grok-3-mini-beta",
+    "google/gemini-2.5-flash",
+    "openai/gpt-4.1-mini",
+]
+
 
 class Model:
     def __init__(self, model_name: str, local: bool, sysprompt: str, api_key):
@@ -1264,7 +1289,7 @@ class Model:
         #     self.model_name = "openai/gpt-4.1-mini"
 
         self.model_name = model_name
-        
+
         if local:
             raise NotImplementedError()
         else:
@@ -1279,15 +1304,14 @@ class Model:
         # input = f"Here is the reponse you will be judging: {response}"
         # str_score = self.get_response(input)
 
-
         self.conversation_history.append({"role": "user", "content": prompt})
         completion = self.client.chat.completions.create(
             model=self.model_name, messages=self.conversation_history
         )
         return completion.choices[0].message.content
 
+
 def get_single_response(model, prompt, sys_prompt, api_key):
     gemini = Model(model, local=False, sysprompt=sys_prompt, api_key=api_key)
     model_answer = gemini.response(prompt)
     return model_answer
-
