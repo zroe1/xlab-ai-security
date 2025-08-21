@@ -23,17 +23,40 @@ It doesn't end there. The authors also find that using the HuggingFace `SFTTrain
   <ThemeImage
     lightSrc="/images/TAR_robustness.png"
     darkSrc="/images/TAR_robustness.png"
-    alt="PAIR Algorithm"
+    alt="Performance of fine-tuned TAR model on WDMP with original codebase vs. HuggingFace SFTTrainer"
     style={{ align: "center", width: "90%", display: "block", margin: "0 auto" }}
   />
 </p>
 
 <div align="center">
-  **Fig. 1** <br></br> (a) Performance of adversarially fine-tuned TAR model on WMDP using (a) the original authors' codebase, and (b) the HuggingFace `SFTTrainer()`. Figure 3 from @qiEvaluatingDurabilitySafeguards2024
+  **Fig. 1** <br></br> (a) Performance of adversarially fine-tuned TAR model on WMDP using (a) the original authors' codebase, and (b) the HuggingFace `SFTTrainer()`. Figure 3 from @qiEvaluatingDurabilitySafeguards2024.
 </div>
 
-But wait, there's more! Even slightly modifying the fine-tuning setup can also have drastic changes in the fine-tuning ASR. For example, using a cosine decay for the learning rate greatly increases the stability of the adversarial fine-tuning (which can be seen in "New-Config 1" and "New-Config 2" in figure 1a above). The authors additionaly confirm that LoRA fine-tuning is particularly effective against TAR. They additionally found that changing prompt templates can somewhat increase the effectiveness of the adversarial fine-tuning, and that even when the adversarial fine-tuning fails, the TAR models often over-refuse.
+But wait, there's more! Even slightly modifying the fine-tuning setup can also have drastic changes in the fine-tuning ASR. For example, using a cosine decay and warmup for the learning rate greatly increases the stability of the adversarial fine-tuning (which can be seen in "New-Config 1" and "New-Config 2" in figure 1a above). The authors additionaly confirm that LoRA fine-tuning is particularly effective against TAR. They additionally found that changing prompt templates can somewhat increase the effectiveness of the adversarial fine-tuning, and that even when the adversarial fine-tuning fails, the TAR models often over-refuse.
 
 ## The Lessons
+The authors then give a number of lessons that we should takeaway from the brittleness of these open-weight LLM safeguards, many of which we believe are very important and want to cover here as well.
+1. **Developing open-weight LLM safeguards is quite challenging.** This writeup should've convinced you that this is most definitely the case.
+2. **We should be more scrupulous with when making claims about these defenses.** If the original papers had more clearly defined the scope over which their defenses apply and had made more clear that the attacks are still vulnerable to certain fine-tuning techniques (e.g. LoRA), then a response paper probably wouldn't have had to be written. Of course, that didn't happen, but going forward it would be better for the community if papers made clear the extent to which we can generalize their results.
+3. **Understanding how a defense works helps identify its vulnerabilities.** Here, the authors looked into TAR's differing performance between the original fine-tuning configurations and the new fine-tuning configuration. They found that TAR explodes the gradient of the original configurations over the first few steps, which could cause very large model update and destroy performance after fine-tuning. By using a learning rate warmup, however, we can bypass these large updates and keep the loss low from the get-go.
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/TAR_loss.png"
+    darkSrc="/images/TAR_loss.png"
+    alt="TAR loss curves over fine-tuning; the loss converges much faster with a learning rate warmup."
+    style={{ align: "center", width: "50%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 2** <br></br> Loss curves of a TAR model during fine-tuning; notice that the new config with a learning rate warmup converges much faster. From @qiEvaluatingDurabilitySafeguards2024.
+</div>
+
+4. **"Unlearning" probably isn't actually unlearning.** Both of these safeguards aim to "unlearn" certain harmful information (e.g. TAR's "retain" and "forget" sets), but probably don't actually forget anything. As the authors put it:
+> We argue that *if the information about a certain task or capability X has been truly unlearned from the model, then fine-tuning the model on a dataset that does not contain any information about X should not recover the model’s capability of performing X*—otherwise, the information of X may not really be unlearned from the model. [@qiEvaluatingDurabilitySafeguards2024]
+
+A final takeaway of ours is that the generalization of open-weight LLM safeguards seems to largely follow traditional adversarial training [@madry2019deeplearningmodelsresistant], i.e., the models become robust to in-distribution perturbations but remain vulnerable to out-of-distribution attacks.
 
 
+## References
