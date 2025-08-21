@@ -39,9 +39,9 @@ The first method the authors use to find safety-critical neurons is using the SN
 $$
 I(W_{ij}, x) = |W_{ij} \cdot \nabla_{W_{ij}} \mathcal{L}(x)|.
 $$
-This is just the first-order Taylor approximation of the change in loss when the entry $W_{ij}$ is set to 0. What?
+This is just the first-order Taylor approximation of the change in loss when the entry $W_{ij}$ is set to 0, but let's look into this a bit more closely.
 
-Let's back up. Given a differentiable function $\mathcal{L}(w)$, we can estimate the change in $\mathcal{L}$ given a small change in input $\delta w$ with a first-order Taylor expansion, which is a fancy way of saying we're gonna multiply the change in $w$ by the slope to get the change in $\mathcal{L}(w)$. Specifically,
+Backing up, given a differentiable function $\mathcal{L}(w)$, we can estimate the change in $\mathcal{L}$ given a small change in input $\delta w$ with a first-order Taylor expansion, which is a fancy way of saying we're gonna multiply the change in $w$ by the slope to get the change in $\mathcal{L}(w)$. Specifically,
 $$
 \mathcal{L}(w + \Delta w) \approx \mathcal{L}(w) + \frac{\partial \mathcal{L}}{\partial w}(w) \cdot \Delta w,
 $$
