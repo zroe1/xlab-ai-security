@@ -9,6 +9,7 @@ import { usePathname } from "next/navigation";
 interface TocItem {
   id: string;
   text: string;
+  level?: number;
 }
 
 interface LayoutProps {
@@ -352,6 +353,7 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
                   <a
                     href={`#${item.id}`}
                     className={`toc-link ${activeSection === item.id ? "active" : ""}`}
+                    style={{ paddingLeft: `${Math.max(0, ((item.level ?? 1) - 1) * 12)}px` }}
                     onClick={() => {
                       if (isMobile) setShowTOC(false);
                     }}>
