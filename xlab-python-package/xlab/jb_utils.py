@@ -2,6 +2,7 @@ import random
 import dataclasses
 import requests
 import json
+from importlib import resources
 from PIL import Image
 from io import BytesIO
 from enum import auto, Enum
@@ -12,7 +13,7 @@ import torch
 import transformers
 from tqdm import tqdm
 from transformers import PreTrainedTokenizer
-from datasets import load_dataset
+from datasets import Dataset, load_dataset
 
 
 IMAGE_TOKEN_INDEX = -200
@@ -301,7 +302,8 @@ class CircuitBreakerDataset(Dataset):
         print("Orig s length:", len(self.orig_s_retain))
 
         # ======================= Circuit Breaker ======================= #
-        with open("working/data/old_cb_train.json") as file:
+        cb_path = resources.files("xlab.data").joinpath("cb_train.json")
+        with open(cb_path) as file:
             dataset = json.load(file)
         circuit_breaker_orig = []
 
@@ -337,7 +339,7 @@ class CircuitBreakerDataset(Dataset):
     def __len__(self):
         return min(len(self.orig_s_retain), len(self.circuit_breaker_orig))
 
-    def __getitem__(self, i) -> Dict[str, torch.Tensor]:
+    def __getitem__(self, i) -> dict[str, torch.Tensor]:
         orig_s_retain = self.orig_s_retain[i]
         circuit_breaker_orig = self.circuit_breaker_orig[i]
 
