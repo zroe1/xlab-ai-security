@@ -154,6 +154,16 @@ export default async function Page({ params }: PageProps) {
   // Parse table of contents
   const tocItems = parseTableOfContents(contentData.content);
 
+  // Add page title as first TOC item
+  const tocItemsWithTitle = [
+    {
+      id: "page-title",
+      text: contentData.frontMatter.title as string,
+      level: 1,
+    },
+    ...tocItems,
+  ];
+
   // Custom MDX components with section and slug context
   const components = {
     pre: (props: React.HTMLAttributes<HTMLPreElement>) => <pre {...props} className="code-block" />,
@@ -181,8 +191,10 @@ export default async function Page({ params }: PageProps) {
   };
 
   return (
-    <MainLayout tocItems={tocItems}>
-      <h1 className="page-title">{contentData.frontMatter.title as string}</h1>
+    <MainLayout tocItems={tocItemsWithTitle}>
+      <h1 className="page-title" id="page-title">
+        {contentData.frontMatter.title as string}
+      </h1>
       <div className="mdx-content">
         <MDXRemote
           source={contentData.content}
