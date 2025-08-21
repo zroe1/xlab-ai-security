@@ -18,9 +18,39 @@ def student_function():
 
 @pytest.fixture
 def test_data_path():
-    """Returns the path to the test dataset file."""
-    current_dir = os.path.dirname(__file__)
-    return os.path.join(current_dir, "data", "test_qa_dataset.json")
+    """Creates a temporary file with test dataset and returns its path."""
+    test_data = [
+        {
+            "question": "What is the capital of France?",
+            "response": "The capital of France is Paris."
+        },
+        {
+            "question": "How do you say hello in Spanish?", 
+            "response": "In Spanish, you say 'Hola' to greet someone."
+        },
+        {
+            "question": "What is 2 + 2?",
+            "response": "2 + 2 equals 4."
+        },
+        {
+            "question": "What color is the sky?",
+            "response": "The sky is typically blue during a clear day."
+        },
+        {
+            "question": "Who wrote Romeo and Juliet?",
+            "response": "William Shakespeare wrote Romeo and Juliet."
+        }
+    ]
+    
+    # Create a temporary file with the test data
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_file:
+        json.dump(test_data, temp_file)
+        temp_path = temp_file.name
+    
+    yield temp_path
+    
+    # Clean up the temporary file after the test
+    os.unlink(temp_path)
 
 @pytest.mark.task1
 def test_default_parameters(student_function, test_data_path):
@@ -237,9 +267,6 @@ def test_special_characters_in_strings(student_function):
 def task1(student_func):
     """Runs all 'task1' tests against the provided student function."""
     target.func = student_func
-    import warnings
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", message="Module already imported so cannot be rewritten")
-        result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task1"])
+    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task1", "-W", "ignore"])
     if result_code == pytest.ExitCode.OK:
         print("✅ All checks passed!")
