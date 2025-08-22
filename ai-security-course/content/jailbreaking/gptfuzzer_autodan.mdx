@@ -52,7 +52,7 @@ $$
 \textbf{Algorithm: } \text{MCTS-Explore} \\
 \hline
 \textbf{Input: } \text{Root node } \text{root}, \text{ early-termination probability } p, \text{seed set } S \\
-\textbf{Input: } \text{ reward penalty } \alpha, \text{ minimal reward } \beta \\
+\hphantom{\textbf{Input: }} \text{reward penalty } \alpha, \text{ minimal reward } \beta \\
 \textbf{Initialize:} \\
 \quad \textbf{for each } \text{seed} \in S \textbf{ do} \\
 \quad \quad \text{root.addChild(seed)} \\[0.5em]
@@ -136,8 +136,9 @@ $$
 \textbf{Algorithm: } \text{AutoDAN Hierarchical Genetic Algorithm (HGA)} \\
 \hline
 \textbf{Input: } \text{Initial prompt } J_p, \text{ Refusal lexicon } L_{\text{refuse}}, \text{ Population size } N, \\
-\quad \text{Hyperparameters: elite fraction } \alpha, \text{ crossover prob. } p_c, \text{ mutation prob. } p_m, \text{ top-K words } K \\
-\textbf{Output: } \text{Optimal jailbreak prompt } J_{\text{max}} \\[0.5em]
+\hphantom{\textbf{Input: }} \text{elite fraction } \alpha, \text{ crossover probability } p_c, \\
+\hphantom{\textbf{Input: }} \text{mutation probability } p_m, \text{ top-K words } K \\
+\textbf{Output: } \text{Optimal jailbreak prompt } J_{\text{max}} \\
 \textbf{Initialize: } \text{Population } P \leftarrow \text{DiversifyWithLLM}(J_p, N) \\[0.5em]
 \textbf{while } \text{response contains words in } L_{\text{refuse}} \text{ and iterations not exhausted} \textbf{ do} \\
 \quad \textbf{for } i=1, \dots, T_{\text{sentence}} \textbf{ do} \\

@@ -156,10 +156,11 @@ $$
 \begin{array}{l}
 \text{\bf Algorithm: } \text{Adaptive Dense-to-Sparse Optimization} \\
 \hline
-\text{\bf Input: } \text{User query } x_{1:l}, \text{ target response } y_{1:l}, \text{ number of adversarial tokens } n \\
+\text{\bf Input: } \text{User query } x_{1:l}, \text{ target response } y_{1:l}, \\
+\hphantom{\textbf{Input: }} \text{number of adversarial tokens } n \\
 \text{\bf Initialize: } \text{dense adversarial tokens } z^{(0)}_{1:n} \gets \text{ softmax}(\varepsilon \sim \mathcal{N}) \\
-\text{\bf Initialize: } \text{lr } \gamma \gets 10, \text{ momentum } \beta \gets 0.99 \\
-\text{\bf Initialize: } \text{max iterations } T \gets 5000 \\[0.375em]
+\hphantom{\textbf{Initialize: }} \text{lr } \gamma \gets 10, \text{ momentum } \beta \gets 0.99 \\
+\hphantom{\textbf{Initialize: }} \text{max iterations } T \gets 5000 \\[0.375em]
 \textbf{for } t = 1, \dots, T \textbf{ do} \\
 \quad g^{(t)} \leftarrow \nabla_{z_{1:n}} \mathcal{L}(z^{(t-1)}_{1:n}) \\
 \quad v^{(t)} \leftarrow \beta v^{(t-1)} + g^{(t)} \\

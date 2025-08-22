@@ -91,12 +91,13 @@ $$
 \begin{array}{l}
 \text{\bf Algorithm: TAP} \\
 \hline
-\text{\bf Input: } \text{Attack Objective } O, \text{ branching factor } b, \text{ max width } w, \text{ max depth } d \\
-\text{\bf Initialize: } \text{root with an empty conversation history and attack objective } O \\[0.375em]
+\text{\bf Input: } \text{Attack Objective } O, \text{ branching factor } b, \\
+\, \quad \quad \quad \text{ max width } w, \text{ max depth } d \\
+\text{\bf Initialize: } \text{root with empty conversation history and attack objective } O \\[0.375em]
 \text{\bf while } \text{depth of tree at most } d \text{ \bf do } \\
 \quad \text{\bf for } \text{each leaf } \ell \text{ \bf do } \\
 \quad \quad \text{Sample } P_1, \ ..., \ P_b \sim q_A(C) \\
-\quad \quad \text{Add } b \text{ children of } \ell \text{ with prompts }P_1, \ ..., \ P_b \text{ and conversation histories } C_\ell \\
+\quad \quad \text{Add } b \text{ children of } \ell \text{ w/ prompts }P_1, \ ..., \ P_b \text{ and conversations } C_\ell \\
 \quad \text{\bf for } \text{each leaf } \ell \text{ \bf do } \\
 \quad \quad \text{\bf if } \texttt{OffTopic}(P_\ell, O) == 1, \text{ delete } \ell \\
 \quad \text{\bf for } \text{each leaf } \ell \text{ \bf do } \\
