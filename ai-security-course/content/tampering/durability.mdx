@@ -1,16 +1,7 @@
 ---
-title: "A Few Warnings About Evaluating the Durability of Open-Weight LLM Safeguards"
+title: "A Few Warnings About Evaluating Open-Weight LLM Safeguard Durability"
 description: "Let's not repeat our past mistakes."
 ---
-
-## The Past Mistakes
-Back at the height of the adversarial examples crazy in the latter-half of the 2010s, there was a very common technique to supposedly defeat adversarial attacks against computer vision (CV) models: obfuscated gradients. You might recall that we touched on this concept in the RobustBench notebook, but we'll include a brief review here since it's been quite a while. In short, this method involves attempting to remove the usefulness of the gradient in the CV model to greatly increase the difficulty of optimizing the adversarial example. (The wiggly ReLU defense you investigated in the RobustBench notebook was exemplary of this!) As shown by @athalye2018obfuscatedgradientsfalsesense, however, these defenses don't actually get to the root of the problem (with them breaking 6 of 7 obfuscated gradient defenses and partially breaking the other 1). These "defenses" don't work because they don't solve the model's brittle representations of the images classes, but rather just make the adversarial optimization process hard. 
-
-Unfortunately, it seems that many of the tamper-resistant attacks proposed in the open-weight LLM literature are falling into similar traps. **TODO:** cite carlini interview talking about this
-
-- there are two main issues to harp on here:
-  1. Don't just obfuscate gradients, it doesn't really work
-  2. We should try harder to evaluate the robustness of our defenses
 
 ## The Current Mistakes
 @qiEvaluatingDurabilitySafeguards2024 investigate the durability of the open-weight safeguards proposed by @rosati2024representationnoisingdefencemechanism (RepNoise) @tamirisaTamperResistantSafeguardsOpenWeight2025 (TAR). We haven't covered RepNoise, but in short, it simply trains a model to push its harmful representations towards random noise (imagine circuit breakers but instead of minimizing the cosine similarity, we minimize the difference between the harmful states and a random vector). TAR does the same, while also incorporating loss on a retain set into the training (note that @qiEvaluatingDurabilitySafeguards2024 test only the more effective usage of TAR for restricts weaponization knowledge, not improving refusal training). The goal of both of these techniques is to create models that are resistant to adversarial fine-tuning attacks, and both @rosati2024representationnoisingdefencemechanism and @tamirisaTamperResistantSafeguardsOpenWeight2025 found—in their own papers—that their defenses were relatively successful. Unfortunately, this might not be the case. 
@@ -34,7 +25,7 @@ It doesn't end there. The authors also find that using the HuggingFace `SFTTrain
 
 But wait, there's more! Even slightly modifying the fine-tuning setup can also have drastic changes in the fine-tuning ASR. For example, using a cosine decay and warmup for the learning rate greatly increases the stability of the adversarial fine-tuning (which can be seen in "New-Config 1" and "New-Config 2" in figure 1a above). The authors additionaly confirm that LoRA fine-tuning is particularly effective against TAR. They additionally found that changing prompt templates can somewhat increase the effectiveness of the adversarial fine-tuning, and that even when the adversarial fine-tuning fails, the TAR models often over-refuse.
 
-## The Lessons
+### The Lessons
 The authors then give a number of lessons that we should takeaway from the brittleness of these open-weight LLM safeguards, many of which we believe are very important and want to cover here as well.
 1. **Developing open-weight LLM safeguards is quite challenging.** This writeup should've convinced you that this is most definitely the case.
 2. **We should be more scrupulous with when making claims about these defenses.** If the original papers had more clearly defined the scope over which their defenses apply and had made more clear that the attacks are still vulnerable to certain fine-tuning techniques (e.g. LoRA), then a response paper probably wouldn't have had to be written. Of course, that didn't happen, but going forward it would be better for the community if papers made clear the extent to which we can generalize their results.
@@ -45,7 +36,7 @@ The authors then give a number of lessons that we should takeaway from the britt
     lightSrc="/images/TAR_loss.png"
     darkSrc="/images/TAR_loss.png"
     alt="TAR loss curves over fine-tuning; the loss converges much faster with a learning rate warmup."
-    style={{ align: "center", width: "50%", display: "block", margin: "0 auto" }}
+    style={{ align: "center", width: "65%", display: "block", margin: "0 auto" }}
   />
 </p>
 
@@ -58,5 +49,14 @@ The authors then give a number of lessons that we should takeaway from the britt
 
 A final takeaway of ours is that the generalization of open-weight LLM safeguards seems to largely follow traditional adversarial training [@madry2019deeplearningmodelsresistant], i.e., the models become robust to in-distribution perturbations but remain vulnerable to out-of-distribution attacks.
 
+## The Past Mistakes
+Back at the height of the adversarial examples crazy in the latter-half of the 2010s, there was a very common technique to supposedly defeat adversarial attacks against computer vision (CV) models: obfuscated gradients. You might recall that we touched on this concept in the RobustBench notebook, but we'll include a brief review here since it's been quite a while. In short, this method involves attempting to remove the usefulness of the gradient in the CV model to greatly increase the difficulty of optimizing the adversarial example. (The wiggly ReLU defense you investigated in the RobustBench notebook was exemplary of this.) As demonstrated by @athalye2018obfuscatedgradientsfalsesense, however, these defenses don't actually get to the root of the problem (they completely broke 6 of 7 obfuscated gradient defenses and partially broke the remaining one). These "defenses" don't work because they don't solve the fact that the CV models are learning brittle representations of the images classes, but rather just make the adversarial optimization process hard. 
+
+Unfortunately, it seems that many of the tamper-resistant attacks proposed in the open-weight LLM literature are falling into similar traps. They don't "unlearn" the model's knowledge of harmful content at all, but just hide it under noisy gradients. In an interview on the Cognitive Revolution Podcast, Nicholas Carlini (who actually third authored the paper we covered in this writeup) expressed his thoughts on these style of defenses:
+
+> This [the obfuscated gradients trend] continued even all the way through to these unfine-tunable models, where one of the papers was explicitly saying "we make the gradients very challenging so that when you train the model, the gradients are ugly and you can't fine-tune the model." This is literally the exact same argument that people were presenting in 2017 for image adversarial examples and it fails in the exact same way. You change the learning rate a little bit, you add some random restarts, and you add some warmup so that things work better. The gradient ends up becoming smooth enough that you can now do optimizations, and then deep learning takes over and the rest is easy. ([Source](https://www.youtube.com/watch?v=fyGdlnUDOdg))
+
+### The Real Lesson
+The field is making the exact same mistakes as before! This paper hopefully makes it very clear that defenses should be *thoroughly tested* and framed accurately if they're going to be proposed as a viable defense. Unlearning methods *should not* just obfuscate gradients, but should *thoroughly and completely* remove the unwanted knowledge from the model (think distillation robustifies unlearning). Ultimately, however, if we want to build safe and tamper-resistant open-weight LLMs, there's no better approach than making sure these models are safely pre-trained from the start [@mainiSafetyPretrainingNext2025; @obrienDeepIgnoranceFiltering2025].
 
 ## References
