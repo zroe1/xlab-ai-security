@@ -270,3 +270,67 @@ def task1(student_func):
     result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task1", "-W", "ignore"])
     if result_code == pytest.ExitCode.OK:
         print("✅ All checks passed!")
+
+# ---------------------------------------------------------------------------
+# Tests for get_msj_prompt(prompt, num_shots=5)
+
+class TestTargetMSJ:
+    func = None
+
+target_msj = TestTargetMSJ()
+
+@pytest.fixture
+def student_msj_function():
+    """Provides the student's get_msj_prompt function to tests."""
+    if target_msj.func is None:
+        pytest.skip("Student get_msj_prompt function not provided.")
+    return target_msj.func
+
+@pytest.mark.task_msj
+def test_msj_prompt_basic_structure(student_msj_function):
+    """Ensures formatting and num_shots pass-through to format_qa_dataset."""
+    calls = []
+
+    def fake_format_qa_dataset(path, num_shots):
+        calls.append((path, num_shots))
+        return "QA_DATA"
+
+    import sys
+    module = sys.modules[student_msj_function.__module__]
+    original = getattr(module, 'format_qa_dataset', None)
+    try:
+        setattr(module, 'format_qa_dataset', fake_format_qa_dataset)
+        result = student_msj_function("Hello", num_shots=3)
+        assert result == "QA_DATA" + "<|user|>Hello<\\s>\n<|assistant|>\n"
+        assert calls == [("beauty_qa_dataset.json", 3)]
+    finally:
+        if original is not None:
+            setattr(module, 'format_qa_dataset', original)
+
+@pytest.mark.task_msj
+def test_msj_prompt_default_num_shots(student_msj_function):
+    """Checks that default num_shots=5 is used when not provided."""
+    recorded = {}
+
+    def fake_format_qa_dataset(path, num_shots):
+        recorded['num_shots'] = num_shots
+        return ""
+
+    import sys
+    module = sys.modules[student_msj_function.__module__]
+    original = getattr(module, 'format_qa_dataset', None)
+    try:
+        setattr(module, 'format_qa_dataset', fake_format_qa_dataset)
+        result = student_msj_function("Hi")
+        assert recorded.get('num_shots') == 5
+        assert result == "<|user|>Hi<\\s>\n<|assistant|>\n"
+    finally:
+        if original is not None:
+            setattr(module, 'format_qa_dataset', original)
+
+def task2(student_func):
+    """Runs all 'task_msj' tests against the provided get_msj_prompt function."""
+    target_msj.func = student_func
+    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task_msj", "-W", "ignore"])
+    if result_code == pytest.ExitCode.OK:
+        print("✅ All checks passed!")
