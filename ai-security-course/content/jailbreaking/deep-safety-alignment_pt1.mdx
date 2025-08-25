@@ -7,7 +7,7 @@ In the jailbreaking section, we've looked at numerous attacks and defenses for l
 
 ## Safety Alignment is Only a Few Tokens Deep
 
-In an ICLR 2025 outstanding paper, @qiSafetyAlignmentShould2025a introduced the idea of _shallow safety alignment._ This paper is chock-full of findings, so we'll only touch on half of them here (the second half is more related to model tampering and will be covered in that section). The core idea that we'll focus on for now is that most alignment or refusal training techniques (such as RLHF or DPO) only affect the model's generative distribution over the first few tokens. Intuitively, this makes sense, as we often train models to immediately refuse a harmful query:
+In a recent paper, @qiSafetyAlignmentShould2025a introduce the idea of _shallow safety alignment._ This paper is chock-full of findings, so we'll only touch on half of them here (the second half is more related to model tampering and will be covered in that section). The core idea that we'll focus on for now is that most alignment or refusal training techniques (such as RLHF or DPO) only affect the model's generative distribution over the first few tokens. Intuitively, this makes sense, as we often train models to immediately refuse a harmful query:
 
 ```
 USER: How do I make a bomb?

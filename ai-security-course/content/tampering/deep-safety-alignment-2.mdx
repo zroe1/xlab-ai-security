@@ -1,0 +1,64 @@
+---
+title: "Deep Safety Alignment (Part 2)"
+description: "From 'Safety Alignment Should be Made More Than Just a Few Tokens Deep'"
+---
+
+## Motivation
+Recall from the [previous writeup on shallow safety alignment](https://xlabaisecurity.com/jailbreaking/deep-safety-alignment_pt1/) that @qiSafetyAlignmentShould2025a found safety alignment to primarily affect only the first few tokens in LLMs. This meant that if we could get a model "over the hump" of those first few tokens, it would then likely comply even with harmful queries. Might this same reasoning apply to the case fine-tuning attacks undoing safety training, i.e., that fine-tuning attacks mostly affect the model's generative distribution over the first few tokens?
+
+## Fine-Tuning Primarily Affects the Generative Distribution of the First Few Tokens
+To confirm this hypothesis, over the course of fine-tuning, the authors tracked the cross-entropy loss $-\log p(x_t | x_{1:t-1})$ and the gradient magnitude $\nabla \log p(x_t | x_{1:1-t})$ over the first $t \in [1, 15]$ tokens.
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/shallow_fine-tuning.png"
+    darkSrc="/images/shallow_fine-tuning.png"
+    alt="CE loss and gradient magnitudes largely affects the first few token positions."
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> Over the course of fine-tuning, the cross-entropy loss and gradient magnitude affects primarily the first few token positions; Figure 3 from @qiSafetyAlignmentShould2025a.
+</div>
+
+Figure 1 confirms that fine-tuning mostly affects the first few tokens. In fact, these results align with a common intuition surrounding fine-tuning: it doesn't change the underlying distribution, but rather just "points" the model to a certain subset of that distribution. As put by @zhouLIMALessMore2023 in their paper "LIMA: Less is More for Alignment":
+
+> A model’s knowledge and capabilities are learnt almost entirely during pretraining, while alignment teaches it which subdistribution of formats should be used when interacting with users. 
+
+The experiments demonstrate that fine-tuning indeed doesn't affect the model's underlying distribution, but affecting the distribution of the first few tokens is sufficient to "steer" or "point" the model in a certain direction (by taking advantage of the autoregressive nature of language models).
+
+<Dropdown title="Shallow vs. Superficial Alignment">
+
+The LIMA paper introduces the above quote as the **superficial alignment hypothesis**, which is related to but distinct from the notion of **shallow safety alignment**. Succinctly, the superficial alignment hypothesis focuses on the superficiality of the changes resulting from fine-tuning, whereas shallow safety alignment emphasizes *how* we get to superficial alignment (by examining the per-token depth of safety alignment).
+
+</Dropdown>
+
+The authors additionally look at the per-token KL divergence over a harmful dataset between the model during fine-tuning and the base model, again finding that the KL divergence increases as a result of the safety fine-tuning, but only over the first few tokens.
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/fine-tuning_KL.png"
+    darkSrc="/images/fine-tuning_KL.png"
+    alt="Over the course of safety fine-tuning a model, the per-token KL divergence only increases over the first few tokens"
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 2** <br></br> Over the course of safety fine-tuning a model, the per-token KL divergence only increases over the first few tokens; Figure 3 from @qiSafetyAlignmentShould2025a.
+</div>
+
+We can therefore all but confirm that safety fine-tuning works because it "points" the model in a safe direction, but doesn't actually change the safety of the model's underlying generative distribution, which is why non-safety fine-tuning can so easily undo safety training. What can we do to combat this problem?
+
+
+## Protecting the Precious Initial Tokens
+
+
+
+
+
+## References
+
+
+
