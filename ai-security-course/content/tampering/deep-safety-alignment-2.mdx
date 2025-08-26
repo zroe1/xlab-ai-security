@@ -40,19 +40,129 @@ The authors additionally look at the per-token KL divergence over a harmful data
   <ThemeImage
     lightSrc="/images/fine-tuning_KL.png"
     darkSrc="/images/fine-tuning_KL.png"
-    alt="Over the course of safety fine-tuning a model, the per-token KL divergence only increases over the first few tokens"
-    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+    alt="Per-token KL divergence over the course of safety fine-tuning a model"
+    style={{ align: "center", width: "60%", display: "block", margin: "0 auto" }}
   />
 </p>
 
 <div align="center">
-  **Fig. 2** <br></br> Over the course of safety fine-tuning a model, the per-token KL divergence only increases over the first few tokens; Figure 3 from @qiSafetyAlignmentShould2025a.
+  **Fig. 2** <br></br> Per-token KL divergence over the course of safety fine-tuning a model; Figure 3 from @qiSafetyAlignmentShould2025a.
 </div>
 
 We can therefore all but confirm that safety fine-tuning works because it "points" the model in a safe direction, but doesn't actually change the safety of the model's underlying generative distribution, which is why non-safety fine-tuning can so easily undo safety training. What can we do to combat this problem?
 
 
 ## Protecting the Precious Initial Tokens
+The solution to this problem is a simple custom fine-tuning objective, where $\sigma = \frac{1}{1 + \exp(-z)}$ is the sigmoid function and $\beta_t$ controls the regularization towards the initial aligned model's generative distribution:
+$$
+\underset{\theta}{\min} \left\{ \underset{(x, y) \sim D}{\mathbb{E}} - \sum_{t = 1}^{|\mathbf{y}|} \frac{2}{\beta_t} \log \left[ \sigma \left( \beta_t \log \frac{\pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t})}{\pi_\text{aligned}(y_t | \mathbf{x}, \mathbf{y}_{< t})}  \right)  \right]  \right\}.
+$$
+
+Oh, and $\pi_\theta$ represents the model with parameters $\theta$. That should clear up any remaining confusion.
+
+Alright, maybe it's not exactly *simple,* but it's definitely not as complicated as it looks at first glance. For starers, let's look at how the authors define the vanilla supervised fine-tuning (SFT) objective using the same notation:
+$$
+\underset{\theta}{\min} \left\{ \underset{(\mathbf{x}, \mathbf{y}) \sim D}{\mathbb{E}} - \sum_{t = 1}^{|\mathbf{y}|} \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t}) \right\}.
+$$
+
+Hopefully this objective is more straightforward; we're just looking to optimize the parameters $\theta$ such that they minimize the expected negative log-likelihood loss from model $\pi_\theta$ on some fine-tuning dataset $D$. Here, $\mathbf{x}$ and $\mathbf{y}$ represent the input and output token sequences (note $\mathbf{y}$ is defined during fine-tuning). Revisiting the custom fine-tuning objective from above, first note that we can rewrite it as
+$$
+\underset{\theta}{\min} \left\{ \sum_{t = 1}^{|\mathbf{y}|} \underset{(\mathbf{x}, \mathbf{y}) \sim D}{\mathbb{E}} \left[ \frac{2}{\beta_t} S\Big[ \beta_t(\log \pi_\text{aligned}(y_t | \mathbf{x}, \mathbf{y}_{<t}) - \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{<t}) \Big]  \right]  \right\},
+$$
+where $S(z) = \log(1 + e^{z})$ is the softplus function. Notice now that we have a nice difference $\Delta_t := \log \pi_\text{aligned}(y_t | \mathbf{x}, \mathbf{y}_{<t}) - \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{<t})$ in the objective function. At token position $t$, the loss essentially boils down to this difference $\Delta_t$ multiplied by $\beta_t$ wrapped in the softplus $S(\cdot)$. Given this, we must investigate how $\beta_t$ affects the loss at different values.
+
+### Small $\beta_t$
+When $\beta_t$ is small, then $S(\beta_tz)$ will be close to $0$ and we can approximate it with its first-order taylor polynomial:
+$$
+S(\beta_t z) \approx S(0) + \beta_t z S'(0).
+$$
+Think of this as taking a small, $\beta_t z$-sized step in the $S'(0)$ direction, which is an accurate approximation for small $\beta_t$. Next, because we have $S'(z) = e^z \cdot \frac{1}{1 + e^z}$, we have that
+$$
+S(\beta_t z) \approx \log 2 + \frac{1}{2} \beta_t z.
+$$
+
+Next, multiplying our approximation by its coefficient $\frac{2}{\beta_t}$, we're left with
+$$
+\frac{2}{\beta_t} S(\beta_t z) \approx \frac{2}{\beta_t} \log 2 + \frac{1}{2} \beta_t z = \log 2 + z,
+$$
+and ignoring the constant $\log 2$, this leaves us with our loss being $z = \Delta_t$. Further, notice that in $\Delta_t = \log \pi_\text{aligned}(y_t | \mathbf{x}, \mathbf{y}_{<t}) - \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{<t})$, the $\log \pi_\text{aligned}(y_t | \mathbf{x}, \mathbf{y}_{<t})$ term is a constant, as the aligned model is already aligned and isn't changed over the course of training. Therefore, for small $\beta_t$, the loss is approximately given by
+$$
+- \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t}),
+$$
+which is the normal negative log-likelihood (or cross-entopy) loss!
+
+### Large $\beta_t$
+For large $\beta_t$, things change. To understand how, we make an observation: as $z \to \infty$, $S(z) \approx \text{ReLU}(z)$. Why? Well,
+$$
+\begin{aligned}
+\lim_{z \to \infty} S(z) &= \lim_{z \to \infty} \log(1 + e^z) \\
+&= \lim_{z \to \infty} \log(e^z(1 + e^{-z})) \\
+&= \lim_{z \to \infty} (z + \log(1 + e^{-z})) \\
+&= z.
+\end{aligned}
+$$
+It is also easy to verify that $\lim_{z \to -\infty} S(z) = 0$, meaning $S(z) \approx \text{ReLU}(z)$. This means that for large $\beta_t$, 
+$$
+\begin{aligned}
+\frac{2}{\beta_t} S(\beta_t z) &\approx 2 \max \{z, 0\} \\
+&= \max\{ \Delta_t, 0\}.
+\end{aligned}
+$$
+
+This means that when $\beta_t$ is large, the loss's focus is on minimizing the distance between the generative distributions of the aligned model $\pi_\text{aligned}$ and the model undergoing training $\pi_\theta$. In short, when small $\beta_t$ emphasizes cross-entropy loss, large $\beta_t$ emphasizes matching distributions.
+
+### The Objective's Gradient
+We can perform some calculus to see that
+$$
+\nabla \left( \frac{2}{\beta_t} S(\beta_t \Delta_t) \right) = -2 \sigma (\beta_t \Delta_t) \nabla \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{<t}).
+$$
+
+<Dropdown title="I want to see the calculus!">
+
+It's easiest first to rewrite our goal as $\frac{\mathrm{d}}{\mathrm{d}x} S(f(x))$ to achieve the expansion:
+$$
+\begin{aligned}
+\frac{\mathrm{d}}{\mathrm{d}x} S(f(x)) &= \frac{\mathrm{d}}{dx} \ln( 1 + e^{f(x)}) \\
+&= \frac{1}{1 + e^{f(x)}} \cdot \frac{\mathrm{d}}{\mathrm{d}x}\left( 1 + e^{f(x)} \right) \\
+&= \frac{1}{1 + e^{f(x)}} \cdot e^{f(x)} \cdot f'(x) \\
+&= \frac{e^{f(x)}}{1 + e^{f(x)}} \cdot f'(x). \\
+\end{aligned}
+$$
+
+Now, we can plug in $\beta_t \Delta_t$ for $f(x)$ and $- \beta_t \nabla \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t})$ for $f'(x)$:
+$$
+\nabla S(\beta_t \Delta_t) = \frac{e^{\beta_t \Delta_t}}{1 + e^{\beta_t \Delta_t}} \cdot \cdot - \beta_t \nabla \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t}).
+$$
+
+Next, we can use the fact that 
+$$
+\frac{e^x}{1 + e^x} = \frac{1}{e^{-x}(1 + e^x)} = \frac{1}{1 + e^{-x}}
+$$
+to get
+$$
+\nabla S(\beta_t \Delta_t) = - \beta_t \frac{1}{1 + e^{-\beta_t \Delta_t}} \cdot \nabla \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t}).
+$$
+
+Finally, we add back in the coefficient $\frac{2}{\beta_t}$:
+$$
+\begin{aligned}
+\nabla \left( \frac{2}{\beta_t} S(\beta_t \Delta_t  \right) &= -2 \frac{1}{1 + e^{-\beta_t \Delta_t}} \cdot \nabla \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t}) \\
+\nabla \left( \frac{2}{\beta_t} S(\beta_t \Delta_t  \right) &= -2 \sigma(\beta_t \Delta_t) \nabla \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t}). \\
+\end{aligned}
+$$
+
+</Dropdown>
+
+Conveniently, this gradient is rather interpretable. We see the normal cross-entropy loss in the form of $- \log \pi_\theta (y_t | \mathbf{x}, \mathbf{y}_{< t})$, but there's an additional weighting term $2\sigma(\beta_t \Delta_t)$. What's the role of this weighting term? Well, consider a case where $\log \pi_\text{aligned} > \log \pi_\theta$, i.e., $\pi_\text{aligned}$ is much more likely to correct the correct token than $\pi_\theta$ (you can see this with the fact that $\pi_\theta$'s negative log-likelihood loss would be much larger). Consequently, $\Delta_t$ would take on a large positive value, and when input into the sigmoid $\sigma(\cdot)$ we'd get a value near $1$ in return. This would preserve the magnitude of the gradient update, and ensure that we better match the aligned model's distribution at token position $t$.
+
+On the other hand, say that $\log \pi_\theta > \log \pi_\text{aligned}$—$\pi_\theta$ now has a much better prediction than $\pi_\text{aligned}$. In this case, we *don't* want $\pi_\theta$ to match the distribution of $\pi_\text{aligned}$, as $\pi_\theta$ is technically performing better and we don't want it to stray further from the properly aligned model. We can see this in the fact that $\Delta_t$ here would be a large negative value with which the sigmoid would return a value near $0$, greatly diminishing the gradient update's strength. 
+
+The role of $\beta_t$ in this interpretation is controlling how *quickly* we approach these constraints. A large $\beta_t$ makes the sigmoid much steeper and puts $\pi_\theta$ on a "tigher leash," quickly constraining its gradient updates if it strays from $\pi_\text{aligned}$, whereas a small $\beta_t$ flattens the sigmoid and gives $\pi_\theta$ more "freedom" to stray from the aligned model. Hopefully, either the direct objective's interpretation or the gradient's interpretation helps clear up what's going on in this fine-tuning setup!
+
+## Using the Constrained Fine-Tuning Objective
+
+
+
 
 
 
