@@ -4,14 +4,13 @@ Tests for section 1.1 of the AI Security course.
 
 import pickle
 import torch
-import torch.nn.functional as F
 import os
 import pytest
 import numpy as np
-import sys
 import xlab
-from typing import List, Callable, Any
+from importlib import resources
 from .. import utils
+
 
 # Global variables to store test parameters passed from notebook
 _test_config = {
@@ -48,7 +47,10 @@ class TestTask1:
             predictions = torch.argmax(logits, axis=1)
     
             cnn = xlab.utils.SimpleCNN()
-            cnn.load_state_dict(torch.load('CNN_weights.pth'))        
+
+            cnn_path = resources.files("xlab.data").joinpath("CNN_weights.pth")
+            cnn.load_state_dict(torch.load(cnn_path))        
+
             cnn.eval()
             logits = cnn(x)
             cnn_pred = torch.argmax(logits, axis=1)
@@ -62,7 +64,7 @@ class TestTask2:
         """Tests successful processing of frog image."""
 
         process_image = _test_config['student_function']
-        img_path =  "cat.jpg"
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         
         # Execution
         result_tensor = process_image(img_path)
@@ -77,7 +79,7 @@ class TestTask2:
         """Tests successful processing of cat image."""
 
         process_image = _test_config['student_function']
-        img_path = "cat.jpg"
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         
         # Execution
         result_tensor = process_image(img_path)
@@ -100,7 +102,7 @@ class TestTask3:
         student_FGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 8/255
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
         
@@ -119,7 +121,7 @@ class TestTask3:
         student_FGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 0.1
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
         original_img = utils.process_image(img_path)
@@ -138,7 +140,7 @@ class TestTask3:
         student_FGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 0
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
         original_img = utils.process_image(img_path)
@@ -157,7 +159,7 @@ class TestTask3:
         student_FGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 8/255
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
         original_img = utils.process_image(img_path)
@@ -179,7 +181,7 @@ class TestTask3:
         student_FGSM = _test_config['student_function']
         loss_fn = torch.nn.CrossEntropyLoss()
         epsilon = 1/50
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_FGSM(model, loss_fn, img_path, y_target, epsilon)
         pred = xlab.utils.prediction(model, adv_tensor)[0]      
@@ -281,7 +283,7 @@ class TestTask4a:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
@@ -302,7 +304,7 @@ class TestTask4a:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
 
@@ -324,7 +326,7 @@ class TestTask4a:
         epsilon = 0
         alpha = 1/100
         num_iters = 6
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
@@ -347,7 +349,7 @@ class TestTask4a:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_IGSM(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         pred = xlab.utils.prediction(model, adv_tensor)[0]
@@ -374,7 +376,7 @@ class TestTask5:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
@@ -395,7 +397,7 @@ class TestTask5:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
 
@@ -417,7 +419,7 @@ class TestTask5:
         epsilon = 0.1
         alpha = 1/100
         num_iters = 6
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         
@@ -440,7 +442,7 @@ class TestTask5:
         epsilon = 8/255
         alpha = 1/100
         num_iters = 8
-        img_path = 'cat.jpg'
+        img_path = resources.files("xlab.data").joinpath("cat.jpg")
         y_target = torch.tensor([6]) 
         adv_tensor = student_PGD(model, loss_fn, img_path, y_target, epsilon, alpha, num_iters)
         pred = xlab.utils.prediction(model, adv_tensor)[0]
