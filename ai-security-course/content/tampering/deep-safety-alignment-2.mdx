@@ -60,7 +60,7 @@ $$
 
 Oh, and $\pi_\theta$ represents the model with parameters $\theta$. That should clear up any remaining confusion.
 
-Alright, maybe it's not exactly *simple,* but it's definitely not as complicated as it looks at first glance. For starers, let's look at how the authors define the vanilla supervised fine-tuning (SFT) objective using the same notation:
+Alright, maybe it's not exactly *simple,* but it's definitely not as complicated as it looks at first glance. The high-level idea is that as $\beta_t$ gets larger, the loss places more emphasis on matching the distribution of an aligned model $\pi_\text{aligned}$ during fine-tuning. To see this, let's first look at how the authors define the vanilla supervised fine-tuning (SFT) objective using the same notation:
 $$
 \underset{\theta}{\min} \left\{ \underset{(\mathbf{x}, \mathbf{y}) \sim D}{\mathbb{E}} - \sum_{t = 1}^{|\mathbf{y}|} \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t}) \right\}.
 $$
@@ -160,8 +160,11 @@ On the other hand, say that $\log \pi_\theta > \log \pi_\text{aligned}$—$\pi_\
 The role of $\beta_t$ in this interpretation is controlling how *quickly* we approach these constraints. A large $\beta_t$ makes the sigmoid much steeper and puts $\pi_\theta$ on a "tigher leash," quickly constraining its gradient updates if it strays from $\pi_\text{aligned}$, whereas a small $\beta_t$ flattens the sigmoid and gives $\pi_\theta$ more "freedom" to stray from the aligned model. Hopefully, either the direct objective's interpretation or the gradient's interpretation helps clear up what's going on in this fine-tuning setup!
 
 ## Using the Constrained Fine-Tuning Objective
+In their experiments, @qiSafetyAlignmentShould2025a use $\beta_1 = 0.5$, $\beta_{2:5} = 2$, and $\beta_{6:} = 0.1$. Based on these $\beta_t$ values, you can hopefully tell that the goal is to ensure that fine-tuning the model *doesn't* undo the shallow safety training over the first few tokens, as demonstrated by the larger $\beta_t$ values in the earlier token positions. The authors then tested their constrained fine-tuning objective against three types of attacks: fine-tuning on 100 harmful examples, fine-tuning to shift the model's identity into an absolutely obedient agent, and fine-tuning on a poisoned mixture of 100 benign examples and 100 harmful examples that contrain a trigger. They also tested the model on benign utility tasks, such as GSM8k [@cobbe2021trainingverifierssolvemath]. 
 
+The authors find that against all three types of attacks, their consrtained fine-tuning performs much better than vanilla SFT, keeping the ASR in all instances around or less than 10%, whereas vanilla SFT saw ASRs from 79% to 90%. Additionally, it kept performance on the benign tasks within a few percentage points of the vanilla SFT, while also preventing the ASR gain that we previous saw that can happen when fine-tuning on benign data (the benign vanilla SFT increased ASR from 1% to 23% in the most extreme case; it only rose to 3.2% with constrained fine-tuning).
 
+Of course, the use-case for this constrained fine-tuning is rather narrow, as we can't force anyone fine-tuning an open-weight model to use it. However, for model providers that let you fine-tune their models through an API (e.g. [OpenAI](https://platform.openai.com/docs/guides/supervised-fine-tuning#page-top)), it would make quite a lot of sense to use a fine-tuning technique similar to the one introduced in this paper.
 
 
 
