@@ -14,7 +14,7 @@ In this section, you will learn about "defensive distillation," a technique to d
 
 ## Distillation
 
-Distillation, proposed by [@hinton2015distillingknowledgeneuralnetwork], is a technique to leverage a more complex and capible model to produce a more compute-efficent model that preserves the performace. The author's accomplish this by training the smaller model on the outputs of the capible model.
+Distillation, proposed by @hinton2015distillingknowledgeneuralnetwork, is a technique to leverage a more complex and capible model to produce a more compute-efficent model that preserves the performace. The author's accomplish this by training the smaller model on the outputs of the capible model.
 
 As a review, when we train an image classifer we usually use what are called "hard labels." For an image of a 2 in the MNIST dataset, the hard label would assign 100% probability to the "2" class and 0% probability to every other class. In distillation however, we use "soft labels" from a trained model which assign various positive probabilites to every class.
 
