@@ -32,30 +32,30 @@ def get_100_examples():
 
     return x_test_loaded, y_test_loaded
 
-# Task 1 Tests
-class TestTask1:    
-    def test_model_prediction(self):
-        """Test that the model achieves the same predictions as the correct model"""
-        model = _test_config['model']
-        model.eval()
+# # Task 1 Tests
+# class TestTask1:    
+#     def test_model_prediction(self):
+#         """Test that the model achieves the same predictions as the correct model"""
+#         model = _test_config['model']
+#         model.eval()
         
-        x, y = get_100_examples()
-        assert model(x) is not None, "Model not configured for testing"
-        with torch.no_grad():
+#         x, y = get_100_examples()
+#         assert model(x) is not None, "Model not configured for testing"
+#         with torch.no_grad():
 
-            logits = model(x)
-            predictions = torch.argmax(logits, axis=1)
+#             logits = model(x)
+#             predictions = torch.argmax(logits, axis=1)
     
-            cnn = xlab.utils.SimpleCNN()
+#             cnn = xlab.utils.SimpleCNN()
 
-            cnn_path = resources.files("xlab.data").joinpath("CNN_weights.pth")
-            cnn.load_state_dict(torch.load(cnn_path))        
+#             cnn_path = resources.files("xlab.data").joinpath("CNN_weights.pth")
+#             cnn.load_state_dict(torch.load(cnn_path))        
 
-            cnn.eval()
-            logits = cnn(x)
-            cnn_pred = torch.argmax(logits, axis=1)
+#             cnn.eval()
+#             logits = cnn(x)
+#             cnn_pred = torch.argmax(logits, axis=1)
 
-            assert torch.equal(predictions, cnn_pred)
+#             assert torch.equal(predictions, cnn_pred)
 
 
 #Task 2 Tests
@@ -622,24 +622,24 @@ def _print_test_summary(result_dict, task_name):
         print(result_dict["stderr"])
 
 # Notebook interface functions (maintaining backward compatibility)
-def task1(model):
-    """
-    Run Task 1 tests using pytest.
+# def task1(model):
+#     """
+#     Run Task 1 tests using pytest.
     
-    Args:
-        model: The model to test with.
+#     Args:
+#         model: The model to test with.
     
-    Returns:
-        dict: A summary dictionary with test results.
-    """
-    # Configure global test parameters
-    _test_config['model'] = model
+#     Returns:
+#         dict: A summary dictionary with test results.
+#     """
+#     # Configure global test parameters
+#     _test_config['model'] = model
     
-    # Run pytest tests
-    result = _run_pytest_with_capture(TestTask1)
-    _print_test_summary(result, "Task 1")
+#     # Run pytest tests
+#     result = _run_pytest_with_capture(TestTask1)
+#     _print_test_summary(result, "Task 1")
     
-    return result
+#     return result
 
 
 def task2(student_function):
