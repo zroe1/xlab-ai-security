@@ -24,7 +24,7 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(280); // Default width
   const [isResizing, setIsResizing] = useState(false);
-  const [activeSection, setActiveSection] = useState<string>("");
+  // const [activeSection, setActiveSection] = useState<string>("");
   const [selectedSection, setSelectedSection] = useState<string>("");
 
   const appRef = useRef<HTMLDivElement>(null);
@@ -42,7 +42,7 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
       for (let i = sections.length - 1; i >= 0; i--) {
         const section = sections[i];
         if (section && section.offsetTop <= scrollPosition) {
-          setActiveSection(tocItems[i].id);
+          // setActiveSection(tocItems[i].id);
           break;
         }
       }
