@@ -25,7 +25,6 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
   const [sidebarWidth, setSidebarWidth] = useState(280); // Default width
   const [isResizing, setIsResizing] = useState(false);
   const [activeSection, setActiveSection] = useState<string>("");
-  const [selectedSection, setSelectedSection] = useState<string>("");
 
   const appRef = useRef<HTMLDivElement>(null);
   const resizeHandleRef = useRef<HTMLDivElement>(null);
@@ -353,13 +352,11 @@ const LayoutContent = ({ children, tocItems = [] }: LayoutProps) => {
                 <li key={index}>
                   <a
                     href={`#${item.id}`}
-                    className={`toc-link`}
+                    className={`toc-link ${activeSection === item.id ? "active" : ""}`}
                     style={{
                       paddingLeft: `${Math.max(0, ((item.level ?? 1) - 1) * 12)}px`,
-                      color: selectedSection === item.id ? "#8b1724" : undefined,
                     }}
                     onClick={() => {
-                      setSelectedSection(item.id);
                       if (isMobile) setShowTOC(false);
                     }}>
                     {item.text}
