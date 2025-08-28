@@ -550,7 +550,7 @@ body[data-theme='dark'] .github-link:hover {
 /* Content */
 .content-container {
   flex: 1;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   padding: 24px;
 }
 
@@ -802,7 +802,6 @@ body[data-theme='dark'] blockquote {
   display: flex;
   min-height: 100vh;
   position: relative;
-  overflow: hidden; /* Prevent any overflow issues */
 }
 
 /* Ensure the sidebar and main content are correctly positioned */
@@ -1885,6 +1884,11 @@ body[data-theme='dark'] .footer-bottom p {
     display: none;
   }
 
+  /* Contain overflow when panels slide over content on mobile/tablet */
+  .app-container {
+    overflow: hidden;
+  }
+
   /* Sidebar becomes off-canvas */
   .sidebar {
     position: fixed;
@@ -1962,5 +1966,21 @@ body[data-theme='dark'] .footer-bottom p {
 @media (min-width: 1280px) {
   .content-wrapper {
     max-width: 760px;
+  }
+}
+
+/* Desktop: keep left sidebar fixed in place while page scrolls */
+@media (min-width: 1025px) {
+  .app-container > .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+  }
+
+  .resize-handle {
+    position: sticky;
+    top: 0;
+    height: 100vh;
   }
 }
