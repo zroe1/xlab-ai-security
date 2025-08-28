@@ -215,7 +215,7 @@ def main():
 
     # hyperparams
     alpha = 1 / 255
-    iters = 500
+    iters = 50
     batch_size = 4
     queries = [""] * batch_size
 
