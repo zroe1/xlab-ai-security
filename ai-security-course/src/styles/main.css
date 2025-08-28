@@ -702,7 +702,6 @@ body[data-theme='dark'] blockquote {
   list-style-type: none;
   padding: 0;
   margin: 0;
-  space-y: 8px;
 }
 
 .toc-nav li {
@@ -724,6 +723,11 @@ body[data-theme='dark'] blockquote {
 .toc-link.active {
   color: var(--primary-color);
   font-weight: 500;
+}
+
+/* Ensure active state (scroll-based) takes precedence over selected state (click-based) */
+.toc-link.active {
+  color: var(--primary-color) !important;
 }
 
 
@@ -1969,7 +1973,7 @@ body[data-theme='dark'] .footer-bottom p {
   }
 }
 
-/* Desktop: keep left sidebar fixed in place while page scrolls */
+/* Desktop: keep left sidebar and TOC fixed in place while page scrolls */
 @media (min-width: 1025px) {
   .app-container > .sidebar {
     position: sticky;
@@ -1982,5 +1986,13 @@ body[data-theme='dark'] .footer-bottom p {
     position: sticky;
     top: 0;
     height: 100vh;
+  }
+
+  /* Make TOC sidebar sticky on desktop */
+  .toc-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
   }
 }
