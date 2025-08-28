@@ -204,6 +204,10 @@ def load_image(image_file):
         image = Image.open(image_file).convert("RGB")
     return image
 
+def load_adversarial_noise():
+    img_path = resources.files("xlab.data").joinpath("adversarial_noise.png")
+    image = Image.open(img_path).convert("RGB")
+    return image
 
 
 # ========================== CIRCUIT BREAKER UTILS ==========================

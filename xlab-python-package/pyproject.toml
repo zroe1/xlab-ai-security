@@ -53,7 +53,7 @@ version = {attr = "xlab.__version__"}
 
 [tool.setuptools.package-data]
 "xlab.tests" = ["data/*.pkl"]
-"xlab" = ["data/cb_train.json"]
+"xlab" = ["data/**"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

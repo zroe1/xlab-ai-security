@@ -68,7 +68,7 @@ def test_get_query_ids_len_correct_length(student_function, token_count):
 def task1(student_func):
     """Runs all 'task1' tests against the provided student function."""
     target.func = student_func
-    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task1"])
+    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task1", "-W", "ignore::pytest.PytestAssertRewriteWarning"])
     if result_code == pytest.ExitCode.OK:
         print("✅ All checks passed!")
 
@@ -113,7 +113,7 @@ def test_build_full_sequence_correct_values(student_function, token_ids):
 def task2(student_func):
     """Runs all 'task2' tests against the provided student function."""
     target.func = student_func
-    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task2"])
+    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task2", "-W", "ignore::pytest.PytestAssertRewriteWarning"])
     if result_code == pytest.ExitCode.OK:
         print("✅ All checks passed!")
 
@@ -154,7 +154,7 @@ def test_create_and_mask_labels_correct_masking(student_function, total_len, que
 def task3(student_func):
     """Runs all 'task3' tests against the provided student function."""
     target.func = student_func
-    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task3"])
+    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task3", "-W", "ignore::pytest.PytestAssertRewriteWarning"])
     if result_code == pytest.ExitCode.OK:
         print("✅ All checks passed!")
 
@@ -209,7 +209,7 @@ def task4(student_func):
          patch('__main__.build_full_sequence', MagicMock(return_value=torch.ones(10))), \
          patch('__main__.create_and_mask_labels', MagicMock(return_value=torch.ones(10)*-1)):
         
-        result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task4"])
+        result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task4", "-W", "ignore::pytest.PytestAssertRewriteWarning"])
         if result_code == pytest.ExitCode.OK:
             print("✅ All checks passed!")
 
@@ -249,7 +249,7 @@ def test_pad_sequences_padding_values(student_function):
 def task5(student_func):
     """Runs all 'task5' tests against the provided student function."""
     target.func = student_func
-    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task5"])
+    result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task5", "-W", "ignore::pytest.PytestAssertRewriteWarning"])
     if result_code == pytest.ExitCode.OK:
         print("✅ All checks passed!")
 
@@ -299,6 +299,6 @@ def task6(student_func):
     with patch('__main__.build_all_sequences', MagicMock(return_value=([],[],[]))), \
          patch('__main__.pad_sequences', MagicMock(return_value=(torch.empty(0), torch.empty(0)))):
 
-        result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task6"])
+        result_code = pytest.main([__file__, "-v", "--no-header", "-m", "task6", "-W", "ignore::pytest.PytestAssertRewriteWarning"])
         if result_code == pytest.ExitCode.OK:
             print("✅ All checks passed!")
