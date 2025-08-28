@@ -3,6 +3,13 @@ title: "Baseline Defenses and Perplexity Filters"
 description: "Defense Basics"
 ---
 
+This section has a series of coding problems using PyTorch. _As always, we highly recommend you read all the content on this page before starting the coding exercises._
+
+<ExerciseButtons
+  githubUrl="https://github.com/zroe1/xlab-ai-security/blob/main/working/jailbreaking/ppl_filters/ppl_filters.ipynb"
+  colabUrl="https://colab.research.google.com/github/zroe1/xlab-ai-security/blob/main/working/jailbreaking/ppl_filters/ppl_filters.ipynb"
+/>
+
 At this point, we've looked at many methods of attacking models, be it token-level, prompt-level, or other novel vectors. We haven't, however, touched on defenses, which are just as (if not more) important than attacks. In this section we'll cover some basic defenses for language models (with a particular emphasis on perplexity filters) [@jainBaselineDefensesAdversarial2023; @alonDetectingLanguageModel2023]. These defenses primarily are designed to defeat GCG-like attacks. The goal of this section is not to present the state-of-the-art, but rather to provide a background on some early defenses that informed later, stronger approaches.
 
 ## Perplexity
