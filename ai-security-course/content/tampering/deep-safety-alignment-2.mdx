@@ -131,7 +131,7 @@ $$
 
 Now, we can plug in $\beta_t \Delta_t$ for $f(x)$ and $- \beta_t \nabla \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t})$ for $f'(x)$:
 $$
-\nabla S(\beta_t \Delta_t) = \frac{e^{\beta_t \Delta_t}}{1 + e^{\beta_t \Delta_t}} \cdot \cdot - \beta_t \nabla \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t}).
+\nabla S(\beta_t \Delta_t) = \frac{e^{\beta_t \Delta_t}}{1 + e^{\beta_t \Delta_t}} \cdot - \beta_t \nabla \log \pi_\theta(y_t | \mathbf{x}, \mathbf{y}_{< t}).
 $$
 
 Next, we can use the fact that 
