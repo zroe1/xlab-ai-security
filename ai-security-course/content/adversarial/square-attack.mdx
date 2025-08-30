@@ -13,11 +13,11 @@ all the content on this page before starting the coding exercises._
 
 ## Introduction
 
-The Square Attack is a black-box method used to generate adversarial samples. Unlike 'white-box' approachs such as PGD or FGSM, the Square Attack does not require knowing model weights or gradients.
+The Square Attack is a black-box method used to generate adversarial samples. Unlike 'white-box' approaches such as PGD or FGSM, the Square Attack does not require knowing model weights or gradients.
 
-While other black-box attack take many queries to perform attacks the square attack makes relatively few. The attack works by taking repeated alterations in the shape of a square on the image, keeping it if it increases the loss of the model. The Square Attack, upon release, was successful enough that it even outperformed some existing white-box approaches on benchmarks.
+While other black-box attacks take many queries to perform attacks the square attack makes relatively few. The attack works by taking repeated alterations in the shape of a square on the image, keeping it if it increases the loss of the model. The Square Attack, upon release, was successful enough that it even outperformed some existing white-box approaches on benchmarks.
 
-While both $L_\infty$ and $L_2$ variations of the attack exist, we mainly focus on the $L_\infty$ attack. We beleive that the $L_\infty$ is sufficient to learn the main concepts behind the attack. At the bottom of both of this writeup and the notebook, we include information about the $L_2$ attack as well but we warn readers that this content is quite technical and not necessary to understand for future sections of the course.
+While both $L_\infty$ and $L_2$ variations of the attack exist, we mainly focus on the $L_\infty$ attack. We believe that the $L_\infty$ attack is sufficient to learn the main concepts behind the attack. At the bottom of both of this writeup and the notebook, we include information about the $L_2$ attack as well but we warn readers that this content is quite technical and not necessary to understand for future sections of the course.
 
 <p align="center">
   <img
@@ -117,7 +117,7 @@ The $L_\infty$ Square Attack uses the loop described above. Its distribution wor
 
 ### BONUS: $L_2$ Square Attack
 
-Once again, we will note that the $L_2$ attack is quite technical and not necessary to understand for future sections of this course. If interested a breif writeup of the attack can be found below with more details in [the paper](https://arxiv.org/pdf/1912.00049) itself.
+Once again, we will note that the $L_2$ attack is quite technical and not necessary to understand for future sections of this course. If interested a brief writeup of the attack can be found below with more details in [the paper](https://arxiv.org/pdf/1912.00049) itself.
 
 <Dropdown title="Understanding the $L_2$ Square Attack">
 
