@@ -13,7 +13,11 @@ all the content on this page before starting the coding exercises._
 
 ## Introduction
 
-The Square Attack is a query-efficient black-box method used to generate adversarial samples. Being a 'black-box' approach, the Square Attack does not require knowing model weights or gradients - it requires much less information than a white-box approach (eg. PGD or FGSM). The Square Attack is additionally a 'query-efficient' black-box attack. This is because where other black-box methods make many queries to the model in order to perform attacks (eg. gradient estimation), the Square Attack makes relatively few. It generally consists of trying a random alteration on a decreasing 'square' of the image, and keeping it if it increases the loss of the model. The $L_\infty$ and $L_2$ approaches use different sampling distributions to choose random squares to change the pixel values of. Square Attack, upon release, was successful enough that it even outperformed some existing white-box approaches on benchmarks. It continues to be an effective black-box approach to this day.
+The Square Attack is a black-box method used to generate adversarial samples. Unlike 'white-box' approachs such as PGD or FGSM, the Square Attack does not require knowing model weights or gradients.
+
+While other black-box attack take many queries to perform attacks the square attack makes relatively few. The attack works by taking repeated alterations in the shape of a square on the image, keeping it if it increases the loss of the model. The Square Attack, upon release, was successful enough that it even outperformed some existing white-box approaches on benchmarks.
+
+While both $L_\infty$ and $L_2$ variations of the attack exist, we mainly focus on the $L_\infty$ attack. We beleive that the $L_\infty$ is sufficient to learn the main concepts behind the attack. At the bottom of both of this writeup and the notebook, we include information about the $L_2$ attack as well but we warn readers that this content is quite technical and not necessary to understand for future sections of the course.
 
 <p align="center">
   <img
@@ -78,7 +82,7 @@ The Square Attack works through a random sampling algorithm. Firstly, the advers
 
 ### $L_\infty$ Square Attack
 
-<table align='left'>
+<table>
   <tbody>
     <tr>
       <td style={{verticalAlign: "top", textAlign: "right", paddingRight: "1em", userSelect: "none"}}>1</td>
@@ -109,12 +113,15 @@ The Square Attack works through a random sampling algorithm. Firstly, the advers
 
 [@andriushchenko2020squareattackqueryefficientblackbox]
 
-<br />
-<br />
-
 The $L_\infty$ Square Attack uses the loop described above. Its distribution works within $L_\infty$ constraints to generate perturbations. This approach involves selecting a random starting corner coordinate for the square and adding a random perturbation to every pixel in this square.
 
-### $L_2$ Square Attack
+### BONUS: $L_2$ Square Attack
+
+Once again, we will note that the $L_2$ attack is quite technical and not necessary to understand for future sections of this course. If interested a breif writeup of the attack can be found below with more details in [the paper](https://arxiv.org/pdf/1912.00049) itself.
+
+<Dropdown title="Understanding the $L_2$ Square Attack">
+
+**The algorithm:**
 
 <table align='center'>
   <tbody>
@@ -168,6 +175,8 @@ The $L_\infty$ Square Attack uses the loop described above. Its distribution wor
 [@andriushchenko2020squareattackqueryefficientblackbox]
 
 The $L_2$ Square Attack also uses the loop described above. However, its distribution aims to minimize the $L_2$ norm of the original and the adversarial image instead of the $L_\infty$ norm. This is a much more complicated task, since the $L_\infty$ norm is much easier to calculate than the $L_2$ norm. This distribution involves randomly choosing a square and dividing it into two halves, one negative, and one positive. Helper functions are used to create mound-like shapes in each of these half squares, with high values in the center, and radially decreasing perturbation values going outwards. Then, either this square or its transpose is chosen, and used to perturb the adversarial image.
+
+</Dropdown>
 
 <FeedbackButton />
 
