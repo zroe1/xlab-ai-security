@@ -1,7 +1,7 @@
 <img width="1311" height="152" alt="Screenshot 2025-07-26 at 12 04 07 AM" src="https://github.com/user-attachments/assets/e05f61c7-998d-41e4-b148-5365936bfc5a" />
 <br></br>
 <p align="center">
-<a href="https://test.pypi.org/project/xlab-security/"><img alt="link to PyPi" src="https://img.shields.io/badge/PyPI version-0.1.10-brightgreen"></a>
+<a href="https://pypi.org/project/xlab-security/"><img alt="link to PyPi" src="https://img.shields.io/badge/PyPI version-0.1.10-brightgreen"></a>
 <a href="https://xlabaisecurity.com/"><img alt="link to PyPi" src="https://img.shields.io/badge/website%20build-passing-brightgreen"></a>
 
 </p> 
