@@ -14,7 +14,7 @@ from typing import Any, Callable
 # ==============================================================================
 
 # Global variable to store test parameters passed from the notebook
-_test_config = {
+_test_config: dict[str, Any] = {
     'student_function': None,
     'model': None,
     'loss': None
@@ -132,6 +132,32 @@ class TestTask2:
         assert not all_equal
     
 class TestTask3:
+    """Tests for square_schedule."""
+
+    def test_basic_no_halving(self):
+        """At i=0 and default p, returns expected floor of w*sqrt(p)."""
+        schedule_func = _test_config['student_function']
+        w, i = 32, 0
+        side = schedule_func(i=i, w=w)
+        assert isinstance(side, int)
+        assert side == int((0.10 * (w ** 2)) ** 0.5)  # int(sqrt(0.1) * w) = 10
+
+    def test_single_halving(self):
+        """At i hitting a half-point (e.g., 10), p halves once."""
+        schedule_func = _test_config['student_function']
+        w, i = 32, 10  # halves once from 0.10 -> 0.05
+        expected = int((0.05 * (w ** 2)) ** 0.5)  # int(sqrt(0.05) * w) = 7
+        side = schedule_func(i=i, w=w)
+        assert side == expected
+
+    def test_minimum_enforced(self):
+        """For large i and small p, returns at least 2."""
+        schedule_func = _test_config['student_function']
+        w, i = 32, 10000  # many halvings
+        side = schedule_func(i=i, w=w)
+        assert side == 2
+
+class TestTask4:
     """Tests for Task 2: l_inf_square_attack"""
 
     def test_output(self):
@@ -148,7 +174,7 @@ class TestTask3:
                 
         
 
-class TestTask4:
+class TestTask5:
     """Tests for Task 3: M (helper function)"""
 
     def test_return_type(self):
@@ -172,7 +198,7 @@ class TestTask4:
         assert M_func(r=5, s=2, h1=10, h2=4) == 1
 
 
-class TestTask5:
+class TestTask6:
     """Tests for Task 4: eta (helper function)"""
 
     def setup_method(self):
@@ -212,7 +238,7 @@ class TestTask5:
             pytest.fail("ZeroDivisionError was raised in the eta function.")
 
 
-class TestTask6:
+class TestTask7:
     """Tests for Task 5: l_2_dist"""
 
     def test_output_shape_and_type(self):
@@ -334,31 +360,38 @@ def task2(student_function: Callable):
     _print_test_summary(result, "Task 2: l_inf_dist")
     return result
 
-def task3(model, student_function: Callable):
-    """Run Task 3 tests: l_inf_square_attack."""
-    _test_config['model'] = model
+def task3(student_function: Callable):
+    """Run Task 3 tests: square_schedule."""
     _test_config['student_function'] = student_function
     result = _run_pytest_with_capture(TestTask3)
-    _print_test_summary(result, "Task 3: l_inf_square_attack")
+    _print_test_summary(result, "Task 3: square_schedule")
     return result
 
-def task4(student_function: Callable):
-    """Run Task 4 tests: M function."""
+def task4(model, student_function: Callable):
+    """Run Task 4 tests: l_inf_square_attack."""
+    _test_config['model'] = model
     _test_config['student_function'] = student_function
     result = _run_pytest_with_capture(TestTask4)
-    _print_test_summary(result, "Task 4: M function")
+    _print_test_summary(result, "Task 4: l_inf_square_attack")
     return result
 
 def task5(student_function: Callable):
-    """Run Task 5 tests: eta function."""
+    """Run Task 5 tests: M function."""
     _test_config['student_function'] = student_function
     result = _run_pytest_with_capture(TestTask5)
-    _print_test_summary(result, "Task 5: eta function")
+    _print_test_summary(result, "Task 5: M function")
     return result
 
 def task6(student_function: Callable):
-    """Run Task 6 tests: l_2_dist function."""
+    """Run Task 6 tests: eta function."""
     _test_config['student_function'] = student_function
     result = _run_pytest_with_capture(TestTask6)
-    _print_test_summary(result, "Task 6: l_2_dist function")
+    _print_test_summary(result, "Task 6: eta function")
+    return result
+
+def task7(student_function: Callable):
+    """Run Task 7 tests: l_2_dist function."""
+    _test_config['student_function'] = student_function
+    result = _run_pytest_with_capture(TestTask7)
+    _print_test_summary(result, "Task 7: l_2_dist function")
     return result
