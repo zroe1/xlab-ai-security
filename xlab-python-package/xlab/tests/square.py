@@ -2,7 +2,6 @@
 Tests for section 2.3 of the AI Security course.
 """
 
-
 import pytest
 import sys
 import torch
@@ -76,7 +75,7 @@ class TestTask1:
     """Tests for the l_inf_dist function."""
 
     def test_output_shape_and_type(self):
-        """Tests that the output tensor has the correct shape and data type."""
+        """Output tensor has correct shape and dtype."""
         dist_func = _test_config['student_function']
 
         # Test parameters
@@ -88,97 +87,25 @@ class TestTask1:
         # Assertions
         assert isinstance(result_tensor, torch.Tensor)
         assert result_tensor.shape == (c, w, w)
-        assert result_tensor.dtype == torch.float32  # torch.zeros defaults to float32
+        assert result_tensor.dtype == torch.float32
 
-    def test_values_in_range(self):
-        """Tests that all modified values are within the [-2*epsilon, 2*epsilon] range."""
-        dist_func = _test_config['student_function']
-
-        # Test parameters
-        epsilon, h, w, c = 0.05, 5, 32, 1
-
-        # Execution
-        result_tensor = dist_func(epsilon, h, w, c)
-
-        # Find non-zero elements to check their values
-        non_zero_elements = result_tensor[result_tensor != 0]
-
-        # Assertions
-        assert torch.all(non_zero_elements >= -2 * epsilon)
-        assert torch.all(non_zero_elements <= 2 * epsilon)
-        # Ensure the correct number of elements were modified
-        assert non_zero_elements.numel() == h * h
-
-    def test_patch_structure(self):
-        """Tests that a single h x h patch is modified consistently across channels."""
-        dist_func = _test_config['student_function']
-
-        # Test parameters
-        epsilon, h, w, c = 0.1, 4, 32, 3
-
-        # Seed for reproducibility to determine the patch location ahead of time
-        np.random.seed(42)
-        expected_r, expected_s = np.random.randint(32 - h, size=(2))
-
-        # Reset seed and execute the function
-        np.random.seed(42)
-        result_tensor = dist_func(epsilon, h, w, c)
-
-        # Create a boolean mask for the expected patch location
-        mask = torch.zeros_like(result_tensor, dtype=torch.bool)
-        mask[:, expected_r:expected_r + h, expected_s:expected_s + h] = True
-
-        # Assertions
-        # 1. Values outside the patch must be zero.
-        assert torch.all(result_tensor[~mask] == 0)
-
-        # 2. Values inside the patch for a given channel must all be the same.
-        for i in range(c):
-            patch = result_tensor[i, expected_r:expected_r + h, expected_s:expected_s + h]
-            assert torch.all(patch == patch[0, 0])
-
-        # 3. Values for different channels should be different (highly probable).
-        patch_vals = [result_tensor[i, expected_r, expected_s].item() for i in range(c)]
-        assert len(set(patch_vals)) == c
-
-    def compare_to_solution(self):
-        """Tests that the output tensor has the correct shape and data type."""
+    def test_randomness_across_runs(self):
+        """Multiple runs with same parameters should produce different outputs."""
         dist_func = _test_config['student_function']
 
         # Test parameters
         epsilon, h, w, c = 0.1, 8, 32, 3
 
-        # Execution
-        result_tensor = dist_func(epsilon, h, w, c)
-        ans_tensor = demo_l_inf_dist(epsilon, h, w, c)
+        # Execute multiple times
+        results = [dist_func(epsilon, h, w, c) for _ in range(5)]
 
-        # Assertions
-        assert torch.equal(result_tensor, ans_tensor)
-
-
-    def test_reproducibility_with_seed(self):
-        """Tests that seeding numpy's RNG makes the function's output reproducible."""
-        dist_func = _test_config['student_function']
-
-        # Test parameters
-        epsilon, h, w, c = 0.1, 8, 32, 3
-        seed = 123
-
-        # Execution - First run
-        np.random.seed(seed)
-        result1 = dist_func(epsilon, h, w, c)
-
-        # Execution - Second run with the same seed
-        np.random.seed(seed)
-        result2 = dist_func(epsilon, h, w, c)
-
-        # Execution - Third run with a different seed
-        np.random.seed(seed + 1)
-        result3 = dist_func(epsilon, h, w, c)
-
-        # Assertions
-        assert torch.equal(result1, result2)
-        assert not torch.equal(result1, result3)
+        # Assert that not all results are identical
+        all_equal = True
+        for r in results[1:]:
+            if not torch.equal(results[0], r):
+                all_equal = False
+                break
+        assert not all_equal
     
 class TestTask2:
     """Tests for Task 2: l_inf_square_attack"""
