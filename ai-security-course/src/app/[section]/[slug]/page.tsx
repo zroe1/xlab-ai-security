@@ -7,6 +7,8 @@ import OrganizationCard from "@/components/OrganizationCard";
 import NextPageButton from "@/components/NextPageButton";
 import FeedbackButton from "@/components/FeedbackButton";
 import AdversarialScalingExplorer from "@/components/AdversarialScalingExplorer";
+import TeamGrid from "@/components/TeamGrid";
+import TeamMember from "@/components/TeamMember";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -188,6 +190,8 @@ export default async function Page({ params }: PageProps) {
     NextPageButton,
     FeedbackButton,
     AdversarialScalingExplorer,
+    TeamGrid,
+    TeamMember,
   };
 
   return (
