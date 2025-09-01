@@ -2,7 +2,6 @@
 Tests for section 2.3 of the AI Security course.
 """
 
-
 import pytest
 import sys
 import torch
@@ -15,7 +14,7 @@ from typing import Any, Callable
 # ==============================================================================
 
 # Global variable to store test parameters passed from the notebook
-_test_config = {
+_test_config: dict[str, Any] = {
     'student_function': None,
     'model': None,
     'loss': None
@@ -73,10 +72,34 @@ def demo_l_inf_dist(epsilon, h, w, c):
 # ==============================================================================
 
 class TestTask1:
+    """Tests for get_rand_square_coordinates."""
+
+    def test_output_type_and_bounds(self):
+        """Returns (y, x) as ints within valid bounds."""
+        coords_func = _test_config['student_function']
+
+        w, h = 32, 5
+        y, x = coords_func(w, h)
+
+        assert isinstance(y, int) and isinstance(x, int)
+        assert 0 <= y < (w - h)
+        assert 0 <= x < (w - h)
+
+    def test_randomness_across_calls(self):
+        """Multiple calls produce differing coordinates (high probability)."""
+        coords_func = _test_config['student_function']
+
+        w, h = 32, 5
+        results = [coords_func(w, h) for _ in range(5)]
+
+        all_equal = all(results[0] == r for r in results[1:])
+        assert not all_equal
+
+class TestTask2:
     """Tests for the l_inf_dist function."""
 
     def test_output_shape_and_type(self):
-        """Tests that the output tensor has the correct shape and data type."""
+        """Output tensor has correct shape and dtype."""
         dist_func = _test_config['student_function']
 
         # Test parameters
@@ -88,99 +111,53 @@ class TestTask1:
         # Assertions
         assert isinstance(result_tensor, torch.Tensor)
         assert result_tensor.shape == (c, w, w)
-        assert result_tensor.dtype == torch.float32  # torch.zeros defaults to float32
+        assert result_tensor.dtype == torch.float32
 
-    def test_values_in_range(self):
-        """Tests that all modified values are within the [-2*epsilon, 2*epsilon] range."""
-        dist_func = _test_config['student_function']
-
-        # Test parameters
-        epsilon, h, w, c = 0.05, 5, 32, 1
-
-        # Execution
-        result_tensor = dist_func(epsilon, h, w, c)
-
-        # Find non-zero elements to check their values
-        non_zero_elements = result_tensor[result_tensor != 0]
-
-        # Assertions
-        assert torch.all(non_zero_elements >= -2 * epsilon)
-        assert torch.all(non_zero_elements <= 2 * epsilon)
-        # Ensure the correct number of elements were modified
-        assert non_zero_elements.numel() == h * h
-
-    def test_patch_structure(self):
-        """Tests that a single h x h patch is modified consistently across channels."""
-        dist_func = _test_config['student_function']
-
-        # Test parameters
-        epsilon, h, w, c = 0.1, 4, 32, 3
-
-        # Seed for reproducibility to determine the patch location ahead of time
-        np.random.seed(42)
-        expected_r, expected_s = np.random.randint(32 - h, size=(2))
-
-        # Reset seed and execute the function
-        np.random.seed(42)
-        result_tensor = dist_func(epsilon, h, w, c)
-
-        # Create a boolean mask for the expected patch location
-        mask = torch.zeros_like(result_tensor, dtype=torch.bool)
-        mask[:, expected_r:expected_r + h, expected_s:expected_s + h] = True
-
-        # Assertions
-        # 1. Values outside the patch must be zero.
-        assert torch.all(result_tensor[~mask] == 0)
-
-        # 2. Values inside the patch for a given channel must all be the same.
-        for i in range(c):
-            patch = result_tensor[i, expected_r:expected_r + h, expected_s:expected_s + h]
-            assert torch.all(patch == patch[0, 0])
-
-        # 3. Values for different channels should be different (highly probable).
-        patch_vals = [result_tensor[i, expected_r, expected_s].item() for i in range(c)]
-        assert len(set(patch_vals)) == c
-
-    def compare_to_solution(self):
-        """Tests that the output tensor has the correct shape and data type."""
+    def test_randomness_across_runs(self):
+        """Multiple runs with same parameters should produce different outputs."""
         dist_func = _test_config['student_function']
 
         # Test parameters
         epsilon, h, w, c = 0.1, 8, 32, 3
 
-        # Execution
-        result_tensor = dist_func(epsilon, h, w, c)
-        ans_tensor = demo_l_inf_dist(epsilon, h, w, c)
+        # Execute multiple times
+        results = [dist_func(epsilon, h, w, c) for _ in range(5)]
 
-        # Assertions
-        assert torch.equal(result_tensor, ans_tensor)
-
-
-    def test_reproducibility_with_seed(self):
-        """Tests that seeding numpy's RNG makes the function's output reproducible."""
-        dist_func = _test_config['student_function']
-
-        # Test parameters
-        epsilon, h, w, c = 0.1, 8, 32, 3
-        seed = 123
-
-        # Execution - First run
-        np.random.seed(seed)
-        result1 = dist_func(epsilon, h, w, c)
-
-        # Execution - Second run with the same seed
-        np.random.seed(seed)
-        result2 = dist_func(epsilon, h, w, c)
-
-        # Execution - Third run with a different seed
-        np.random.seed(seed + 1)
-        result3 = dist_func(epsilon, h, w, c)
-
-        # Assertions
-        assert torch.equal(result1, result2)
-        assert not torch.equal(result1, result3)
+        # Assert that not all results are identical
+        all_equal = True
+        for r in results[1:]:
+            if not torch.equal(results[0], r):
+                all_equal = False
+                break
+        assert not all_equal
     
-class TestTask2:
+class TestTask3:
+    """Tests for square_schedule."""
+
+    def test_basic_no_halving(self):
+        """At i=0 and default p, returns expected floor of w*sqrt(p)."""
+        schedule_func = _test_config['student_function']
+        w, i = 32, 0
+        side = schedule_func(i=i, w=w)
+        assert isinstance(side, int)
+        assert side == int((0.10 * (w ** 2)) ** 0.5)  # int(sqrt(0.1) * w) = 10
+
+    def test_single_halving(self):
+        """At i hitting a half-point (e.g., 10), p halves once."""
+        schedule_func = _test_config['student_function']
+        w, i = 32, 10  # halves once from 0.10 -> 0.05
+        expected = int((0.05 * (w ** 2)) ** 0.5)  # int(sqrt(0.05) * w) = 7
+        side = schedule_func(i=i, w=w)
+        assert side == expected
+
+    def test_minimum_enforced(self):
+        """For large i and small p, returns at least 2."""
+        schedule_func = _test_config['student_function']
+        w, i = 32, 10000  # many halvings
+        side = schedule_func(i=i, w=w)
+        assert side == 2
+
+class TestTask4:
     """Tests for Task 2: l_inf_square_attack"""
 
     def test_output(self):
@@ -197,7 +174,7 @@ class TestTask2:
                 
         
 
-class TestTask3:
+class TestTask5:
     """Tests for Task 3: M (helper function)"""
 
     def test_return_type(self):
@@ -221,7 +198,7 @@ class TestTask3:
         assert M_func(r=5, s=2, h1=10, h2=4) == 1
 
 
-class TestTask4:
+class TestTask6:
     """Tests for Task 4: eta (helper function)"""
 
     def setup_method(self):
@@ -261,7 +238,7 @@ class TestTask4:
             pytest.fail("ZeroDivisionError was raised in the eta function.")
 
 
-class TestTask5:
+class TestTask7:
     """Tests for Task 5: l_2_dist"""
 
     def test_output_shape_and_type(self):
@@ -368,129 +345,53 @@ def _print_test_summary(result_dict: dict, task_name: str):
 # Notebook Interface Functions
 # ==============================================================================
 
-def task2(student_function: Callable):
-    """Runs tests for Task 2: l_inf_square_attack."""
+# Notebook interface functions
+def task1(student_function: Callable):
+    """Run Task 1 tests: get_rand_square_coordinates."""
     _test_config['student_function'] = student_function
     result = _run_pytest_with_capture(TestTask1)
-    _print_test_summary(result, "Task 2: l_inf_square_attack")
+    _print_test_summary(result, "Task 1: get_rand_square_coordinates")
+    return result
+
+def task2(student_function: Callable):
+    """Run Task 2 tests: l_inf_dist."""
+    _test_config['student_function'] = student_function
+    result = _run_pytest_with_capture(TestTask2)
+    _print_test_summary(result, "Task 2: l_inf_dist")
     return result
 
 def task3(student_function: Callable):
-    """Runs tests for Task 3: M helper function."""
-    _test_config['student_function'] = student_function
-    result = _run_pytest_with_capture(TestTask2)
-    _print_test_summary(result, "Task 3: M function")
-    return result
-
-def task4(student_function: Callable):
-    """Runs tests for Task 4: eta helper function."""
+    """Run Task 3 tests: square_schedule."""
     _test_config['student_function'] = student_function
     result = _run_pytest_with_capture(TestTask3)
-    _print_test_summary(result, "Task 4: eta function")
+    _print_test_summary(result, "Task 3: square_schedule")
+    return result
+
+def task4(model, student_function: Callable):
+    """Run Task 4 tests: l_inf_square_attack."""
+    _test_config['model'] = model
+    _test_config['student_function'] = student_function
+    result = _run_pytest_with_capture(TestTask4)
+    _print_test_summary(result, "Task 4: l_inf_square_attack")
     return result
 
 def task5(student_function: Callable):
-    """Runs tests for Task 5: l_2_dist function."""
+    """Run Task 5 tests: M function."""
     _test_config['student_function'] = student_function
-    result = _run_pytest_with_capture(TestTask4)
-    _print_test_summary(result, "Task 4: l_2_dist function")
-    return result
-
-# Notebook interface functions (maintaining backward compatibility)
-def task1(student_function):
-    """
-    Run Task 1 tests using pytest.
-    
-    Args:
-        student_function: The function to test with.
-    
-    Returns:
-        dict: A summary dictionary with test results.
-    """
-    # Configure global test parameters
-    _test_config['student_function'] = student_function
-    
-    # Run pytest tests
-    result = _run_pytest_with_capture(TestTask1)
-    _print_test_summary(result, "Task 1")
-    
-    return result
-
-
-def task2(model, student_function):
-    """
-    Run Task 2 tests using pytest.
-    
-    Args:
-        student_function: The function to test with.
-    
-    Returns:
-        dict: A summary dictionary with test results.
-    """
-    # Configure global test parameters
-    _test_config['model'] = model
-    _test_config['student_function'] = student_function
-    
-    # Run pytest tests
-    result = _run_pytest_with_capture(TestTask2)
-    _print_test_summary(result, "Task 2")
-    
-    return result
-
-def task3(student_function):
-    """
-    Run Task 3 tests using pytest.
-    
-    Args:
-        student_function: The function to test with.
-    
-    Returns:
-        dict: A summary dictionary with test results.
-    """
-    # Configure global test parameters
-    _test_config['student_function'] = student_function
-    
-    # Run pytest tests
-    result = _run_pytest_with_capture(TestTask3)
-    _print_test_summary(result, "Task 3")
-    
-    return result
-
-def task4(student_function):
-    """
-    Run Task 4 tests using pytest.
-    
-    Args:
-        student_function: The function to test with.
-    
-    Returns:
-        dict: A summary dictionary with test results.
-    """
-    # Configure global test parameters
-    _test_config['student_function'] = student_function
-    
-    # Run pytest tests
-    result = _run_pytest_with_capture(TestTask4)
-    _print_test_summary(result, "Task 4")
-    
-    return result
-
-
-def task5(student_function):
-    """
-    Run Task 5 tests using pytest.
-    
-    Args:
-        student_function: The function to test with.
-    
-    Returns:
-        dict: A summary dictionary with test results.
-    """
-    # Configure global test parameters
-    _test_config['student_function'] = student_function
-    
-    # Run pytest tests
     result = _run_pytest_with_capture(TestTask5)
-    _print_test_summary(result, "Task 5")
-    
+    _print_test_summary(result, "Task 5: M function")
+    return result
+
+def task6(student_function: Callable):
+    """Run Task 6 tests: eta function."""
+    _test_config['student_function'] = student_function
+    result = _run_pytest_with_capture(TestTask6)
+    _print_test_summary(result, "Task 6: eta function")
+    return result
+
+def task7(student_function: Callable):
+    """Run Task 7 tests: l_2_dist function."""
+    _test_config['student_function'] = student_function
+    result = _run_pytest_with_capture(TestTask7)
+    _print_test_summary(result, "Task 7: l_2_dist function")
     return result

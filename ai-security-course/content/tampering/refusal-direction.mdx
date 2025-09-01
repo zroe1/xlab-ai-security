@@ -4,10 +4,10 @@ description: "From 'Refusal is Mediated by a Single Direction in Language Models
 ---
 
 ## Background
-From past work, we know that word (or token) embeddings encode semantically meaningful differences between themselves [@mikolovLinguisticRegularitiesContinuous2013]. For example, taking the vector for `King`, subtracting `Man`, and then adding `Woman` gets a vector close to `Queen` (if this concept is unfamiliar to you, 3blue1brown has made a [great visualization](https://youtube.com/shorts/FJtFZwbvkI4?si=dF8DIFeSScgEHc-c) of it). This has been a well-known result for over a decade, but it has not often been applied to more abstract concepts, such as "refusal." This is exactly what @arditiRefusalLanguageModels2024 look into in their landmark interpretability paper "Refusal in Language Models is Mediated by a Single Direction."
+From past work, we know that word (or token) embeddings encode semantically meaningful differences between themselves [@mikolovLinguisticRegularitiesContinuous2013]. For example, taking the vector for `King`, subtracting `Man`, and then adding `Woman` gets a vector close to `Queen` (if this concept is unfamiliar to you, 3blue1brown has made a [great visualization](https://youtube.com/shorts/FJtFZwbvkI4?si=dF8DIFeSScgEHc-c) of it). This has been a well-known result for over a decade; more recently, it has been applied to vectors or directions in the internal representations of LLMs @turner2024steeringlanguagemodelsactivation. In "Refusal in Language Models is Mediated by a Single Direction", @arditiRefusalLanguageModels2024 present a method for finding a direction that, when erased from an LLM's activations (or weights), steers the LLM's behavior by strongly reducing its propensity to refuse user requests (also, addition along this direction causes the model to refuse).
 
 ## Finding the Refusal Direction
-In order to find the direction associated with refusal, as in @arditiRefusalLanguageModels2024 we first construct a dataset of harmless prompts (which are not refused by the model) and a dataset of harmful prompts (which are refused by the model). We then then run all the prompts in each dataset through our target model, calculating the mean activation (hidden state) for each layer in the model and each post-instruction token. (Post-instruction tokens are the template tokens between the user query and model response; @arditiRefusalLanguageModels2024 use them for their standardization and hypothesizing that they contain information about how the model will formulate its response.) 
+In order to find the direction associated with refusal, as in @arditiRefusalLanguageModels2024 we first construct a dataset of harmless prompts (which are not refused by the model) and a dataset of harmful prompts (which are refused by the model). We then run all the prompts in each dataset through our target model, calculating the mean activation (hidden state) for each layer in the model and each post-instruction token. (Post-instruction tokens are the chat template tokens between the user query and model response; @arditiRefusalLanguageModels2024 use them for their standardization and hypothesize that they contain information about how the model will formulate its response.) 
 
 Formally, let $\mathbf{x}(\mathbf{t})_i^{(l)}$ represent the residual stream activation of token $i$ at the start of layer $l$. For each model layer (composed of an attention and MLP component) $l \in [L]$ and post-instruction token position $i \in I$, the mean activation for harmful prompts $\bm{\mu}_i^{(l)}$ and for harmless prompts $\bm{\nu}_i^{(l)}$ are calculated by
 $$
@@ -18,7 +18,7 @@ $$
 Next, we compute the difference-in-means vector $\textbf{r}_i^{(l)} = \bm{\mu}_i^{(l)} - \bm{\nu}_i^{(l)}$ for each layer and token position. This gives us $|I| \times L$ vectors to choose from, and we select the best by evaluating each vector on held-out validation sets $\mathcal{D}_\text{harmful}^\text{(val)}$ and $\mathcal{D}_\text{harmless}^\text{(val)}$, selecting the vector $\mathbf{r}$ (with $\hat{\mathbf{r}} = \frac{\mathbf{r}}{\lVert \textbf{r} \Vert}$) that when ablated best bypasses refusal without affecting model performance otherwise.
 
 ## Ablating the Refusal Direction
-We can add our refusal vector to the activations of an input to induce refusal on it:
+We can add our refusal vector to the activations of a model to cause the model to refuse even harmless prompts:
 $$
 \mathbf{x}^{(l)'} \gets \mathbf{x}^{(l)} + \mathbf{r}^{(l)}.
 $$
@@ -32,7 +32,7 @@ $$
 $$
 
 
-Here, $\mathbf{r r}^\top$ is the outer product of $\mathbf{r}$ with itself, which gives a rank-1 matrix that projects $\mathbf{x}$ onto $\text{span}(\mathbf{r})$. When we perform this over all layers and token positions, the model becomes *unable to represent the refusal direction.* Alternatively, we can modify the matrices that write to the residual streams themselves:
+Here, $\mathbf{r r}^\top$ is the outer product of $\mathbf{r}$ with itself, which gives a rank-1 matrix that projects $\mathbf{x}$ onto $\text{span}(\mathbf{r})$. When we perform this over all layers and token positions, the model becomes *unable to represent the refusal direction.* Alternatively, we can orthogonalize the weights of the model by modifying the matrices that write to the residual streams:
 $$
 W'_\text{out} \gets W_\text{out} - \mathbf{\hat{r} \hat{r}}^\top W_\text{out}
 $$
@@ -55,12 +55,12 @@ Alternatively, recall the formula for a matrix $P$ that projects onto vector $r$
 $$
 P = \frac{r r^\top}{r^\top r}
 $$
-But becuase $\lVert \hat{\mathbf{r}} \lVert = 1$, we have $r^\top r = 1$ and thus $P = \hat{\mathbf{r}} \hat{\mathbf{r}}^\top$. Note that this is also the matrix we apply to $W_\text{out}$.
+But because $\lVert \hat{\mathbf{r}} \rVert = 1$, we have $r^\top r = 1$ and thus $P = \hat{\mathbf{r}} \hat{\mathbf{r}}^\top$. Note that this is also the matrix we apply to $W_\text{out}$.
 
 </Dropdown>
 
 ## Results and Later Directions
-Refusal direction ablation is a very potent attack, outperforming GCG and PAIR against Llama-2, achieving an ASR of up to 79.9 without the system prompt (interestingly, the ASR with the system prompt against Llama-2 7B is only 22.6). Additionally, capabilities of the ablated models were generally maintained on MMLU, ARC, and GSM8K, although there was a mild drop in TruthfulQA performance, likely because of discussed categories such as "misinformation" and "conspiracies."
+Refusal direction ablation is a very potent attack, outperforming GCG and PAIR against Llama-2, achieving an ASR of up to 79.9 without the system prompt (interestingly, the ASR with the system prompt against Llama-2 7B is only 22.6). Additionally, capabilities of the ablated models were generally maintained on MMLU, ARC, and GSM8K, although there was a mild drop in TruthfulQA performance, likely because of discussed categories such as "misinformation" and "conspiracies." It is common for users on HuggingFace to create ["abliterated" or uncensored versions](https://huggingface.co/blog/mlabonne/abliteration) of open-source models using this technique to bypass censorship, as this technique is cheaper than adversarially fine-tuning the model.
 
 This paper has also sparked a number of follow-up works seeking to improve or extend the methodology. For example, @wang2025refusaldirectionuniversalsafetyaligned found that a single refusal direction persists across different languages the LM is trained on. @wollschläger2025geometryrefusallargelanguage introduced a better method for finding the refusal direction, a new algorithm to find a refusal conic polyhedral subspace, and a technique to find new "independent" refusal directions (although the strength of these new refusal directions is inferior to the difference-in-means direction, and the ASR of the refusal cone degrades with increased dimensionality).
 

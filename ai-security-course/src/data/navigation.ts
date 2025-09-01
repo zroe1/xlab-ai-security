@@ -376,4 +376,16 @@ export const navigationItems: NavigationItem[] = [
       },
     ],
   },
+  {
+    id: "9",
+    title: "About Us",
+    items: [
+      {
+        id: "9.1",
+        title: "Our Team",
+        href: "/about/about",
+        type: "link",
+      },
+    ],
+  },
 ];
