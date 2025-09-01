@@ -4,7 +4,7 @@ description: "From 'Safety Alignment Should be Made More Than Just a Few Tokens 
 ---
 
 ## Motivation
-Recall from the [previous writeup on shallow safety alignment](https://xlabaisecurity.com/jailbreaking/deep-safety-alignment_pt1/) that @qiSafetyAlignmentShould2025a found safety alignment to primarily affect only the first few tokens in LLMs. This meant that if we could get a model "over the hump" of those first few tokens, it would then likely comply even with harmful queries. Might this same reasoning apply to the case fine-tuning attacks undoing safety training, i.e., that fine-tuning attacks mostly affect the model's generative distribution over the first few tokens?
+Recall from the [previous writeup on shallow safety alignment](https://xlabaisecurity.com/jailbreaking/deep-safety-alignment_pt1/) that @qiSafetyAlignmentShould2025a found safety alignment to primarily affect only the first few tokens in LLMs. This meant that if we could get a model "over the hump" of those first few tokens, it would then likely comply with harmful queries. Might this same reasoning apply to the case of fine-tuning attacks undoing safety training, i.e., that fine-tuning may primarily affect the model's generative distribution over the first few tokens?
 
 ## Fine-Tuning Primarily Affects the Generative Distribution of the First Few Tokens
 To confirm this hypothesis, over the course of fine-tuning, the authors tracked the cross-entropy loss $-\log p(x_t | x_{1:t-1})$ and the gradient magnitude $\nabla \log p(x_t | x_{1:1-t})$ over the first $t \in [1, 15]$ tokens.
