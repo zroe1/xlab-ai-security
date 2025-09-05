@@ -1,0 +1,37 @@
+---
+title: "Model Extraction Attacks"
+description: "Learn how attackers can steal information about AI models"
+---
+
+## Introduction
+
+Imagine OpenAI decided to expose the the full logits that ChatGPT generates when autoregressing. Now imagine that doing so lets us steal the unembedding layer of the model. In fact, it's quite simple to do so, as long as you understand a bit of linear algebra.
+
+## Full-Logit Attack
+To understand our attacks, we'll first create a simple mathematical model for language models. Let $\mathcal{X}$ represent our vocabulary, with $\mathcal{P}(\mathcal{X})$ being the space of probability distributions over $\mathcal{X}$. The language model is a function $f_\theta(p) : \mathcal{X}^N \to \mathcal{P}(\mathcal{X})$ that outputs a probability distrbution for the next token in $\mathcal{X}$ given $N$ input tokens. We can define $f_\theta$ in terms of a function $g_\theta(p) : \mathcal{X}^N \to \mathbb{R}^h$ that produces the model's hidden states, an unembedding matrix $\mathbf{W} \in \mathbb{R}^{l \times h}$ ($l = |\mathcal{X}|$), and the softmax operation:
+$$
+f_\theta(p) = \text{softmax}(\mathbf{W} \cdot g_\theta(p)).
+$$
+We take the model's last hidden state ($\mathbb{R}^h$), "upscale" it to $\mathbb{R}^l$ with $\mathbf{W}$, and then apply the softmax function to get our final probability distribution.
+
+First, notice that given access to the logits $\mathbf{W} \cdot g_\theta(p)$, we can quite easily extract the hidden dimension $h$ of the model. To do this, we initialize a matrix $\mathbf{Q} \in \mathbb{R}^{n \times l}$, where we estimate some $n$ larger than $h$. We then query the model $n$ times and use the logits to fill in each row of $\mathbf{Q}$.
+
+Now we use the key bit of intuition: even though each output logit vector is $l$-dimensional, they all exist in an $h$-dimensional subspace beacuse $\mathbf{W}$ is a linear operation that by definition cannot increase the dimensionality of the hidden states. That means that as long as $n$ is larger than $h$, we'll start to fill in $\mathbf{Q}$ with linearly dependent logit vectors. From there, we can use calculate the rank of $\mathbf{Q}$, thereby extracting the hidden dimensionality $h$.
+
+Calculating the rank is somewhat nontrivial as we have to deal with floating point numbers. Normally, we could use SVD and take the number of nonzero singular values as the rank of the matrix, however given the imprecision of floaing point numbers, we'd probably see *all* nonzero singular values! To get around this, we use the numerical rank of $\mathbf{Q}$, which works be separating the "actual" singular values from the singular values that only exist because of floating point imprecision. Specifically, we compute our singular values and order then such that $\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_n$. We then find the $i$ that maximizes the multiplicative gap between consecutive singular values: $\underset{i}{\arg \max} \frac{\lambda_i}{\lambda_{i + 1}}$. Why does this work? Because ideally, $\lambda_i$ will be the last *actual* singular value, and $\lambda_{i + 1}$ will only be nonzero due to imprecision, meaning it'd still be close to 0. Thus, we'll have a large multiplicative gap, and identify the rank of the matrix as $i$. The visualization of this gap is pretty striking:
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/hidden_dim.png"
+    darkSrc="/images/hidden_dim.png"
+    alt="The magnitude of singular values drops off significantly after $h = 2048$ singular values, indicating the subspace dimensionality"
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 1** <br></br> The magnitude of singular values drops off significantly after $h = 2048$ singular values, indicating the subspace dimensionality; Figure 1 from @carlini2024stealingproductionlanguagemodel
+</div>
+
+
+## References

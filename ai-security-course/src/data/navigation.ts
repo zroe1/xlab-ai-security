@@ -315,20 +315,20 @@ export const navigationItems: NavigationItem[] = [
     id: "5",
     title: "Information Extraction & Data Poisoning",
     items: [
-      { id: "5.1", title: "Model Stealing", href: "/extraction/model-stealing", type: "link" },
+      { id: "5.1", title: "Model Stealing", href: "/extraction-poisoning/model-stealing", type: "link" },
       {
         id: "5.2",
         title: "Training Data Extraction",
-        href: "/extraction/data-extraction",
+        href: "/extraction-poisoning/data-extraction",
         type: "link",
       },
       {
         id: "5.3",
         title: "Data Poisoning & Backdooring",
-        href: "/extraction/data-poisoning",
+        href: "/extraction-poisoning/data-poisoning",
         type: "link",
       },
-      { id: "5.4", title: "Defenses", href: "/extraction/defenses", type: "link" },
+      { id: "5.4", title: "Defenses", href: "/extraction-poisoning/defenses", type: "link" },
     ],
   },
   {
