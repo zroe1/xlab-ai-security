@@ -14,9 +14,11 @@ f_\theta(p) = \text{softmax}(\mathbf{W} \cdot g_\theta(p)).
 $$
 We take the model's last hidden state ($\mathbb{R}^h$), "upscale" it to $\mathbb{R}^l$ with $\mathbf{W}$, and then apply the softmax function to get our final probability distribution.
 
-First, notice that given access to the logits $\mathbf{W} \cdot g_\theta(p)$, we can quite easily extract the hidden dimension $h$ of the model. To do this, we initialize a matrix $\mathbf{Q} \in \mathbb{R}^{n \times l}$, where we estimate some $n$ larger than $h$. We then query the model $n$ times and use the logits to fill in each row of $\mathbf{Q}$.
+First, notice that given access to the logits $\mathbf{W} \cdot g_\theta(p)$, we can quite easily extract the hidden dimension $h$ of the model. To do this, we initialize a matrix $\mathbf{Q} \in \mathbb{R}^{l \times n}$, where we estimate some $n$ larger than $h$. We then query the model $n$ times and use the logits to fill in each column of $\mathbf{Q}$.
 
 Now we use the key bit of intuition: even though each output logit vector is $l$-dimensional, they all exist in an $h$-dimensional subspace beacuse $\mathbf{W}$ is a linear operation that by definition cannot increase the dimensionality of the hidden states. That means that as long as $n$ is larger than $h$, we'll start to fill in $\mathbf{Q}$ with linearly dependent logit vectors. From there, we can use calculate the rank of $\mathbf{Q}$, thereby extracting the hidden dimensionality $h$.
+
+More formally, we have that $\mathbf{Q} = \mathbf{W} \cdot \mathbf{H}$, where $\mathbf{H} \in \mathbb{R}^{h \times n}$ where $\mathbf{H}$'s columns are $g_\theta(p_i) \forall \ i \in [1, n]$. Because $\mathbf{W}$ has $h$ columns, $\mathbf{H}$ has $h$ rows, and $h < n, l$, the ranks of $\mathbf{W}$ and $\mathbf{W}$ are at most $h$. Further, it is highly unlikely that they have a rank less than $h$, as this would require all of $\mathbf{W}$'s rows or $\mathbf{H}$'s columns to lie on a ($h - j$)-dimensional subspace with $j \geq 1$. The authors found empirically, this never occurred. Thus, because $\text{rank}(\mathbf{W}) = \text{rank}(\mathbf{H}) = h$, $\text{rank}(\mathbf{Q}) = h$.
 
 Calculating the rank is somewhat nontrivial as we have to deal with floating point numbers. Normally, we could use SVD and take the number of nonzero singular values as the rank of the matrix, however given the imprecision of floaing point numbers, we'd probably see *all* nonzero singular values! To get around this, we use the numerical rank of $\mathbf{Q}$, which works be separating the "actual" singular values from the singular values that only exist because of floating point imprecision. Specifically, we compute our singular values and order then such that $\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_n$. We then find the $i$ that maximizes the multiplicative gap between consecutive singular values: $\underset{i}{\arg \max} \frac{\lambda_i}{\lambda_{i + 1}}$. Why does this work? Because ideally, $\lambda_i$ will be the last *actual* singular value, and $\lambda_{i + 1}$ will only be nonzero due to imprecision, meaning it'd still be close to 0. Thus, we'll have a large multiplicative gap, and identify the rank of the matrix as $i$. The visualization of this gap is pretty striking:
 
@@ -33,5 +35,34 @@ Calculating the rank is somewhat nontrivial as we have to deal with floating poi
   **Fig. 1** <br></br> The magnitude of singular values drops off significantly after $h = 2048$ singular values, indicating the subspace dimensionality; Figure 1 from @carlini2024stealingproductionlanguagemodel
 </div>
 
+Going further, we can actually extract the unembedding matrix $\mathbf{W}$ (up to symmetries, at least). Specifically, we can approximate $\mathbf{W}$ with the matrix $\tilde{\mathbf{W}} = \mathbf{W} \cdot \mathbf{G}$, with $\mathbf{G} \in \mathbb{R}^{h \times h}$. To show this, we first take the SVD $\mathbf{Q} = \mathbf{U} \cdot \mathbf{\Sigma} \cdot \mathbf{V}^\top$ and rewrite 
+$$
+\mathbf{Q} \cdot \mathbf{V} = \mathbf{U} \cdot \mathbf{\Sigma} 
+$$ 
+using the orthogonality of $\mathbf{V}$. Next, we recall that $\mathbf{Q} = \mathbf{W} \cdot \mathbf{H}$, letting us write
+$$
+\mathbf{W} \cdot \mathbf{H} \cdot \mathbf{V} = \mathbf{U} \cdot \mathbf{\Sigma}.
+$$
+
+Notice that $\mathbf{H} \cdot \mathbf{V} \in \mathbb{R}^{h \times h}$, as $\mathbf{H} \in \mathbb{R}^{h \times n}$ and $\mathbf{V}^\top \in \mathbb{R}^{h \times n}$ (given a numerically stable SVD). Thus, we can take $\mathbf{G} = \mathbf{H} \cdot \mathbf{V}$, giving us $\tilde{\mathbf{W}} = \mathbf{W} \cdot \mathbf{G} = \mathbf{U} \cdot \mathbf{\Sigma}$. 
+
+While it is beyond the scope of this writeup, feel free to look at [Appendix C](https://arxiv.org/pdf/2403.06634#appendix.C) in the original paper to see why it is actually *impossible* to extract $\mathbf{W}$ exactly. Despite this, we can see that the approximation is rather good. To show this, the authors perform least-squares regression to solve for $\mathbf{G}^{-1}$ in $\tilde{\mathbf{W}} \cdot \mathbf{G}^{-1} = \mathbf{W}$, as the actual $\mathbf{G}$ matrix is unknown. They then take the RMS norm of $\mathbf{W}$ and $\tilde{\mathbf{W}} \cdot \mathbf{G}^{-1}$, giving the following results:
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/hidden_dim.png"
+    darkSrc="/images/hidden_dim.png"
+    alt="Stolen hidden dimension size and RMS norm of stolen unembedding layer across various models"
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 2** <br></br> Stolen hidden dimension size and RMS norm of stolen unembedding layer across various models; Table 2 from @carlini2024stealingproductionlanguagemodel
+</div>
+
+The average RMS norm between $\mathbf{W}$ and a randomly initialized matrix is $2 \cdot 10^{-2}$, meaning that the recovered matrix is a $100—500\times$ better approximation than a random matrix.
+
+Of course, the attack presented in this section is impractical for closed-source, production language models, as it requires the entire output logit vector, which APIs generally do not expose. Luckily, though, many APIs do expose the top-$K$ token logits, opening the door to another attack.
 
 ## References
