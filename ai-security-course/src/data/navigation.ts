@@ -328,7 +328,6 @@ export const navigationItems: NavigationItem[] = [
         href: "/extraction-poisoning/data-poisoning",
         type: "link",
       },
-      { id: "5.4", title: "Defenses", href: "/extraction-poisoning/defenses", type: "link" },
     ],
   },
   {

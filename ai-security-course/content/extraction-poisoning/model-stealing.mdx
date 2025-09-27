@@ -5,7 +5,7 @@ description: "Learn how attackers can steal information about AI models"
 
 ## Introduction
 
-Imagine OpenAI decided to expose the the full logits that ChatGPT generates when autoregressing. Now imagine that doing so lets us steal the unembedding layer of the model. In fact, it's quite simple to do so, as long as you understand a bit of linear algebra.
+Imagine OpenAI decided to expose the the full logits that ChatGPT generates when autoregressing. Now imagine that doing so lets us steal the unembedding layer of the model. In fact, @carlini2024stealingproductionlanguagemodel show that it's quite simple to do so, as long as you understand a bit of linear algebra.
 
 ## Full-Logit Attack
 To understand our attacks, we'll first create a simple mathematical model for language models. Let $\mathcal{X}$ represent our vocabulary, with $\mathcal{P}(\mathcal{X})$ being the space of probability distributions over $\mathcal{X}$. The language model is a function $f_\theta(p) : \mathcal{X}^N \to \mathcal{P}(\mathcal{X})$ that outputs a probability distrbution for the next token in $\mathcal{X}$ given $N$ input tokens. We can define $f_\theta$ in terms of a function $g_\theta(p) : \mathcal{X}^N \to \mathbb{R}^h$ that produces the model's hidden states, an unembedding matrix $\mathbf{W} \in \mathbb{R}^{l \times h}$ ($l = |\mathcal{X}|$), and the softmax operation:
@@ -14,9 +14,11 @@ f_\theta(p) = \text{softmax}(\mathbf{W} \cdot g_\theta(p)).
 $$
 We take the model's last hidden state ($\mathbb{R}^h$), "upscale" it to $\mathbb{R}^l$ with $\mathbf{W}$, and then apply the softmax function to get our final probability distribution.
 
-First, notice that given access to the logits $\mathbf{W} \cdot g_\theta(p)$, we can quite easily extract the hidden dimension $h$ of the model. To do this, we initialize a matrix $\mathbf{Q} \in \mathbb{R}^{n \times l}$, where we estimate some $n$ larger than $h$. We then query the model $n$ times and use the logits to fill in each row of $\mathbf{Q}$.
+First, notice that given access to the logits given by an oracle $\mathcal{O}(p) = \mathbf{W} \cdot g_\theta(p)$, we can quite easily extract the hidden dimension $h$ of the model. To do this, we initialize a matrix $\mathbf{Q} \in \mathbb{R}^{l \times n}$, where we estimate some $n$ larger than $h$. We then query the model $n$ times and use the logits to fill in each column of $\mathbf{Q}$.
 
 Now we use the key bit of intuition: even though each output logit vector is $l$-dimensional, they all exist in an $h$-dimensional subspace beacuse $\mathbf{W}$ is a linear operation that by definition cannot increase the dimensionality of the hidden states. That means that as long as $n$ is larger than $h$, we'll start to fill in $\mathbf{Q}$ with linearly dependent logit vectors. From there, we can use calculate the rank of $\mathbf{Q}$, thereby extracting the hidden dimensionality $h$.
+
+More formally, we have that $\mathbf{Q} = \mathbf{W} \cdot \mathbf{H}$, where $\mathbf{H} \in \mathbb{R}^{h \times n}$ where $\mathbf{H}$'s columns are $g_\theta(p_i) \forall \ i \in [1, n]$. Because $\mathbf{W}$ has $h$ columns, $\mathbf{H}$ has $h$ rows, and $h < n, l$, the ranks of $\mathbf{W}$ and $\mathbf{W}$ are at most $h$. Further, it is highly unlikely that they have a rank less than $h$, as this would require all of $\mathbf{W}$'s rows or $\mathbf{H}$'s columns to lie on a ($h - j$)-dimensional subspace with $j \geq 1$. The authors found empirically, this never occurred. Thus, because $\text{rank}(\mathbf{W}) = \text{rank}(\mathbf{H}) = h$, $\text{rank}(\mathbf{Q}) = h$.
 
 Calculating the rank is somewhat nontrivial as we have to deal with floating point numbers. Normally, we could use SVD and take the number of nonzero singular values as the rank of the matrix, however given the imprecision of floaing point numbers, we'd probably see *all* nonzero singular values! To get around this, we use the numerical rank of $\mathbf{Q}$, which works be separating the "actual" singular values from the singular values that only exist because of floating point imprecision. Specifically, we compute our singular values and order then such that $\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_n$. We then find the $i$ that maximizes the multiplicative gap between consecutive singular values: $\underset{i}{\arg \max} \frac{\lambda_i}{\lambda_{i + 1}}$. Why does this work? Because ideally, $\lambda_i$ will be the last *actual* singular value, and $\lambda_{i + 1}$ will only be nonzero due to imprecision, meaning it'd still be close to 0. Thus, we'll have a large multiplicative gap, and identify the rank of the matrix as $i$. The visualization of this gap is pretty striking:
 
@@ -32,6 +34,82 @@ Calculating the rank is somewhat nontrivial as we have to deal with floating poi
 <div align="center">
   **Fig. 1** <br></br> The magnitude of singular values drops off significantly after $h = 2048$ singular values, indicating the subspace dimensionality; Figure 1 from @carlini2024stealingproductionlanguagemodel
 </div>
+
+Going further, we can actually extract the unembedding matrix $\mathbf{W}$ (up to symmetries, at least). Specifically, we can approximate $\mathbf{W}$ with the matrix $\tilde{\mathbf{W}} = \mathbf{W} \cdot \mathbf{G}$, with $\mathbf{G} \in \mathbb{R}^{h \times h}$. To show this, we first take the SVD $\mathbf{Q} = \mathbf{U} \cdot \mathbf{\Sigma} \cdot \mathbf{V}^\top$ and rewrite 
+$$
+\mathbf{Q} \cdot \mathbf{V} = \mathbf{U} \cdot \mathbf{\Sigma} 
+$$ 
+using the orthogonality of $\mathbf{V}$. Next, we recall that $\mathbf{Q} = \mathbf{W} \cdot \mathbf{H}$, letting us write
+$$
+\mathbf{W} \cdot \mathbf{H} \cdot \mathbf{V} = \mathbf{U} \cdot \mathbf{\Sigma}.
+$$
+
+Notice that $\mathbf{H} \cdot \mathbf{V} \in \mathbb{R}^{h \times h}$, as $\mathbf{H} \in \mathbb{R}^{h \times n}$ and $\mathbf{V}^\top \in \mathbb{R}^{h \times n}$ (given a numerically stable SVD). Thus, we can take $\mathbf{G} = \mathbf{H} \cdot \mathbf{V}$, giving us $\tilde{\mathbf{W}} = \mathbf{W} \cdot \mathbf{G} = \mathbf{U} \cdot \mathbf{\Sigma}$. 
+
+While it is beyond the scope of this writeup, feel free to look at [Appendix C](https://arxiv.org/pdf/2403.06634#appendix.C) in the original paper to see why it is actually *impossible* to extract $\mathbf{W}$ exactly. Despite this, we can see that the approximation is rather good. To show this, the authors perform least-squares regression to solve for $\mathbf{G}^{-1}$ in $\tilde{\mathbf{W}} \cdot \mathbf{G}^{-1} = \mathbf{W}$, as the actual $\mathbf{G}$ matrix is unknown. They then take the RMS norm of $\mathbf{W}$ and $\tilde{\mathbf{W}} \cdot \mathbf{G}^{-1}$, giving the following results:
+
+<p align="center">
+  <ThemeImage
+    lightSrc="/images/hidden_dim.png"
+    darkSrc="/images/hidden_dim.png"
+    alt="Stolen hidden dimension size and RMS norm of stolen unembedding layer across various models"
+    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+  />
+</p>
+
+<div align="center">
+  **Fig. 2** <br></br> Stolen hidden dimension size and RMS norm of stolen unembedding layer across various models; Table 2 from @carlini2024stealingproductionlanguagemodel
+</div>
+
+The average RMS norm between $\mathbf{W}$ and a randomly initialized matrix is $2 \cdot 10^{-2}$, meaning that the recovered matrix is a $100—500\times$ better approximation than a random matrix.
+
+Of course, the attack presented in this section is impractical for closed-source, production language models, as it requires the entire output logit vector, which APIs generally do not expose. What ever will we do?
+
+## The Logit-Bias API Attack
+Some APIs (well, before this paper was published) exposed the Top-$k$ logprobs, and allowed users to specify some bias $b \in \mathbb{R}^{|\mathcal{X}|}$ that could be added to each specified token's logit before the softmax:
+$$
+\mathcal{O}(p, b) = \text{Top-}k(\text{logsoftmax}(\mathbf{W} g_\theta(p) + b)).
+$$
+For example, at the time of publication, @carlini2024stealingproductionlanguagemodel note that OpenAI supported modifying the logits for up to 300 tokens, with the bias for each token needing to be in $[-100, 100]$. 
+
+Before looking into this setting, suppose that a model provider returned the Top-$k$ *logits*, instead of logprobs (and say $k = 5$). In this scenario, the extraction attack would be quite straightforward: all we have to do is query the same prompt over an over, cycling through which logits we "upweight" via the bias $B$ (as long as $B$ is large enough):
+$$
+\mathcal{O}(p, b_k = b_{k + 1} = \dots = b_{k + 4} = B) \text{ for } k \in \{0, 5, 10, \dots, |\mathcal{X}|\}.
+$$
+
+Unfortunately, as we touched on earlier, providers instead return the Top-$k$ *logprobs*, not logits, meaning this simple attack doesn't work. To deal with this fact, @carlini2024stealingproductionlanguagemodel give a number of feasible attacks in the Top-$k$ logprob setting; we will present the most simple case here, and encourage you to read the [original paper](https://arxiv.org/abs/2403.06634) if you want to learn about the other!
+
+### Dealing with the Logprobs
+Given its logit $z_i$ and bias $B$, the $i$th token's logprob is given by
+$$
+y_i^B = \log\left( \frac{\exp(z_i + B)}{\sum_{j \neq i} \exp(z_j) + \exp(z_i + B)}  \right),
+$$
+which we can rewrite as
+$$
+y_i^B = z_i + B - \log\left( \sum_{j \neq i} \exp(z_i) + \exp(z_i + B)  \right).
+$$
+The term with the logarithm is rather annoying, as without it we could otherwise simply extract the logit $z_i$. To deal with it, we'll rely on a reference token $R$, the top token for the prompt $p$, given that we're still biasing token $i$ by $B$ to push it into the Top-$5$:
+$$
+y_R^B = z_R - \log \left(\sum_{j \neq i} \exp(z_j) + \exp(z_i + B) \right).
+$$
+Now, we can calculate the relative difference between token $i$ and $R$:
+$$
+\begin{aligned}
+y_R^B - y_i^B = &\left[ z_R - \log \left(\sum_{j \neq i} \exp(z_j) + \exp(z_i + B) \right)\right] \\
+&- \left[  z_i + B - \log\left( \sum_{j \neq i} \exp(z_i) + \exp(z_i + B)  \right) \right] \\
+= &z_R - z_i + B,
+\end{aligned}
+$$
+and from here we can simply subtract $B$ to get the relative position of token $i$. (In fact, because $z_R$ is essentially a free variable here, the authors ultimately just set it to $0$.) In practice, we can extract $k - 1$ logits per query, as the only exposed logprob we cannot use to extract a logit in each query is that of token $R$ (since we must have this token to compute the relative logits). That is, we can issue a sequence of queries
+$$
+\mathcal{O}(p, b_i = b_{i + 1} = \dots = b_{i + 3} = B) \text{ for } i \in \{0, 4, \dots, |\mathcal{X}|\}
+$$
+to perform this attack.
+
+## Wrap Up
+As we mentioned earlier, there are a number of additional attacks proposed in the [original paper](https://arxiv.org/abs/2403.06634), and we encourage you to take a look at them if you're interested. On the other hand, if write-up has been a bit too in the mathematical weeds, feel free to ignore our suggestion.
+
+We also want to mention that while this paper is perhaps the most interesting case of a model stealing attack due to its techniques working against frontier LLMs, there's a rich history of model stealing, dating all the way back to 2016 [@tramèr2016stealingmachinelearningmodels]. Model extraction attacks will likely remain outside of the realistic threat model for production LLMs—especially given the amount of time and money that now goes into training them—but we find it interesting that a partial extraction attack was feasible at any point. Finally, if you're intersted, model stealing attacks *in general* are still an active area of research today. 
 
 
 ## References
