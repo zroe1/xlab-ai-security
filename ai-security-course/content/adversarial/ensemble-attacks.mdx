@@ -14,19 +14,19 @@ One interesting feature of adversarial images is that they often "transfer" to o
 
 ## Targeted vs Untargeted Transfers
 
-Finding targeted adversarial examples that transfer is much harder than finding untargeted examples that transfer [@liu2017delvingtransferableadversarialexamples]. This is because it is much easier to drive the loss up when there isn't a constraint on the exact direction the loss should be moving upwards. In other words, the loss landscape for predicting a singular target class is less generous than the landscape for predicting any class other than the clean label. As a mental model, we propose you think about an individual attempting to climb up a mountain: in the untargeted case, it is easy to climb straight up while in the targeted case, it is unclear which direction to climb.
+Finding targeted adversarial examples that transfer is much harder than finding untargeted examples that transfer [@liu2017delvingtransferableadversarialexamples]. This is because it is much easier to drive the loss up when there isn't a constraint on the exact direction the loss should be moving upwards. In other words, the loss landscape for predicting a singular target class is less generous than the landscape for predicting any class other than the clean label. Think about a target containing all classes. If you are trying to shoot an arrow at the below target and you are trying to hit anything but the correct class, it is easy. If you are trying to hit a specific incorrect class however, the task becomes much more difficult.
 
 <p align="center">
   <ThemeImage
-    lightSrc="/images/targeted_light.png"
-    darkSrc="/images/targeted_dark.png"
+    lightSrc="/images/ensemble_light.png"
+    darkSrc="/images/ensemble_dark.png"
     alt="Targeted vs untargeted loss landscape"
-    style={{ align: "center", width: "80%", display: "block", margin: "0 auto" }}
+    style={{ align: "center", width: "40%", display: "block", margin: "0 auto" }}
   />
 </p>
 
 <div align="center">
-  **Fig. 1** <br></br>Targeted vs untargeted loss landscape
+  **Fig. 1** <br></br>Mental model for thinking of targeted vs untargeted attacks
 </div>
 
 ## Threat Model for Transferability
