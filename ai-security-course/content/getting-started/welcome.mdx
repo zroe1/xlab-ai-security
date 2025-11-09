@@ -28,11 +28,11 @@ The intention is for the pages on the website to be an overview to prepare you f
 
 The course contains five sections which we recommend you complete in order because they build on one another. Below is an overview of each section.
 
-1. **Section #1: Getting Started:** This will cover any setup you may have to do to complete the coding exercises. It will also introduce our python package `xlab-security` and show you how to install it.
+1. **Section #1: Getting Started:** This will cover any setup you may have to do to complete the coding exercises. It will also introduce our Python package `xlab-security` and show you how to install it.
 2. **Section #2: Adversarial Basics:** This section will teach you how to generate adversarial examples to induce misclassification in computer vision, laying the foundation for later attacks on more powerful models.
 3. **Section #3: Jailbreaks:** The first section on LLMs, here you'll learn how to “jailbreak” LLMs to respond to prompts that they were designed to refuse to answer.
 4. **Section #4: Model Tampering:** Here, we touch on how bad actors can manipulate open source models to remove safety filters and how to mitigate this risk.
-5. **Section #5: Data Poisoning & Information Extraction:** This covers model stealing attacks and attacks which extract model training data.
+5. **Section #5: Data Poisoning & Information Extraction:** This covers model stealing attacks and attacks that extract model training data.
 
 ## What is AI Security?
 
@@ -42,13 +42,13 @@ A related set of work, which can also be called “AI Security,” focuses on to
 
 ## Why AI Security?
 
-The mission of UChicago’s Existential Risk Lab is to decrease the probability of catastrophic events that pose risks to humanity. We believe that future AI systems could pose this kind of threat if, for example, they are not sufficiently aligned with human values and pursue goals human programmers did not intend. Because of this possible threat, there has been an increasing interest in AI safety research (if interested, XLab has an [AI safety reading list](https://uchicagoaisafety.com/ai-safety-fundamentals)). Meanwhile, AI security research has gained momentum but remains an underappreciated field. Below we list three reasons for why we believe AI security is essential for AI safety.
+The mission of UChicago’s Existential Risk Lab is to decrease the probability of catastrophic events that pose risks to humanity. We believe that future AI systems could pose this kind of threat if, for example, they are not sufficiently aligned with human values and pursue goals human programmers did not intend. Because of this possible threat, there has been an increasing interest in AI safety research (if interested, XLab has an [AI safety reading list](https://uchicagoaisafety.com/ai-safety-fundamentals)). Meanwhile, AI security research has gained momentum but remains an underappreciated field. Below, we list three reasons why we believe AI security is essential for AI safety.
 
 ### Reason #1: Defending Models Against Attacks Deters Dual Use
 
-Although current state of the art LLMs are not yet capable to independently performing dangerous actions such as independently building a bio weapon [@mouton2024operational], we believe that these capabilities will likely exist in the coming decades and [according](https://www.nytimes.com/2025/04/03/technology/ai-futures-project-ai-2027.html) [to](https://www.youtube.com/watch?v=Xywqm0vlUxk) [some](https://situational-awareness.ai/), even sooner. If, at that time, safety training can still be bypassed using jailbreaks or other attacks, bad actors would have access to expert assistants to carry out any action they desire. In addition to bio-risk, these attacks are especially concerning for developing nuclear capabilities, military capacity, and broad social manipulation.
+Although current state-of-the-art LLMs are not yet capable of independently performing dangerous actions such as independently building a bioweapon [@mouton2024operational], we believe that these capabilities will likely exist in the coming decades and [according](https://www.nytimes.com/2025/04/03/technology/ai-futures-project-ai-2027.html) [to](https://www.youtube.com/watch?v=Xywqm0vlUxk) [some](https://situational-awareness.ai/), even sooner. If, at that time, safety training can still be bypassed using jailbreaks or other attacks, bad actors would have access to expert assistants to carry out any action they desire. In addition to bio-risk, these attacks are especially concerning for developing nuclear capabilities, military capacity, and broad social manipulation.
 
-Below is an example of a GCG jailbreak [@zouUniversalTransferableAdversarial2023] (which you will learn about later in this course!). The attack is quite simple; all we have done is appended a carefully chosen suffix at the end of our prompt. This suffix, however, bypasses the model's safety training, causing it to respond to the malicious query. Unfortunately, there is no currently known defense that is impervious to jailbreaks—every model that exists today can be jailbroken.
+Below is an example of a GCG jailbreak [@zouUniversalTransferableAdversarial2023] (which you will learn about later in this course!). The attack is quite simple; all we have done is append a carefully chosen suffix at the end of our prompt. This suffix, however, bypasses the model's safety training, causing it to respond to the malicious query. Unfortunately, there is no currently known defense that is impervious to jailbreaks—every model that exists today can be jailbroken.
 
 ```
 <|user|>
