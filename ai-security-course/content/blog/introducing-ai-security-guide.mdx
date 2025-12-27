@@ -1,0 +1,88 @@
+---
+title: "Introducing the XLab AI Security Guide"
+description: "Announcing our first major release: online resources and coding exercises covering jailbreaks, fine-tuning attacks, and defenses for AI systems"
+---
+
+_By Zephaniah Roe, Jack Sanderson, Julian Huang, Piyush Garodia_
+
+_This work was supported by [UChicago XLab](https://xrisk.uchicago.edu/)._
+
+Today, we are announcing our first major release of the XLab AI Security Guide: a set of online resources and coding exercises covering canonical papers on jailbreaks, fine-tuning attacks, and proposed methods to defend AI systems from misuse.
+
+Each page on the course contains a readable blog-style overview of a paper and often a notebook that guides users through a small replication of the core insight the paper makes. Researchers and students can use this guide as a structured course to learn AI security step-by-step or as a reference, focusing on specific sections relevant to their research. When completed chronologically, sections build on each other and become more advanced as students pick up conceptual insights and technical skills.
+
+## Why Create AI Security Resources?
+
+While many safety-relevant papers have been documented as readable blog posts on LessWrong or formatted as pedagogically useful replications in ARENA, limited resources exist for high-quality AI security papers.
+
+One illustrative example is the paper _Universal and Transferable Adversarial Attacks on Aligned Language Models_. This paper introduces the Greedy Coordinate Gradient (GCG) algorithm, which jailbreaks LLMs through an optimized sequence of tokens appended to the end of a malicious request. Interestingly, these adversarial suffixes (which appear to be nonsense) transfer across models and different malicious requests. The mechanism that causes these bizarre token sequences to predictably misalign a wide variety of models remains unknown.
+
+This work has been covered by the New York Times and has racked up thousands of citations, but unfortunately, there are no high-quality blog posts or instructional coding exercises to understand GCG. Consequently, if students or early-career researchers are interested in further diving into work like GCG, it's difficult to know where to start.
+
+Given the extensive ecosystem of companies and universities pursuing high-quality research on AI Security, we wanted to parse through it all, find what is relevant, and document it in a readable way. We consider this to be an impactful lever to pull, because it allows us to spread a huge volume of safety-relevant research without having to do the work of making novel discoveries. Replicating papers and coding an implementation at a more granular level confers a lot of intuitions and a deeper understanding.
+
+## What We Cover
+
+There are various definitions of "AI security" in usage, but we define the term as attacks on and defenses unique to AI systems. For example, securing algorithmic secrets or model weights is not covered because these issues are under the umbrella of traditional computer security.
+
+The course is structured into the following four sections, with a fifth section covering security evaluations coming soon.
+
+### Section 1: Getting Started
+
+We describe what the course is, include a note on ethics, and give instructions on how to run the course's code and install our Python package "xlab-security".
+
+### Section 2: Adversarial Basics
+
+We cover how adversarial attacks against image models work and how they can be prevented. We cover FGSM, PGD, Carlini-Wagner, Ensemble, and Square attacks. We also cover evaluating robustness on CIFAR-10, defensive distillation, and are working on an adversarial training section currently.
+
+### Section 3: LLM Jailbreaking
+
+This section covers the biggest research breakthroughs in jailbreaking LLMs. We cover GCG, AmpleGCG, Dense-to-sparse optimization, PAIR, TAP, GPTFuzzer, AutoDAN, visual jailbreaks, and many-shot jailbreaks.
+
+We then cover defenses such as perplexity filters, Llama Guard, SafeDecoding, Smooth LLM, Constitutional Classifiers, and Circuit Breakers.
+
+### Section 4: Model Tampering
+
+We cover open weight model risks, refusal direction removal, fine-tuning attacks, and tamper-resistant safeguards. We also include two blog-post style write-ups which discuss lessons in evaluating open-weight LLM safeguard durability, why fine-tuning attacks work, and how to avoid undoing safety training via fine-tuning.
+
+### Other things too!
+
+There are also some topics and pages not covered in the overview above, so we encourage readers to poke around the website!
+
+## Who We Target
+
+The target audience is centered around the people XLab has traditionally served: current students and early-career researchers. We have noticed that in our own summer research fellowship, some accepted researchers have been bottlenecked by their level of concrete technical knowledge and skills. Likewise, many other students were not accepted to the SRF because they couldn't demonstrate familiarity with the tools, technical skills, and conceptual knowledge needed to pursue empirical AI security or safety research.
+
+There are already existing resources like ARENA for upskilling in technical AI safety work. However, AI security work requires a different skillset compared to other areas like mechanistic interpretability research, leaving students or researchers interested in AI security with few resources. For these students or early-career researchers, the XLab AI security guide is the perfect starting point.
+
+More established researchers may also find the guide to be a useful reference, even if it makes less sense for them to work through the entire course chronologically.
+
+## Choosing Topics to Teach
+
+Creating new resources for AI security required parsing through a huge volume of research. The two criteria of inclusion in our own guide were "relevance to x-risk" and "pedagogically useful." If a particular paper or topic scores highly on one criterion but not the other, we may choose to include it.
+
+By relevance to x-risk, we mean work that exposes or addresses a vulnerability in machine learning models that could pose a significant threat to humanity. The typical x-risk argument for AI security topics is catastrophic misuse, where a bad actor leverages a model to build nuclear weapons, synthesize novel viruses, or perform another action which could result in large-scale disaster. Some papers that score highly on relevance to x-risk were Zou et al., 2024, Arditi et al, 2024, Durmus et al., 2024, and Qi et al., 2024.
+
+By pedagogically useful, we mean papers that are foundational, or illustrate concepts that other more involved papers have built upon. The idea is that students should have a place to go to if they would like to learn AI security from the ground up. In order to do that, the guide starts by covering classical adversarial machine learning: FGSM, black box attacks, and evaluation methods for computer vision models. This work makes up the foundation of the computer security field and is essential to understand, even if it is not directly relevant to x-risk reduction. Some papers that score highly on this criterion were Goodfellow et al., 2015, Liu et al., 2017, and Croce et al., 2021.
+
+## Choosing Skills to Teach
+
+Performing small replications of influential papers will provide students with much of the technical foundation and necessary knowledge to do research for programs like XLab's SRF, MATS, or for a PI at a university. The technical skills we expect students to learn include, but are not limited to:
+
+- Translating high-level algorithms into implementable PyTorch code.
+- Familiarity with loading and running models from HuggingFace.
+- Understanding the mathematical intuitions behind attacks and defenses.
+- Practical understanding of how transformer-based language models work (we discuss what we consider to be practical LLM knowledge [here](/jailbreaking/llm-intro)).
+
+Not only will students become familiar with the foundational AI security literature, but we also expect students to pick up on some basic research taste. AI security research has historically been a cat-and-mouse game where some researchers propose defenses and others develop attacks to break those defenses. By working through the sections, students should develop an intuition for which defenses are likely to stand the test of time through hands-on examples. For example, in section 2.6.1, we include an example of "obfuscated gradients" as a defense against adversarial attacks and have students explore why the approach fails.
+
+## Getting Involved
+
+There are several ways to support this project:
+
+- You can support the course by completing sections and providing feedback through the feedback links at the bottom of each page.
+- You can also submit issues or contribute on GitHub: [https://github.com/zroe1/xlab-ai-security](https://github.com/zroe1/xlab-ai-security).
+- Use [this invite link](https://join.slack.com/t/xlab-at-uchicago/shared_invite/zt-2xaknubnl-tBd8_n6~YJwIVTlb1XR_Mw) to join the XLab Slack and join the #ai-security-course channel, where you can voice any feedback/questions or stay in touch with future announcements. You can also use the slack channel to get assistance if you are stuck on a coding exercise.
+- We would greatly appreciate it if you could help spread the word or share this resource with those who might find it useful!
+
+If you have any questions/concerns or feedback you do not want to share in our Slack, you can contact [zroe@uchicago.edu](mailto:zroe@uchicago.edu).

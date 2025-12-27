@@ -315,7 +315,12 @@ export const navigationItems: NavigationItem[] = [
     id: "5",
     title: "Information Extraction & Data Poisoning",
     items: [
-      { id: "5.1", title: "Model Stealing", href: "/extraction-poisoning/model-stealing", type: "link" },
+      {
+        id: "5.1",
+        title: "Model Stealing",
+        href: "/extraction-poisoning/model-stealing",
+        type: "link",
+      },
       {
         id: "5.2",
         title: "Training Data Extraction",
@@ -347,6 +352,12 @@ export const navigationItems: NavigationItem[] = [
         id: "7.1",
         title: "Intriguing Properties of gpt-oss Jailbreaks",
         href: "/blog/gpt-oss-jailbreaks",
+        type: "link",
+      },
+      {
+        id: "7.2",
+        title: "Introducing the XLab AI Security Guide",
+        href: "/blog/introducing-ai-security-guide",
         type: "link",
       },
     ],
